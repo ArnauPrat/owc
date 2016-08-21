@@ -1,0 +1,32 @@
+CMAKE_MINIMUM_REQUIRED (VERSION 2.8.4)
+PROJECT(openwarclient)
+
+set( CMAKE_EXPORT_COMPILE_COMMANDS 1 )
+
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  message(STATUS "Setting build type to 'Release' as none was specified.")
+  set(CMAKE_BUILD_TYPE Release)
+endif()
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+set(OPENWARCLIENT_LIB_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/lib/asio/include 
+                                   ${CMAKE_SOURCE_DIR}/src/irrlicht
+                                   ${CMAKE_SOURCE_DIR}/src/irrlicht/include)
+
+IF( UNIX )
+  SET(PLATFORM "_LINUX")
+ENDIF(UNIX)
+
+IF( WIN32 )
+  SET(PLATFORM "_WINDOWS")
+ENDIF(WIN32)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D${PLATFORM}")
+
+
+ADD_SUBDIRECTORY(src/furious)
+ADD_SUBDIRECTORY(src/client)
