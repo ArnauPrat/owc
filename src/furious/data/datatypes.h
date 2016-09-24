@@ -5,7 +5,7 @@
 
 namespace furious {
   namespace data {
-    enum DataType { BOOLEAN, CHAR, INTEGER, LONG, FLOAT, DOUBLE, STRING };
+    enum class DataType { BOOLEAN, CHAR, INTEGER, LONG, FLOAT, DOUBLE, STRING };
 
   } 
 }

@@ -1,5 +1,6 @@
 
 
+
 #ifndef _FURIOUS_COMPONENT_H_
 #define _FURIOUS_COMPONENT_H_
 
@@ -9,39 +10,66 @@
 #include <vector>
 
 namespace furious {
-  namespace data {
+	namespace data {
 
-    struct Field {
-      std::string m_name;
-      DataType    m_type;
-      uint_t      m_stride;
-    };
+#define SELFAWARE_IDENTIFIER(fieldname) \
+		template<typename Q_T> \
+		struct fieldname { \
+			template<typename U, typename ::detail::enum_value_type<Q_T>::type N> \
+			struct Q_enum { \
+				static constexpr U fieldname = U(N); \
+			}; \
+			Q_T fieldname; \
+			using Q_type = Q_T; \
+			constexpr static char const *Q_name() { return #fieldname; } \
+			Q_T &Q_value() & { return fieldname; } \
+			Q_T const &Q_value() const & { return fieldname; } \
+			Q_T &&Q_value() && { return fieldname; } \
+		};
 
-    class ComponentType;
+	template<typename...Fields>
+		struct Component : Fields... {
+			using component_type = Component;
 
-    class ComponentIterator {
+			Component() = default;
+			Component(Component const &) = default;
+			constexpr Component(typename Fields::Q_type &&...x)
+				: Fields{x}... {}
 
-      public:
-        bool HasNext();
-        Component Next();
+			// FIXME relies on undefined behavior, can't be constexpr
+			template<typename Field>
+				/*constexpr*/ static std::uintptr_t offset_of() {
+					return reinterpret_cast<std::uintptr_t>(&static_cast<Component*>(nullptr)->Field::Q_value());
+				}
 
-      private:
-        friend class ComponentType;
-        ComponentIteartor(ComponentType* );
+			template<typename Field>
+				constexpr static std::uintptr_t size_of() { return sizeof(typename Field::Q_type); }
 
-        ComponentCollection*  m_componentType;
+			template<typename Field>
+				constexpr static char_t const *name_of() { return Field::Q_name(); }
 
-    };
 
-    class ComponentType {
+			template<template<typename T> class Field>
+				using type_of = typename detail::find_field<Field, Fields...>::type;
 
-      private:
-        uint_t              m_componentTypeId;
-        std::vector<uint_t> m_entityIds;
-        std::vector<Field>  m_fields;
-        char_t*             m_data;
-    };
-  }
+			template<template<typename T> class Trait, typename Function>
+				static void each_field(Function &&f)
+				{
+					char_t __attribute__((unused)) discard[] = {(
+							f(Fields::Q_name(), offset_of<Fields>(), size_of<Fields>(),
+								Trait<typename Fields::Q_type>::value())
+							, '\0')...};
+				}
+
+			template<typename Function>
+				auto apply(Function &&f) & -> decltype(f(this->Fields::Q_value()...))
+				{ return f(this->Fields::Q_value()...); }
+			template<typename Function>
+				auto apply(Function &&f) const & -> decltype(f(this->Fields::Q_value()...))
+				{ return f(this->Fields::Q_value()...); }
+			template<typename Function>
+				auto apply(Function &&f) && -> decltype(f(this->Fields::Q_value()...))
+				{ return f(this->Fields::Q_value()...); }
+		};
 }
-
 #endif
