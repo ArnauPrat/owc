@@ -13,9 +13,6 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-set(OPENWARCLIENT_LIB_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/lib/asio/include 
-                                   ${CMAKE_SOURCE_DIR}/src/irrlicht
-                                   ${CMAKE_SOURCE_DIR}/src/irrlicht/include)
 
 IF( UNIX )
   SET(PLATFORM "_LINUX")
@@ -27,6 +24,6 @@ ENDIF(WIN32)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D${PLATFORM}")
 
-
+enable_testing()
 ADD_SUBDIRECTORY(src/furious)
 ADD_SUBDIRECTORY(src/client)

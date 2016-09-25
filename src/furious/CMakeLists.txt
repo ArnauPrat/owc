@@ -15,12 +15,14 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2 -DNDEBUG ")
 set(FURIOUS_DEFAULT_DEFINES " ")
 set(FURIOUS_INCLUDE_DIR ${CMAKE_SOURCE_DIR})
 
-INCLUDE_DIRECTORIES(./)
+include_directories(./)
 
-ADD_SUBDIRECTORY(./common/)
+add_subdirectory(./common/)
+add_subdirectory(./data/)
 
-ADD_LIBRARY(furious SHARED)  
-TARGET_LINK_LIBRARIES(furious common)
+add_library(furious SHARED)  
+target_link_libraries(furious common)
 
+set( FURIOUS_OUTPUT_DIR "${CMAKE_BINARY_DIR}/bin/furious/")
 
-SET( FURIOUS_OUTPUT_DIR "${CMAKE_BINARY_DIR}/bin/furious/")
+add_subdirectory(./test/)

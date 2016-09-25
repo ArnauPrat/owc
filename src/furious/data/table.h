@@ -9,7 +9,7 @@
 
 namespace furious {
   namespace data {
-    template<template<typename...Fields> class T> 
+    template<typename T> 
       class Table {
         public:
 
@@ -19,20 +19,21 @@ namespace furious {
           Table( Table && ) = delete;
           Table & operator=( Table &&) = delete;
 
-			    void insert( typename Fields::Q_type &&...x) {
+/*			    void insert( typename Fields::Q_type &&...x) {
             data.emplace_back(std::forward<Fields::Q_type>(x)...);
           }
+          */
 
           void insert( const T & component ) {
             data.push_back(component);
           }
 
           void insert(T && component) {
-            data.push_back(std::forward<T>(component))
+            data.push_back(std::forward<T>(component));
           }
 
         private:
-          std::vector<Component> data;
+          std::vector<T> data;
 
       };
   } /* data */ 
