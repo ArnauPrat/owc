@@ -9,6 +9,10 @@
 #include <common/types.h>
 #include <iterator>
 
+#include "irow.h"
+#include "itable_iterator.h"
+#include "itable.h"
+
 using std::begin;
 using std::cbegin;
 
@@ -27,16 +31,17 @@ namespace furious {
     };
 
     template<typename...Fields> 
-      class Table {
+      class Table : public ITable {
         public:
+          using table_type = Table;
 
           /** Structure representing a row in the table.*/
-          struct Row : Fields... {
+          struct Row : IRow, Fields... {
             using row_type = Row;
             Row() = default;
             Row(Row const &) = default;
             constexpr Row(typename Fields::Q_type &&...x)
-              : Fields{x}... {}
+              : IRow(), Fields{x}... {}
             ;
 
             /**
@@ -95,43 +100,85 @@ namespace furious {
 
           };
 
-          Table() = default ;
+          /**
+           * Iterator class
+           */
+          template<typename T>
+          class Iterator : public ITableIterator {
+
+            public:
+              Iterator( typename std::vector<Row>::iterator itbegin, typename std::vector<Row>::iterator itend ) :
+                it_(itbegin),
+                end_(itend)
+              {
+              }
+
+              virtual ~Iterator() {}
+
+              bool has_next() const override {
+                return it_ != end_; 
+              }
+
+              T& next() override {
+                return (*it_++);
+              }
+              
+            private:
+              typename std::vector<Row>::iterator it_;
+              typename std::vector<Row>::iterator end_;
+
+          };
+
+          Table(const std::string& table_name) : 
+            table_name_(table_name) {
+          }
+
+          Table( std::string&& table_name) : 
+            table_name_(table_name) {
+          }
+
           Table( const Table & ) = delete;
           Table & operator=( const Table &) = delete;
           Table( Table && ) = delete;
           Table & operator=(Table &&) = delete;
 
           void insert( typename Fields::Q_type &&...x ) {
-            data.emplace_back(std::forward< typename Fields::Q_type>(x)...);
+            data_.emplace_back(std::forward< typename Fields::Q_type>(x)...);
           }
 
           Row& get( int32_t row ) & {
-            return data[row];
+            return data_[row];
           }
+
 
           /**
            * Gets the ith row of the table
            */
           const Row& get( int32_t row ) const & {
-            return data[row];
+            return data_[row];
           }
 
-          /**
-           * Gets an iterator to the table
-           */
-          auto iterator() {
-            return begin(data);
+          std::string table_name() const override {
+            return std::move(table_name_);
           }
 
-          /**
-           * Gets a const iterator to the table
-           */
-          auto const_iterator() {
-            return cbegin(data);
+          std::unique_ptr<Iterator<Row>> iterator() {
+            return std::unique_ptr<Iterator<Row>>(priv_iterator());
           }
+
+          Iterator<Row>* priv_iterator() override {
+            return new Iterator<Row>(begin(data_),end(data_)); 
+          }
+
+
+          uint32_t size() const override {
+            return data_.size();
+          }
+
 
         private:
-          std::vector<Row> data;  // vector holding the table data
+          std::vector<Row>  data_;        // vector holding the table data
+          std::string       table_name_;  // the name of the table
       };
   } /* data */ 
 } /* furious */ 

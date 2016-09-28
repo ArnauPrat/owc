@@ -1,0 +1,3 @@
+
+- Improve ITableIterator implementation with operator overloadings
+- Improve the table tests
