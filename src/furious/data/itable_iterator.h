@@ -1,6 +1,9 @@
 
 #ifndef _FURIOUS_ITABLE_ITERATOR_H_
 #define _FURIOUS_ITABLE_ITERATOR_H_ 
+
+#include "irow.h"
+
 namespace furious
 {
   namespace data

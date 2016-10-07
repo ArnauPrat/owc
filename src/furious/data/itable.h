@@ -4,15 +4,16 @@
 #ifndef _FURIOUS_ITABLE_H_
 #define _FURIOUS_ITABLE_H_ 
 
-#include "itable_iterator.h"
 #include "irow.h"
+#include "itable_iterator.h"
+#include <memory>
+#include <type_traits>
 
 namespace furious
 {
   namespace data
   {
     class ITable {
-
       public:
         ITable() = default;
         virtual ~ITable() {}
@@ -32,6 +33,7 @@ namespace furious
          * Gets the size of the table
          */
         virtual uint32_t size() const = 0; 
+
       protected:
 
         /**

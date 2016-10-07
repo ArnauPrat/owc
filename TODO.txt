@@ -1,3 +1,6 @@
 
-- Improve ITableIterator implementation with operator overloadings
-- Improve the table tests
+
+- Create Execution engine. This is where systems should go
+  Execution engine should be able to access and query database for the tables it
+  has. Finally, it performs the scheduling and executs the systems in the most
+  optimal order.
