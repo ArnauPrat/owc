@@ -48,14 +48,24 @@ namespace furious {
             return data_[row];
           }
 
+
+          /**
+           * Gets an iterator to the elements of the table
+           */
           Iterator iterator() {
             return begin(data_);
           }
 
+          /**
+           * Gets the size of the table (number of elements) 
+           */
           uint32_t size() const override {
             return data_.size();
           }
 
+          /**
+           * Gets the name of the table
+           */
           virtual std::string table_name() const override {
             return std::string(typeid(T).name());
           }

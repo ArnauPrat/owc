@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <type_traits>
+#include <typeindex>
 
 namespace furious
 {
@@ -13,7 +14,10 @@ namespace furious
   {
 
     class ITable;
+
     using ITablePtr = std::shared_ptr<ITable>;
+    using ITableId = std::type_index;
+
     class ITable {
       public:
         ITable() = default;

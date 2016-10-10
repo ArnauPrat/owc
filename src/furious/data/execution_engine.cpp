@@ -6,7 +6,6 @@ namespace furious
 {
   namespace data
   {
-
     void ExecutionEngine::run_systems() {
       for(auto system : systems_ ) {
         std::vector<std::shared_ptr<ITable>> tables;
@@ -16,7 +15,5 @@ namespace furious
         system->apply(tables);
       }
     }
-
   } /* data */ 
-
 } /* furious */ 

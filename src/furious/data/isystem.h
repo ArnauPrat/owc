@@ -14,6 +14,9 @@ namespace furious
     class ISystem {
       public:
 
+        /** 
+         * Applies the system over the set of tables
+         **/
         virtual void apply( std::vector<ITablePtr>& tables ) const = 0;
 
         /**

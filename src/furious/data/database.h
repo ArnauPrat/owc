@@ -14,8 +14,8 @@
 
 namespace furious {
   namespace data {
-    using TableMap = std::map<std::string, std::shared_ptr<ITable>>;
-    using TableMapPair = std::pair<std::string, std::shared_ptr<ITable>>;
+    using TableMap = std::map<std::string, ITablePtr>;
+    using TableMapPair = std::pair<std::string, ITablePtr>;
 
     class Database {
       public:
