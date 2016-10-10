@@ -30,26 +30,34 @@ namespace furious {
           Table & operator=(Table &&) = delete;
 
           template<typename...Fields>
-            void insert( Fields &&...x ) {
-              data_.emplace_back(std::forward< typename Fields::Q_type>(x)...);
-            }
+          void insert( Fields &&...x ) {
+              data_.emplace_back(std::forward<Fields>(x)...);
+          }
 
           /**
            * Gets the ith row of the table
            */
-          T& get( int32_t row ) & {
+          T& get( int32_t row ) {
             return data_[row];
           }
 
           /**
            * Gets the ith row of the table
            */
-          const T& get( int32_t row ) const & {
+          const T& get( int32_t row ) const {
             return data_[row];
           }
 
-          uint32_t size() const {
+          Iterator iterator() {
+            return begin(data_);
+          }
+
+          uint32_t size() const override {
             return data_.size();
+          }
+
+          virtual std::string table_name() const override {
+            return std::string(typeid(T).name());
           }
 
         private:

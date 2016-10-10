@@ -14,9 +14,8 @@
 
 namespace furious {
   namespace data {
-    using Systems = std::vector<std::shared_ptr<ISystem>>;
-    using TableMap = std::map<std::type_info, std::shared_ptr<ITable>>;
-    using TableMapPair = std::pair<std::type_info, std::shared_ptr<ITable>>;
+    using TableMap = std::map<std::string, std::shared_ptr<ITable>>;
+    using TableMapPair = std::pair<std::string, std::shared_ptr<ITable>>;
 
     class Database {
       public:
@@ -24,35 +23,39 @@ namespace furious {
         Database( const Database& ) = delete;
         Database( Database&& ) = delete;
 
-        virtual ~Database();
+        virtual ~Database() {} ;
 
         Database& operator=( const Database& ) = delete;
         Database& operator=( Database&& ) = delete;
+
+        ////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////
 
         /**
          * Adds an existing table to the database
          */
         template <typename T>
-        void add_table() {
-          tables_.insert(TableMapPair(typeid(T), std::make_shared<Table<T>>()));
-        }
-
-        template <typename T, typename...Args>
-        void add_system( Args&&...x) {
-          systems_.insert(std::make_shared<T>(std::forward<Args>(x)...));
+        void create_table() {
+          auto sp = std::static_pointer_cast<ITable>(std::make_shared<Table<T>>());
+          tables_.insert(TableMapPair(typeid(T).name(),sp));
         }
 
         /**
          * Gets the table with the given name
          */
         template <typename T>
-        std::shared_ptr<ITable> find_table() {
-          return tables_.find(typeid(T))->second;
+        std::shared_ptr<Table<T>> find_table() {
+          return std::dynamic_pointer_cast<Table<T>>(tables_.find(typeid(T).name())->second);
         }
 
+        ////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////
+
       private:
-        TableMap  tables_;
-        Systems   systems_;
+
+        TableMap  tables_;      /** Holds a map between component types and their tables **/
     };
   }
 }

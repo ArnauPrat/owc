@@ -12,7 +12,13 @@ namespace furious
 
     class ISystem {
       public:
-        virtual const std::vector<std::type_info>& components() const = 0;
+
+        virtual void apply( std::vector<ITable*>& tables ) const = 0;
+
+        /**
+         * Gets the list of components this system applies to
+         */
+        virtual const std::vector<std::string>& components() const = 0;
     };
   } /* data */ 
   
