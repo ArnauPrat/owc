@@ -1,6 +1,4 @@
 
-
-
 #include <common/types.h>
 #include <data/database.h>
 #include <data/system.h>
@@ -22,39 +20,50 @@ namespace furious {
     struct ComponentA {
       uint32_t field1;
       float    field2;
+      ComponentA( uint32_t a, float b ) : field1(a), field2(b) {}
     };
 
     struct ComponentB {
       uint32_t field1;
       float    field2;
+      ComponentB( uint32_t a, float b ) : field1(a), field2(b) {}
     };
 
     class TestSystem : public System<ComponentA, ComponentB> {
       public:
         void run( ComponentA& a, ComponentB& b ) const override {
-          std::cout << typeid(a).name() << " " << typeid(b).name() << std::endl;
+          a.field1 = b.field1;
+          a.field2 = b.field2;
         }
     };
 
 
     TEST_F(TableTest,TableWorks) {
 
-      Database database;
-      database.create_table<ComponentA>();
-      database.create_table<ComponentB>();
+      auto database = Database::get_instance();
+      database->create_table<ComponentA>();
+      database->create_table<ComponentB>();
 
-      auto tablea = database.find_table<ComponentA>();
-      auto tableb = database.find_table<ComponentB>();
+      auto tablea = database->find_table<ComponentA>();
+      auto tableb = database->find_table<ComponentB>();
 
-      for(int i = 0; i < 100000; ++i) {
-        //tablea->insert(1,1.0f);
-        tablea->insert();
+      for(auto i = 0; i < 100000; ++i) {
+        tablea->insert(1,1.0f);
+        tableb->insert(2,2.0f);
       }
 
-      ExecutionEngine exec_engine;
-      exec_engine.register_system<TestSystem>();
+      auto  exec_engine = ExecutionEngine::get_instance();
+      exec_engine->register_system<TestSystem>();
 
-      //ASSERT_TRUE(table.size() == counter);
+      ASSERT_TRUE(tablea->size() == 100000);
+      ASSERT_TRUE(tableb->size() == 100000);
+
+      exec_engine->run_systems();
+      for(auto i = 0; i < 100000; ++i) {
+        ASSERT_TRUE(tablea->get(i).field1 == 2);
+        ASSERT_TRUE(tablea->get(i).field2 == 2.0f);
+      }
+
     }
       
   }

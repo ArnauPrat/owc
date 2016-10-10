@@ -19,7 +19,6 @@ namespace furious {
 
     class Database {
       public:
-        Database() = default;
         Database( const Database& ) = delete;
         Database( Database&& ) = delete;
 
@@ -49,13 +48,32 @@ namespace furious {
           return std::dynamic_pointer_cast<Table<T>>(tables_.find(typeid(T).name())->second);
         }
 
-        ////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////
+        /**
+         * Gets the table from name
+         * */
+        std::shared_ptr<ITable> find_table( const std::string& str) {
+          return tables_.find(str)->second;
+        }
 
+        ////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////
+        
+        static std::shared_ptr<Database> get_instance() {
+          static std::shared_ptr<Database> instance(new Database());
+          return instance;
+        }
+
+      protected:
+        Database() = default;
       private:
 
+        ////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////
+
         TableMap  tables_;      /** Holds a map between component types and their tables **/
+        static Database* instance_;
     };
   }
 }

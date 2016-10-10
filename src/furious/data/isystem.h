@@ -3,6 +3,7 @@
 #ifndef _FURIOus_ISYSTEM_H
 #define _FURIOus_ISYSTEM_H value
 
+#include "itable.h"
 #include <vector>
 
 namespace furious
@@ -13,7 +14,7 @@ namespace furious
     class ISystem {
       public:
 
-        virtual void apply( std::vector<ITable*>& tables ) const = 0;
+        virtual void apply( std::vector<ITablePtr>& tables ) const = 0;
 
         /**
          * Gets the list of components this system applies to

@@ -11,6 +11,9 @@ namespace furious
 {
   namespace data
   {
+
+    class ITable;
+    using ITablePtr = std::shared_ptr<ITable>;
     class ITable {
       public:
         ITable() = default;

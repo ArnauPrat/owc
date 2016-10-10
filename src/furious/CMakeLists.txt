@@ -21,7 +21,7 @@ add_subdirectory(./common/)
 add_subdirectory(./data/)
 
 add_library(furious SHARED)  
-target_link_libraries(furious common)
+target_link_libraries(furious common data)
 
 set( FURIOUS_OUTPUT_DIR "${CMAKE_BINARY_DIR}/bin/furious/")
 
