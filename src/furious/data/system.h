@@ -41,8 +41,8 @@ namespace furious
           ////////////////////////////////////////////////////
 
 
-          void apply( std::vector<ITablePtr>& tables ) const override {
-            apply(tables,indices_list<sizeof...(Components)>());
+          void apply( std::vector<void*>& components ) const override {
+            apply(components,indices_list<sizeof...(Components)>());
           }
 
           virtual void run( Components&...c ) const = 0; 
@@ -58,15 +58,9 @@ namespace furious
         private:
 
           template<std::size_t...Indices>
-            void apply( std::vector<ITablePtr>& tables, indices<Indices...> ) const {
-              run(tables[0]->size(),(std::dynamic_pointer_cast<Table<Components>>(tables[Indices]))->iterator()...);
+            void apply( std::vector<void*>& components, indices<Indices...> ) const {
+              run(*(static_cast<Components*>(components[Indices]))...);
             }
-
-          void run(uint32_t size, typename Table<Components>::Iterator...iter) const {
-            for(uint32_t i = 0; i < size; ++i) {
-              run(*iter++...);
-            }
-          }
 
           ////////////////////////////////////////////////////
           ////////////////////////////////////////////////////

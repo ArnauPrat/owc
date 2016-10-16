@@ -14,10 +14,11 @@ namespace furious
     class ISystem {
       public:
 
-        /** 
-         * Applies the system over the set of tables
+
+        /**
+         * Applies the system over the set of components
          **/
-        virtual void apply( std::vector<ITablePtr>& tables ) const = 0;
+        virtual void apply( std::vector<void*>& components ) const = 0;
 
         /**
          * Gets the list of components this system applies to

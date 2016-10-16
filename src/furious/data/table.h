@@ -12,12 +12,26 @@
 
 using std::begin;
 using std::cbegin;
-
 namespace furious {
   namespace data {
 
     template<typename T>
       class Table : public ITable {
+
+        class Row : public IRow {
+          public:
+
+            template<typename...Fields>
+            Row ( EntityId id, Fields&&...x) : IRow(id), data_(std::forward<Fields>(x)...) {}
+
+            void* get_data() {
+              return &data_;
+            }
+
+          private:
+            T data_;
+        };
+
         public:
           using table_type = Table;
           using Iterator = typename std::vector<T>::iterator;
@@ -30,22 +44,15 @@ namespace furious {
           Table & operator=(Table &&) = delete;
 
           template<typename...Fields>
-          void insert( Fields &&...x ) {
-              data_.emplace_back(std::forward<Fields>(x)...);
+          void insert( uint32_t id, Fields &&...x ) {
+              data_.emplace_back(id, std::forward<Fields>(x)...);
           }
 
           /**
            * Gets the ith row of the table
            */
-          T& get( int32_t row ) {
-            return data_[row];
-          }
-
-          /**
-           * Gets the ith row of the table
-           */
-          const T& get( int32_t row ) const {
-            return data_[row];
+          IRow* get_row( uint32_t row ) override {
+            return &data_[row];
           }
 
 
@@ -71,7 +78,7 @@ namespace furious {
           }
 
         private:
-          std::vector<T>    data_;        // vector holding the table data
+          std::vector<Row>    data_;        // vector holding the table data
       };
   } /* data */ 
 } /* furious */ 

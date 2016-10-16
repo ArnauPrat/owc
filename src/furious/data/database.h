@@ -7,6 +7,7 @@
 #include "itable.h"
 #include "system.h"
 #include "table.h"
+#include <common/common.h>
 #include <map>
 #include <memory>
 #include <string>
@@ -14,8 +15,12 @@
 
 namespace furious {
   namespace data {
-    using TableMap = std::map<std::string, ITablePtr>;
-    using TableMapPair = std::pair<std::string, ITablePtr>;
+
+    using TableId = uint32_t;
+    using TableMap = std::map<TableId, ITablePtr>;
+    using TableMapPair = std::pair<TableId, ITablePtr>;
+    using TableIdMap = std::map<std::string, TableId>;
+    using TableIdMapPair = std::pair<std::string, TableId>;
 
     class Database {
       public:
@@ -37,7 +42,9 @@ namespace furious {
         template <typename T>
         void create_table() {
           auto sp = std::static_pointer_cast<ITable>(std::make_shared<Table<T>>());
-          tables_.insert(TableMapPair(typeid(T).name(),sp));
+          TableId id = next_id_++;
+          tables_.insert(TableMapPair(id,sp));
+          table_ids_.insert(TableIdMapPair(typeid(T).name(),id));
         }
 
         /**
@@ -45,14 +52,29 @@ namespace furious {
          */
         template <typename T>
         std::shared_ptr<Table<T>> find_table() {
-          return std::dynamic_pointer_cast<Table<T>>(tables_.find(typeid(T).name())->second);
+          return std::dynamic_pointer_cast<Table<T>>(find_table(get_id(typeid(T).name())));
         }
+
+        /**
+         * Finds a table based on its id
+         */
+        ITablePtr find_table(TableId id) {
+          return tables_.find(id)->second;
+        }
+
+        /**
+         * Gets the internal id of a table
+         */
+        TableId get_id(const std::string& name) {
+          return table_ids_.find(name)->second; 
+        }
+
 
         /**
          * Gets the table from name
          * */
         std::shared_ptr<ITable> find_table( const std::string& str) {
-          return tables_.find(str)->second;
+          return tables_.find(get_id(str))->second;
         }
 
         ////////////////////////////////////////////////////
@@ -72,8 +94,10 @@ namespace furious {
         ////////////////////////////////////////////////////
         ////////////////////////////////////////////////////
 
-        TableMap  tables_;      /** Holds a map between component types and their tables **/
-        static Database* instance_;
+        TableMap          tables_;      /** Holds a map between component types and their tables **/
+        TableIdMap        table_ids_;   /** Holds a map between table names and ids **/
+        TableId           next_id_      = 0;
+        static Database*  instance_;
     };
   }
 }

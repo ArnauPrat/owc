@@ -37,10 +37,19 @@ namespace furious {
         }
     };
 
+    class TestSystemAssert : public System<ComponentA, ComponentB> {
+      public:
+        void run( ComponentA& a, ComponentB& b ) const override {
+          ASSERT_TRUE(a.field1 == b.field1);
+          ASSERT_TRUE(a.field2 == b.field2);
+        }
+    };
+
 
     TEST_F(TableTest,TableWorks) {
 
       auto database = Database::get_instance();
+
       database->create_table<ComponentA>();
       database->create_table<ComponentB>();
 
@@ -48,22 +57,14 @@ namespace furious {
       auto tableb = database->find_table<ComponentB>();
 
       for(auto i = 0; i < 100000; ++i) {
-        tablea->insert(1,1.0f);
-        tableb->insert(2,2.0f);
+        tablea->insert(i,1,1.0f);
+        tableb->insert(i,2,2.0f);
       }
 
       auto  exec_engine = ExecutionEngine::get_instance();
       exec_engine->register_system<TestSystem>();
-
-      ASSERT_TRUE(tablea->size() == 100000);
-      ASSERT_TRUE(tableb->size() == 100000);
-
+      exec_engine->register_system<TestSystemAssert>();
       exec_engine->run_systems();
-      for(auto i = 0; i < 100000; ++i) {
-        ASSERT_TRUE(tablea->get(i).field1 == 2);
-        ASSERT_TRUE(tablea->get(i).field2 == 2.0f);
-      }
-
     }
       
   }
