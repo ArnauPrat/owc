@@ -7,7 +7,7 @@
 #include "itable.h"
 #include "system.h"
 #include "table.h"
-#include <common/common.h>
+#include "common.h"
 #include <map>
 #include <memory>
 #include <string>
@@ -16,7 +16,6 @@
 namespace furious {
   namespace data {
 
-    using TableId = uint32_t;
     using TableMap = std::map<TableId, ITablePtr>;
     using TableMapPair = std::pair<TableId, ITablePtr>;
     using TableIdMap = std::map<std::string, TableId>;

@@ -4,7 +4,7 @@
 #ifndef _FURIOUS_ITABLE_H_
 #define _FURIOUS_ITABLE_H_ 
 
-#include "common/types.h"
+#include "common.h"
 #include <map>
 #include <memory>
 #include <type_traits>
@@ -16,7 +16,6 @@ namespace furious
   {
 
     class ITable;
-    using EntityId = uint32_t;
     class IRow {
       public:
 

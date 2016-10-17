@@ -3,10 +3,12 @@
 #ifndef _FURIOUS_EXECUTION_ENGINE_H_
 #define _FURIOUS_EXECUTION_ENGINE_H_
 
-#include "common/types.h"
+#include "logic_join.h"
+#include "logic_plan.h"
+#include "common.h"
 #include "isystem.h"
 #include "database.h"
-#include <set>
+#include <map>
 #include <memory>
 
 namespace furious
@@ -14,7 +16,8 @@ namespace furious
   namespace data
   {
     class ExecutionEngine {
-      using Systems = std::set<std::shared_ptr<ISystem>>;
+      using SystemMap = std::map<SystemId, std::shared_ptr<ISystem>>;
+      using SystemMapPair = std::pair<SystemId, std::shared_ptr<ISystem>>;
 
       public:
         ExecutionEngine( const ExecutionEngine& ) = delete;
@@ -35,7 +38,7 @@ namespace furious
         template <typename T, typename...Args>
         void register_system( Args&&...x) {
           auto sp = std::static_pointer_cast<ISystem>(std::make_shared<T>(std::forward<Args>(x)...));
-          systems_.insert(sp);
+          systems_.insert(SystemMapPair(next_id_++,sp));
         }
 
         /**
@@ -60,7 +63,10 @@ namespace furious
          * */
         ExecutionEngine() : database_(Database::get_instance()) {}
 
-        Systems                   systems_;     /** Holds the list of registered systems **/
+        std::shared_ptr<LogicPlan> build_logic_plan();
+
+        SystemId                  next_id_ = 0; /** The next id to assign to a sysstem **/
+        SystemMap                 systems_;     /** Holds the list of registered systems **/
         std::shared_ptr<Database> database_;    /** Pointer to the database **/
 
     };

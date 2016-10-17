@@ -4,6 +4,9 @@
 #ifndef _FURIOUS_LOGIC_PLAN_H_
 #define _FURIOUS_LOGIC_PLAN_H_ 
 
+#include <memory>
+#include <vector>
+
 namespace furious
 {
   namespace data
@@ -14,7 +17,7 @@ namespace furious
 
     class LogicPlan {
       public:
-        LogicPlanNode* root; // The root node of the logic plan
+        std::vector<std::shared_ptr<LogicPlanNode>> roots_; // The root node of the logic plan
     };
   } /* data */ 
 } /* furious */ 
