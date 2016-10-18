@@ -44,7 +44,7 @@ namespace furious
         /**
          * Runs the registered systems
          */
-        void run_systems();
+        void run_systems() const ;
 
         ////////////////////////////////////////////////////
         ////////////////////////////////////////////////////
@@ -66,7 +66,7 @@ namespace furious
         /*
          * Build the logic plan for the current registered systems
          */
-        std::shared_ptr<LogicPlan> build_logic_plan();
+        LogicPlanPtr build_logic_plan() const ;
 
 
         SystemId                  next_id_ = 0; /** The next id to assign to a sysstem **/

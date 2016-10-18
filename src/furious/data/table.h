@@ -51,7 +51,7 @@ namespace furious {
           /**
            * Gets the ith row of the table
            */
-          IRow* get_row( uint32_t row ) override {
+          IRowPtr get_row( uint32_t row ) override {
             return &data_[row];
           }
 

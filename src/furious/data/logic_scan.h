@@ -12,6 +12,7 @@ namespace furious
     struct LogicScan : public LogicPlanNode {
 
       LogicScan(TableId table) : table_(table) {}
+      ~LogicScan() = default;
 
       TableId table_;
     };

@@ -16,6 +16,8 @@ namespace furious
   {
 
     class ITable;
+    class IRow;
+    using IRowPtr = IRow*;
     class IRow {
       public:
 
@@ -79,7 +81,7 @@ namespace furious
         /**
          * Gets a pointer to the ith element of the table
          * */
-        virtual IRow* get_row(uint32_t index) = 0;
+        virtual IRowPtr get_row(uint32_t index) = 0;
 
     };
   } /* data */ 

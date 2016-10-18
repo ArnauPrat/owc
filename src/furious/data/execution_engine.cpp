@@ -2,17 +2,19 @@
 
 #include "common/types.h"
 #include "execution_engine.h"
-#include "logic_map.h"
 #include "logic_filter.h"
-#include "logic_scan.h"
 #include "logic_join.h"
+#include "logic_map.h"
+#include "logic_scan.h"
+#include "physical/physical_plan.h"
+#include "physical/physical_scan.h"
 #include <cstddef>
 
 namespace furious
 {
   namespace data
   {
-    void ExecutionEngine::run_systems() {
+    void ExecutionEngine::run_systems() const {
       /*for(auto system : systems_ ) {
         std::vector<ITablePtr> tables;
         for(auto required_component : system.second->components() ) {
@@ -33,7 +35,7 @@ namespace furious
       auto logic_plan = build_logic_plan();
     }
 
-    std::shared_ptr<LogicPlan> ExecutionEngine::build_logic_plan() {
+    LogicPlanPtr ExecutionEngine::build_logic_plan() const {
       auto logic_plan = std::make_shared<LogicPlan>();
       for(auto system : systems_ ) {
         if(system.second->components().size() == 1) { // Case when join is not required

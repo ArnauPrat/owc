@@ -14,6 +14,7 @@ namespace  furious
     struct LogicFilter : public LogicPlanNode {
 
       LogicFilter(LogicPlanNodePtr table) : table_(table) {}
+      virtual ~LogicFilter() = default;
 
       LogicPlanNodePtr table_;
 

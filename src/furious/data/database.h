@@ -21,7 +21,7 @@ namespace furious {
     using TableIdMap = std::map<std::string, TableId>;
     using TableIdMapPair = std::pair<std::string, TableId>;
 
-    class Database {
+class Database {
       public:
         Database( const Database& ) = delete;
         Database( Database&& ) = delete;
@@ -72,7 +72,7 @@ namespace furious {
         /**
          * Gets the table from name
          * */
-        std::shared_ptr<ITable> find_table( const std::string& str) {
+        ITablePtr find_table( const std::string& str) {
           return tables_.find(get_id(str))->second;
         }
 
@@ -87,11 +87,8 @@ namespace furious {
 
       protected:
         Database() = default;
-      private:
 
-        ////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////
+      private:
 
         TableMap          tables_;      /** Holds a map between component types and their tables **/
         TableIdMap        table_ids_;   /** Holds a map between table names and ids **/

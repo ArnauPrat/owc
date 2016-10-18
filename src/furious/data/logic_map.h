@@ -16,6 +16,7 @@ namespace furious
     struct LogicMap : public LogicPlanNode {
 
       LogicMap( SystemId system, LogicPlanNodePtr table ) : system_(system), table_(table) {}
+      virtual ~LogicMap() = default;
 
       SystemId  system_;
       LogicPlanNodePtr table_;

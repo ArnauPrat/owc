@@ -10,11 +10,14 @@ add_library(data STATIC
   isystem.h
   itable.h
   itable_iterator.h
-  logic_join.h
-  logic_plan.h
   logic_filter.h
-  logic_scan.h
+  logic_join.h
   logic_map.h
+  logic_plan.h
+  logic_scan.h
+  physical/physical_plan.h
+  physical/physical_scan.cpp
+  physical/physical_scan.h
   system.h
   table.h
 )

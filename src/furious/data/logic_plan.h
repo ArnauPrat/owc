@@ -27,6 +27,9 @@ namespace furious
      * LogicPlanNode base class
      */
     class LogicPlanNode {
+      public:
+        LogicPlanNode() = default;
+        virtual ~LogicPlanNode(){}
 
     };
 

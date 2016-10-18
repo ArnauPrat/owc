@@ -33,7 +33,7 @@ namespace furious
         public:
 
           System() : 
-            types_{typeid(Components).name()...} {
+            types_{typeid(Components).name()...}  {
             }
 
           ////////////////////////////////////////////////////
@@ -47,7 +47,7 @@ namespace furious
 
           virtual void run( Components&...c ) const = 0; 
 
-          const std::vector<std::string>& components() const override {
+          constexpr const std::vector<std::string>& components() const override {
             return types_;
           }
 

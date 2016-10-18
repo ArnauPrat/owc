@@ -19,6 +19,8 @@ namespace  furious
         right_(right)
       {}
 
+      virtual ~LogicJoin() = default;
+
       LogicPlanNodePtr left_;
       LogicPlanNodePtr right_;
 
