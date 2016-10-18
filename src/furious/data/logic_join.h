@@ -14,13 +14,13 @@ namespace  furious
 
     struct LogicJoin : public LogicPlanNode {
 
-      LogicJoin( std::shared_ptr<LogicPlanNode> left, std::shared_ptr<LogicPlanNode> right ) : 
+      LogicJoin( LogicPlanNodePtr left, LogicPlanNodePtr right ) : 
         left_(left),
         right_(right)
       {}
 
-      std::shared_ptr<LogicPlanNode> left_;
-      std::shared_ptr<LogicPlanNode> right_;
+      LogicPlanNodePtr left_;
+      LogicPlanNodePtr right_;
 
     };
   } /* data */ 

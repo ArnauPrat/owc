@@ -15,10 +15,10 @@ namespace furious
 
     struct LogicMap : public LogicPlanNode {
 
-      LogicMap( SystemId system, std::smart_ptr<LogicPlanNode> table ) : system_(system), table_(table) {}
+      LogicMap( SystemId system, LogicPlanNodePtr table ) : system_(system), table_(table) {}
 
       SystemId  system_;
-      std::smart_ptr<LogicPlanNode> table_;
+      LogicPlanNodePtr table_;
 
     };
     

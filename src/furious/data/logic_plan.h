@@ -11,13 +11,34 @@ namespace furious
 {
   namespace data
   {
+    class LogicPlanNode;
+    using LogicPlanNodePtr = std::shared_ptr<LogicPlanNode>;
+
+    /**
+     * Helper template to reduce verbosity when using shared pointers
+     */
+    template <typename T, typename... Args>
+    auto MakeLogicPlanNodePtr(Args&&... args)  
+    {
+      return std::static_pointer_cast<LogicPlanNode>(std::make_shared<T>(std::forward<Args>(args)...));
+    }
+
+    /**
+     * LogicPlanNode base class
+     */
     class LogicPlanNode {
 
     };
 
+    class LogicPlan;
+    using LogicPlanPtr = std::shared_ptr<LogicPlan>;
+
+    /**
+     * Class representing a Logic execution plan
+     */
     class LogicPlan {
       public:
-        std::vector<std::shared_ptr<LogicPlanNode>> roots_; // The root node of the logic plan
+        std::vector<LogicPlanNodePtr> roots_; // The root node of the logic plan
     };
   } /* data */ 
 } /* furious */ 

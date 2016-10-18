@@ -13,9 +13,9 @@ namespace  furious
 
     struct LogicFilter : public LogicPlanNode {
 
-      LogicFilter(std:smart_ptr<LogicPlanNode> table) : table_(table) {}
+      LogicFilter(LogicPlanNodePtr table) : table_(table) {}
 
-      std::shared_ptr<LogicPlanNode> table_;
+      LogicPlanNodePtr table_;
 
     };
     

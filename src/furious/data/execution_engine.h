@@ -63,7 +63,11 @@ namespace furious
          * */
         ExecutionEngine() : database_(Database::get_instance()) {}
 
+        /*
+         * Build the logic plan for the current registered systems
+         */
         std::shared_ptr<LogicPlan> build_logic_plan();
+
 
         SystemId                  next_id_ = 0; /** The next id to assign to a sysstem **/
         SystemMap                 systems_;     /** Holds the list of registered systems **/

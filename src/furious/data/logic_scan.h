@@ -15,7 +15,6 @@ namespace furious
 
       TableId table_;
     };
-
     
   } /* data */ 
   
