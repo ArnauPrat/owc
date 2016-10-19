@@ -28,7 +28,7 @@ namespace furious
         virtual void open() = 0;
         virtual void close() = 0;
         virtual bool_t has_next() const = 0;
-        virtual IRow* next() = 0;
+        virtual IRowPtr next() = 0;
     };
 
     /**

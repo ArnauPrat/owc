@@ -24,10 +24,12 @@ namespace furious
         ////////////////////////////////////////////////////
 
         bool_t has_next() const override;
-        IRow* next() override;
+        IRowPtr next() override;
 
       private:
-        ITablePtr table_;
+        ITablePtr   table_ptr_;
+        uint32_t    table_size_;
+        uint32_t    next_row_index_;
     };
     
   } /* data */ 

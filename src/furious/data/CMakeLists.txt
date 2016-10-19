@@ -18,6 +18,8 @@ add_library(data STATIC
   physical/physical_plan.h
   physical/physical_scan.cpp
   physical/physical_scan.h
+  physical/physical_filter.cpp
+  physical/physical_filter.h
   system.h
   table.h
 )
