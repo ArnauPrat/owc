@@ -20,6 +20,8 @@ add_library(data STATIC
   physical/physical_scan.h
   physical/physical_filter.cpp
   physical/physical_filter.h
+  physical/physical_hash_join.cpp
+  physical/physical_hash_join.h
   system.h
   table.h
 )

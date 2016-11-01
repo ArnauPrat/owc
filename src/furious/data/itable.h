@@ -9,11 +9,14 @@
 #include <memory>
 #include <type_traits>
 #include <typeindex>
+#include <vector>
 
 namespace furious
 {
   namespace data
   {
+
+
 
     class ITable;
     class IRow;
@@ -21,7 +24,8 @@ namespace furious
     class IRow {
       public:
 
-        IRow( EntityId id ) : id_(id), enabled_(true) {}
+        IRow( EntityId id) : id_(id), enabled_(true) {}
+        virtual ~IRow() = default;
 
         /**
          * Checks if the row is enabled or not
@@ -52,13 +56,21 @@ namespace furious
         }
 
         /**
-         * Gets the data of the row
+         * Gets the specified column of the row
          */
-        virtual void* get_data() = 0;
+        virtual void* get_column(uint32_t column) = 0; 
+        /**
+         * Gets the size of the column in bytes
+         */
+        virtual uint32_t size_of_column( uint32_t column) = 0;
+
+        /**
+         * Gets the number of columns of the table*/
+        virtual uint32_t num_columns() = 0;
         
       private:
-        EntityId  id_;
-        bool_t    enabled_;
+        EntityId    id_;
+        bool_t      enabled_;
     };
 
     using ITablePtr = std::shared_ptr<ITable>;
@@ -82,6 +94,8 @@ namespace furious
          * Gets a pointer to the ith element of the table
          * */
         virtual IRowPtr get_row(uint32_t index) = 0;
+
+
 
     };
   } /* data */ 

@@ -8,6 +8,7 @@
 namespace furious {
 
     using bool_t    = bool;
+    using byte_t    = char;
     using char_t    = char;
     using int8_t    = std::int32_t;
     using int16_t   = std::int64_t;

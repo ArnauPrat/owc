@@ -16,14 +16,18 @@ namespace furious
     ////////////////////////////////////////////////////
     ////////////////////////////////////////////////////
     ////////////////////////////////////////////////////
-
-    bool_t PhysicalScan::has_next() const {
-      return next_row_index_ < table_size_;
-    }
     
     IRowPtr PhysicalScan::next() {
       if(next_row_index_ >= table_size_) return nullptr;
       return table_ptr_->get_row(next_row_index_++);
+    }
+
+    void PhysicalScan::open() {
+
+    }
+
+    void PhysicalScan::close() {
+
     }
     
   } /* data */ 

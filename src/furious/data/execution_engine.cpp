@@ -9,6 +9,7 @@
 #include "physical/physical_plan.h"
 #include "physical/physical_scan.h"
 #include "physical/physical_filter.h"
+#include "physical/physical_hash_join.h"
 #include <cstddef>
 
 namespace furious

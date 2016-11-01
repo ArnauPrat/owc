@@ -9,6 +9,7 @@
 
 #include "itable_iterator.h"
 #include "itable.h"
+#include <cassert>
 
 using std::begin;
 using std::cbegin;
@@ -18,14 +19,27 @@ namespace furious {
     template<typename T>
       class Table : public ITable {
 
+
         class Row : public IRow {
           public:
 
             template<typename...Fields>
-            Row ( EntityId id, Fields&&...x) : IRow(id), data_(std::forward<Fields>(x)...) {}
+              Row ( EntityId id, Fields&&...x) : IRow(id), data_(std::forward<Fields>(x)...) {}
 
-            void* get_data() {
+            virtual ~Row() = default;
+
+            virtual void* get_column(uint32_t column) override {
+              assert(column == 0);
               return &data_;
+            }
+
+            virtual uint32_t size_of_column( uint32_t column)  override {
+              assert(column == 0);
+              return sizeof(T);
+            }
+
+            virtual uint32_t num_columns() override {
+              return 1;
             }
 
           private:
@@ -33,52 +47,43 @@ namespace furious {
         };
 
         public:
-          using table_type = Table;
-          using Iterator = typename std::vector<T>::iterator;
+        using table_type = Table;
+        using Iterator = typename std::vector<T>::iterator;
 
 
-          Table() = default;
-          Table( const Table & ) = delete;
-          Table & operator=( const Table &) = delete;
-          Table( Table && ) = delete;
-          Table & operator=(Table &&) = delete;
+        Table() = default;
+        Table( const Table & ) = delete;
+        Table & operator=( const Table &) = delete;
+        Table( Table && ) = delete;
+        Table & operator=(Table &&) = delete;
 
-          template<typename...Fields>
+        template<typename...Fields>
           void insert( uint32_t id, Fields &&...x ) {
-              data_.emplace_back(id, std::forward<Fields>(x)...);
+            data_.emplace_back(id, std::forward<Fields>(x)...);
           }
 
-          /**
-           * Gets the ith row of the table
-           */
-          IRowPtr get_row( uint32_t row ) override {
-            return &data_[row];
-          }
+        /**
+         * Gets the ith row of the table
+         */
+        IRowPtr get_row( uint32_t row ) override {
+          return &data_[row];
+        }
 
 
-          /**
-           * Gets an iterator to the elements of the table
-           */
-          Iterator iterator() {
-            return begin(data_);
-          }
+        Iterator iterator() {
+          return begin(data_);
+        }
 
-          /**
-           * Gets the size of the table (number of elements) 
-           */
-          uint32_t size() const override {
-            return data_.size();
-          }
+        uint32_t size() const override {
+          return data_.size();
+        }
 
-          /**
-           * Gets the name of the table
-           */
-          virtual std::string table_name() const override {
-            return std::string(typeid(T).name());
-          }
+        virtual std::string table_name() const override {
+          return std::string(typeid(T).name());
+        }
 
         private:
-          std::vector<Row>    data_;        // vector holding the table data
+        std::vector<Row>    data_;        // vector holding the table data
       };
   } /* data */ 
 } /* furious */ 

@@ -20,13 +20,14 @@ namespace furious
         ////////////////////////////////////////////////////
         ////////////////////////////////////////////////////
 
-        bool_t has_next() const override;
         IRow* next() override;
 
-      private:
+        void open() override;
 
-        mutable IPhysicalOperatorPtr input_;
-        mutable IRowPtr next_row_;
+        void close() override;
+
+      private:
+        IPhysicalOperatorPtr input_;
     };
 
   } /* data */ 

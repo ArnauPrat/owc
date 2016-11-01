@@ -8,34 +8,28 @@ namespace furious
   {
 
     PhysicalFilter::PhysicalFilter( IPhysicalOperatorPtr input ) :
-      input_(input),
-      next_row_(nullptr) {
+      input_(input)
+      {
 
       }
-
-    bool_t PhysicalFilter::has_next() const {
-      if(next_row_ == nullptr) {
-        while(input_->has_next()) {
-          next_row_ = input_->next(); 
-          if(next_row_->is_enabled()) {
-            return true;
-          }
-        }
-        return false;
-      }
-      return true;
-    }
 
     IRowPtr PhysicalFilter::next() {
-      if(next_row_ == nullptr) {
-        has_next();
+      IRowPtr next_row = input_->next();
+      while(next_row != nullptr && !next_row->is_enabled()) {
+        next_row = input_->next();
       }
-
-      IRowPtr to_return = next_row_;
-      next_row_ = nullptr;
-      return to_return;
+      return next_row;
     }
-    
+
+    void PhysicalFilter::open() {
+      input_->open();
+
+    }
+
+    void PhysicalFilter::close() {
+      input_->close();
+    }
+
   } /* data */ 
-  
+
 } /* furious */ 

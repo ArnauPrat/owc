@@ -23,8 +23,11 @@ namespace furious
         ////////////////////////////////////////////////////
         ////////////////////////////////////////////////////
 
-        bool_t has_next() const override;
         IRowPtr next() override;
+
+        void open() override;
+
+        void close() override;
 
       private:
         ITablePtr   table_ptr_;
