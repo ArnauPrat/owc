@@ -16,7 +16,7 @@ namespace furious
 
       public:
 
-        PhysicalScan(TableId table); 
+        PhysicalScan(ITablePtr table); 
         virtual ~PhysicalScan() = default;
 
         ////////////////////////////////////////////////////

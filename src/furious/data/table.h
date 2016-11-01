@@ -18,8 +18,6 @@ namespace furious {
 
     template<typename T>
       class Table : public ITable {
-
-
         class Row : public IRow {
           public:
 
@@ -49,6 +47,7 @@ namespace furious {
         public:
         using table_type = Table;
         using Iterator = typename std::vector<T>::iterator;
+        using Ptr = std::shared_ptr<Table>;
 
 
         Table() = default;
@@ -80,6 +79,10 @@ namespace furious {
 
         virtual std::string table_name() const override {
           return std::string(typeid(T).name());
+        }
+
+        virtual void clear() override {
+          data_.clear();
         }
 
         private:

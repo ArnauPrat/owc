@@ -15,9 +15,6 @@ namespace furious
 {
   namespace data
   {
-
-
-
     class ITable;
     class IRow;
     using IRowPtr = IRow*;
@@ -96,6 +93,10 @@ namespace furious
         virtual IRowPtr get_row(uint32_t index) = 0;
 
 
+        /**
+         * Clear the table
+         */
+        virtual void clear() = 0;
 
     };
   } /* data */ 

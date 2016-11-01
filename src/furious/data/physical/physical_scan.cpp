@@ -8,8 +8,8 @@ namespace furious
   namespace data
   {
 
-    PhysicalScan::PhysicalScan(TableId table) :
-      table_ptr_(Database::get_instance()->find_table(table)),
+    PhysicalScan::PhysicalScan(ITablePtr table) :
+      table_ptr_(table),
       table_size_(table_ptr_->size()),
       next_row_index_(0){}
 
@@ -23,7 +23,6 @@ namespace furious
     }
 
     void PhysicalScan::open() {
-
     }
 
     void PhysicalScan::close() {
