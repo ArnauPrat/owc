@@ -33,7 +33,6 @@ namespace furious
         }
       }
       */
-
       auto logic_plan = build_logic_plan();
     }
 

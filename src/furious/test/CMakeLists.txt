@@ -28,11 +28,9 @@ macro(create_test NAME )
     )
 endmacro(create_test)
 
-
 create_test ("furious_test")
 create_test ("database_test")
 create_test ("physical_hash_join_test")
 create_test ("physical_scan_test")
 create_test ("physical_filter_test")
-
-
+create_test ("system_test")

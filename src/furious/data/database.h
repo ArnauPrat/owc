@@ -25,7 +25,7 @@ namespace furious {
     class Database;
     using DatabasePtr = std::shared_ptr<Database>;
 
-class Database {
+    class Database {
       public:
         Database( const Database& ) = delete;
         Database( Database&& ) = delete;
@@ -43,34 +43,34 @@ class Database {
          * Adds an existing table to the database
          */
         template <typename T>
-        typename Table<T>::Ptr create_table() {
-          assert(table_ids_.find(typeid(T).name()) == table_ids_.end());
-          if(table_ids_.find(typeid(T).name()) != table_ids_.end()) return nullptr;
-          auto table = std::make_shared<Table<T>>();
-          auto sp = std::static_pointer_cast<ITable>(table);
-          TableId id = next_id_++;
-          tables_.insert(TableMapPair(id,sp));
-          table_ids_.insert(TableIdMapPair(typeid(T).name(),id));
-          return table;
-        }
+          typename Table<T>::Ptr create_table() {
+            assert(table_ids_.find(typeid(T).name()) == table_ids_.end());
+            if(table_ids_.find(typeid(T).name()) != table_ids_.end()) return nullptr;
+            auto table = std::make_shared<Table<T>>();
+            auto sp = std::static_pointer_cast<ITable>(table);
+            TableId id = next_id_++;
+            tables_.insert(TableMapPair(id,sp));
+            table_ids_.insert(TableIdMapPair(typeid(T).name(),id));
+            return table;
+          }
 
         template <typename T>
-        void drop_table() {
-          assert(table_ids_.find(typeid(T).name()) != table_ids_.end());
-          TableId id = get_id(typeid(T).name());
-          tables_.erase(id);
-          table_ids_.erase(typeid(T).name());
-        }
+          void drop_table() {
+            assert(table_ids_.find(typeid(T).name()) != table_ids_.end());
+            TableId id = get_id(typeid(T).name());
+            tables_.erase(id);
+            table_ids_.erase(typeid(T).name());
+          }
 
         /**
          * Gets the table with the given name
          */
         template <typename T>
-        std::shared_ptr<Table<T>> find_table() {
-          assert(table_ids_.find(typeid(T).name()) != table_ids_.end());
-          if(table_ids_.find(typeid(T).name()) == table_ids_.end()) return nullptr;
-          return std::dynamic_pointer_cast<Table<T>>(find_table(get_id(typeid(T).name())));
-        }
+          std::shared_ptr<Table<T>> find_table() {
+            assert(table_ids_.find(typeid(T).name()) != table_ids_.end());
+            if(table_ids_.find(typeid(T).name()) == table_ids_.end()) return nullptr;
+            return std::dynamic_pointer_cast<Table<T>>(find_table(get_id(typeid(T).name())));
+          }
 
         /**
          * Gets the table from name
@@ -104,7 +104,7 @@ class Database {
         ////////////////////////////////////////////////////
         ////////////////////////////////////////////////////
         ////////////////////////////////////////////////////
-        
+
         static DatabasePtr get_instance() {
           static DatabasePtr instance(new Database());
           return instance;

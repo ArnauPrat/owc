@@ -11,8 +11,6 @@
 #include "itable.h"
 #include <cassert>
 
-using std::begin;
-using std::cbegin;
 namespace furious {
   namespace data {
 
@@ -40,14 +38,18 @@ namespace furious {
               return 1;
             }
 
+            T& get_data() {
+              return data_;
+            } 
+
           private:
             T data_;
         };
 
         public:
         using table_type = Table;
-        using Iterator = typename std::vector<T>::iterator;
-        using Ptr = std::shared_ptr<Table>;
+        using Iterator = typename std::vector<Row>::iterator;
+        using Ptr = std::shared_ptr<Table<T>>;
 
 
         Table() = default;
@@ -69,8 +71,12 @@ namespace furious {
         }
 
 
-        Iterator iterator() {
-          return begin(data_);
+        Iterator begin() {
+          return std::begin(data_);
+        }
+
+        Iterator end() {
+          return std::end(data_);
         }
 
         uint32_t size() const override {
