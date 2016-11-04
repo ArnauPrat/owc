@@ -14,6 +14,12 @@ namespace furious
       LogicScan(TableId table) : table_(table) {}
       ~LogicScan() = default;
 
+      ////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////
+
+      virtual void accept( ILogicPlanVisitor& visitor ) { visitor.visit(*this); };
+
       TableId table_;
     };
     

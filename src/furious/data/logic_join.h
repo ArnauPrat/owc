@@ -21,8 +21,15 @@ namespace  furious
 
       virtual ~LogicJoin() = default;
 
+      ////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////
+
+      virtual void accept( ILogicPlanVisitor& visitor ) { visitor.visit(*this); };
+
       LogicPlanNodePtr left_;
       LogicPlanNodePtr right_;
+
 
     };
   } /* data */ 

@@ -16,7 +16,14 @@ namespace  furious
       LogicFilter(LogicPlanNodePtr table) : table_(table) {}
       virtual ~LogicFilter() = default;
 
+      ////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////
+      
+      virtual void accept( ILogicPlanVisitor& visitor ) { visitor.visit(*this); };
+
       LogicPlanNodePtr table_;
+
 
     };
     

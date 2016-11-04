@@ -12,6 +12,7 @@ namespace furious
 {
   namespace data
   {
+
     /** Basic struct to hold the index sequence **/
     template <std::size_t... Indices>
       struct indices {};

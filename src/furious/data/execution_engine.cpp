@@ -36,6 +36,11 @@ namespace furious
       auto logic_plan = build_logic_plan();
     }
 
+
+    ISystemPtr ExecutionEngine::get_system(SystemId system) {
+      return (*systems_.find(system)).second;
+    }
+
     LogicPlanPtr ExecutionEngine::build_logic_plan() const {
       auto logic_plan = std::make_shared<LogicPlan>();
       for(auto system : systems_ ) {

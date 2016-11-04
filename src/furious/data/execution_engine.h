@@ -15,9 +15,11 @@ namespace furious
 {
   namespace data
   {
+    class ExecutionEngine;
+    using ExecutionEnginePtr = std::shared_ptr<ExecutionEngine>;
     class ExecutionEngine {
-      using SystemMap = std::map<SystemId, std::shared_ptr<ISystem>>;
-      using SystemMapPair = std::pair<SystemId, std::shared_ptr<ISystem>>;
+      using SystemMap = std::map<SystemId, ISystemPtr>;
+      using SystemMapPair = std::pair<SystemId, ISystemPtr>;
 
       public:
         ExecutionEngine( const ExecutionEngine& ) = delete;
@@ -36,9 +38,10 @@ namespace furious
          * Adds a system into the the execution engine
          * */
         template <typename T, typename...Args>
-        void register_system( Args&&...x) {
+        SystemId register_system(Args&&...x) {
           auto sp = std::static_pointer_cast<ISystem>(std::make_shared<T>(std::forward<Args>(x)...));
-          systems_.insert(SystemMapPair(next_id_++,sp));
+          systems_.insert(SystemMapPair(next_id_,sp));
+          return next_id_++;
         }
 
         /**
@@ -46,15 +49,21 @@ namespace furious
          */
         void run_systems() const ;
 
+        ISystemPtr get_system(SystemId system);
+
         ////////////////////////////////////////////////////
         ////////////////////////////////////////////////////
         ////////////////////////////////////////////////////
         
         static std::shared_ptr<ExecutionEngine> get_instance() {
-          static std::shared_ptr<ExecutionEngine> instance(new ExecutionEngine());
+          static ExecutionEnginePtr instance(new ExecutionEngine());
           return instance;
         }
 
+        /*
+         * Build the logic plan for the current registered systems
+         */
+        LogicPlanPtr build_logic_plan() const ;
 
       private:
 
@@ -63,10 +72,6 @@ namespace furious
          * */
         ExecutionEngine() : database_(Database::get_instance()) {}
 
-        /*
-         * Build the logic plan for the current registered systems
-         */
-        LogicPlanPtr build_logic_plan() const ;
 
 
         SystemId                  next_id_ = 0; /** The next id to assign to a sysstem **/

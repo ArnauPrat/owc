@@ -18,6 +18,12 @@ namespace furious
       LogicMap( SystemId system, LogicPlanNodePtr table ) : system_(system), table_(table) {}
       virtual ~LogicMap() = default;
 
+      ////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////
+
+      virtual void accept( ILogicPlanVisitor& visitor ) { visitor.visit(*this); };
+
       SystemId  system_;
       LogicPlanNodePtr table_;
 

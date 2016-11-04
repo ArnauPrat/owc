@@ -15,13 +15,16 @@ add_library(data STATIC
   logic_map.h
   logic_plan.h
   logic_scan.h
-  physical/physical_plan.h
-  physical/physical_scan.cpp
-  physical/physical_scan.h
   physical/physical_filter.cpp
   physical/physical_filter.h
   physical/physical_hash_join.cpp
   physical/physical_hash_join.h
+  physical/physical_map.cpp
+  physical/physical_map.h
+  physical/physical_plan.h
+  physical/physical_scan.cpp
+  physical/physical_scan.h
+  physical_plan_generator.cpp
   system.h
   table.h
 )

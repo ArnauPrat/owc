@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <vector>
+#include "ilogic_plan_visitor.h"
 
 namespace furious
 {
@@ -30,6 +31,12 @@ namespace furious
       public:
         LogicPlanNode() = default;
         virtual ~LogicPlanNode(){}
+
+        ////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////
+
+        virtual void accept( ILogicPlanVisitor& visitor ) = 0;
 
     };
 

@@ -5,11 +5,15 @@
 
 #include "itable.h"
 #include <vector>
+#include <memory>
 
 namespace furious
 {
   namespace data
   {
+
+    class ISystem;
+    using ISystemPtr = std::shared_ptr<ISystem>;
 
     class ISystem {
       public:
