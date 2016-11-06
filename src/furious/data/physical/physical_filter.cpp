@@ -1,6 +1,7 @@
 
 
 #include "physical_filter.h"
+#include <cassert>
 
 namespace furious
 {
@@ -28,6 +29,19 @@ namespace furious
 
     void PhysicalFilter::close() {
       input_->close();
+    }
+
+    uint32_t PhysicalFilter::num_children()  const  {
+      return 0;
+    }
+
+    IPhysicalOperatorPtr  PhysicalFilter::child(uint32_t i ) const {
+      assert(false);
+      return nullptr;
+    }
+
+    std::string PhysicalFilter::str() const  {
+      return "PhysicalFilter()";
     }
 
   } /* data */ 

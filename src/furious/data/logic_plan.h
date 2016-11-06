@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 #include "ilogic_plan_visitor.h"
+#include <cassert>
 
 namespace furious
 {
@@ -37,6 +38,12 @@ namespace furious
         ////////////////////////////////////////////////////
 
         virtual void accept( ILogicPlanVisitor& visitor ) = 0;
+
+        virtual std::string str() const = 0;
+
+        virtual uint32_t num_children() const = 0;
+
+        virtual LogicPlanNodePtr child( uint32_t i ) const = 0;
 
     };
 

@@ -6,6 +6,7 @@
 #include <data/execution_engine.h>
 #include <data/physical/physical_map.h>
 #include <data/physical/physical_scan.h>
+#include <data/static_system.h>
 
 namespace furious
 {
@@ -14,10 +15,11 @@ namespace furious
     class PhysicalMapTest : public DataTest {
     };
 
-    class TestSystem : public System<ComponentA> {
+    class TestSystem : public StaticSystem<ComponentA> {
       public:
 
-        TestSystem() = default;
+        TestSystem(SystemId id ) : StaticSystem(id) {}
+        virtual ~TestSystem() = default; 
 
         void run(ComponentA& component) const override {
           component.field1_ = 4;
@@ -32,7 +34,7 @@ namespace furious
       }
 
       ExecutionEnginePtr engine = ExecutionEngine::get_instance(); 
-      ISystemPtr system = ISystemPtr(new TestSystem());
+      SystemPtr system = SystemPtr(new TestSystem(0));
 
       IPhysicalOperatorPtr physical_scanA( new PhysicalScan(tableA_));
       IPhysicalOperatorPtr physical_map( new PhysicalMap(physical_scanA, system) );

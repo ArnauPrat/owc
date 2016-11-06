@@ -4,9 +4,10 @@
 #define _FURIOUS_PHYSICAL_PLAN 
 
 #include "../common.h"
-#include "../itable.h"
+#include "../table.h"
 #include <memory>
 #include <vector>
+#include <string>
 
 namespace furious
 {
@@ -24,10 +25,13 @@ namespace furious
         ////////////////////////////////////////////////////
         ////////////////////////////////////////////////////
         ////////////////////////////////////////////////////
-
+        
         virtual void open() = 0;
         virtual void close() = 0;
         virtual IRowPtr next() = 0;
+        virtual uint32_t num_children() const = 0;
+        virtual IPhysicalOperatorPtr  child(uint32_t i) const = 0;
+        virtual std::string str() const = 0;
     };
 
     /**

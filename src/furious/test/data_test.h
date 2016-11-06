@@ -41,8 +41,8 @@ namespace furious
         }
 
         DatabasePtr database_ = nullptr;
-        Table<ComponentA>::Ptr tableA_ = nullptr;
-        Table<ComponentB>::Ptr tableB_ = nullptr;
+        StaticTable<ComponentA>::Ptr tableA_ = nullptr;
+        StaticTable<ComponentB>::Ptr tableB_ = nullptr;
 
     };
   } /* data */ 

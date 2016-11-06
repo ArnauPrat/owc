@@ -1,99 +1,110 @@
 
+
+
 #ifndef _FURIOUS_TABLE_H_
-#define _FURIOUS_TABLE_H_
+#define _FURIOUS_TABLE_H_ 
 
+#include "common.h"
+#include <map>
+#include <memory>
+#include <type_traits>
+#include <typeindex>
 #include <vector>
-#include <utility>
-#include <common/types.h>
-#include <iterator>
 
-#include "itable_iterator.h"
-#include "itable.h"
-#include <cassert>
+namespace furious
+{
+  namespace data
+  {
+    class Table;
+    class IRow;
+    using IRowPtr = IRow*;
+    class IRow {
+      public:
 
-namespace furious {
-  namespace data {
-
-    template<typename T>
-      class Table : public ITable {
-        class Row : public IRow {
-          public:
-
-            template<typename...Fields>
-              Row ( EntityId id, Fields&&...x) : IRow(id), data_(std::forward<Fields>(x)...) {}
-
-            virtual ~Row() = default;
-
-            virtual void* get_column(uint32_t column) override {
-              assert(column == 0);
-              return &data_;
-            }
-
-            virtual uint32_t size_of_column( uint32_t column)  override {
-              assert(column == 0);
-              return sizeof(T);
-            }
-
-            virtual uint32_t num_columns() override {
-              return 1;
-            }
-
-            T& get_data() {
-              return data_;
-            } 
-
-          private:
-            T data_;
-        };
-
-        public:
-        using table_type = Table;
-        using Iterator = typename std::vector<Row>::iterator;
-        using Ptr = std::shared_ptr<Table<T>>;
-
-
-        Table() = default;
-        Table( const Table & ) = delete;
-        Table & operator=( const Table &) = delete;
-        Table( Table && ) = delete;
-        Table & operator=(Table &&) = delete;
-
-        template<typename...Fields>
-          void insert( uint32_t id, Fields &&...x ) {
-            data_.emplace_back(id, std::forward<Fields>(x)...);
-          }
+        IRow( EntityId id) : id_(id), enabled_(true) {}
+        virtual ~IRow() = default;
 
         /**
-         * Gets the ith row of the table
+         * Checks if the row is enabled or not
          */
-        IRowPtr get_row( uint32_t row ) override {
-          return &data_[row];
+        bool_t  is_enabled() {
+          return enabled_ == true;
         }
 
-
-        Iterator begin() {
-          return std::begin(data_);
+        /**
+         * Sets the row as enabled
+         */
+        void enable() {
+          enabled_ = true;
         }
 
-        Iterator end() {
-          return std::end(data_);
+        /**
+         * Sets the row as disabled
+         */
+        void disable() {
+          enabled_ = false;
         }
 
-        uint32_t size() const override {
-          return data_.size();
+        /**
+         * Gets the id of the row
+         */
+        EntityId get_id() {
+          return id_;
         }
 
-        virtual std::string table_name() const override {
-          return std::string(typeid(T).name());
-        }
+        /**
+         * Gets the specified column of the row
+         */
+        virtual void* get_column(uint32_t column) = 0; 
+        /**
+         * Gets the size of the column in bytes
+         */
+        virtual uint32_t size_of_column( uint32_t column) = 0;
 
-        virtual void clear() override {
-          data_.clear();
-        }
+        /**
+         * Gets the number of columns of the table*/
+        virtual uint32_t num_columns() = 0;
+        
+      private:
+        EntityId    id_;
+        bool_t      enabled_;
+    };
 
-        private:
-        std::vector<Row>    data_;        // vector holding the table data
-      };
+    using TablePtr = std::shared_ptr<Table>;
+
+    class Table {
+      public:
+        Table(TableId id) : id_(id) {}
+        virtual ~Table() {}
+
+        /**
+         * Gets the name of the table
+         */
+        virtual std::string table_name() const = 0;
+
+        /**
+         * Gets the size of the table
+         */
+        virtual uint32_t size() const = 0; 
+
+        /**
+         * Gets a pointer to the ith element of the table
+         * */
+        virtual IRowPtr get_row(uint32_t index) = 0;
+
+
+        /**
+         * Clear the table
+         */
+        virtual void clear() = 0;
+
+      private:
+        TableId id_;
+
+    };
   } /* data */ 
+  
 } /* furious */ 
+
 #endif
+

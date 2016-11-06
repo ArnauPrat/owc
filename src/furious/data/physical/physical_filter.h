@@ -26,6 +26,12 @@ namespace furious
 
         void close() override;
 
+        virtual uint32_t num_children()  const override ;
+
+        virtual IPhysicalOperatorPtr  child(uint32_t i) const override;
+
+        virtual std::string str() const override;
+
       private:
         IPhysicalOperatorPtr input_;
     };

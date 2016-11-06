@@ -7,9 +7,6 @@ add_library(data STATIC
   database.h
   execution_engine.cpp
   execution_engine.h
-  isystem.h
-  itable.h
-  itable_iterator.h
   logic_filter.h
   logic_join.h
   logic_map.h
@@ -25,6 +22,8 @@ add_library(data STATIC
   physical/physical_scan.cpp
   physical/physical_scan.h
   physical_plan_generator.cpp
+  static_system.h
+  static_table.h
   system.h
   table.h
 )

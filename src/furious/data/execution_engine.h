@@ -6,7 +6,7 @@
 #include "logic_join.h"
 #include "logic_plan.h"
 #include "common.h"
-#include "isystem.h"
+#include "system.h"
 #include "database.h"
 #include <map>
 #include <memory>
@@ -18,8 +18,8 @@ namespace furious
     class ExecutionEngine;
     using ExecutionEnginePtr = std::shared_ptr<ExecutionEngine>;
     class ExecutionEngine {
-      using SystemMap = std::map<SystemId, ISystemPtr>;
-      using SystemMapPair = std::pair<SystemId, ISystemPtr>;
+      using SystemMap = std::map<SystemId, SystemPtr>;
+      using SystemMapPair = std::pair<SystemId, SystemPtr>;
 
       public:
         ExecutionEngine( const ExecutionEngine& ) = delete;
@@ -39,7 +39,7 @@ namespace furious
          * */
         template <typename T, typename...Args>
         SystemId register_system(Args&&...x) {
-          auto sp = std::static_pointer_cast<ISystem>(std::make_shared<T>(std::forward<Args>(x)...));
+          auto sp = std::static_pointer_cast<System>(std::make_shared<T>(next_id_,std::forward<Args>(x)...));
           systems_.insert(SystemMapPair(next_id_,sp));
           return next_id_++;
         }
@@ -49,7 +49,7 @@ namespace furious
          */
         void run_systems() const ;
 
-        ISystemPtr get_system(SystemId system);
+        SystemPtr get_system(SystemId system);
 
         ////////////////////////////////////////////////////
         ////////////////////////////////////////////////////

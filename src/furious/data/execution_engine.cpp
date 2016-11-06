@@ -37,7 +37,7 @@ namespace furious
     }
 
 
-    ISystemPtr ExecutionEngine::get_system(SystemId system) {
+    SystemPtr ExecutionEngine::get_system(SystemId system) {
       return (*systems_.find(system)).second;
     }
 
@@ -57,7 +57,7 @@ namespace furious
           auto logic_filter_first = MakeLogicPlanNodePtr<LogicFilter>(logic_scan_first);
           auto logic_scan_second = MakeLogicPlanNodePtr<LogicScan>(database_->get_id(second_component));
           auto logic_filter_second = MakeLogicPlanNodePtr<LogicFilter>(logic_scan_second);
-          auto previous_join = MakeLogicPlanNodePtr<LogicJoin>(logic_scan_first, logic_scan_second);
+          auto previous_join = MakeLogicPlanNodePtr<LogicJoin>(logic_filter_first, logic_filter_second);
           for(;component_iterator != system.second->components().end(); ++component_iterator ) {
             auto next_component = *component_iterator;
             auto logic_scan_next = MakeLogicPlanNodePtr<LogicScan>(database_->get_id(next_component));

@@ -1,7 +1,7 @@
 
 #include <common/types.h>
 #include <data/database.h>
-#include <data/system.h>
+#include <data/static_system.h>
 #include <data/table.h>
 #include <gtest/gtest.h>
 #include <data/execution_engine.h>
@@ -29,16 +29,21 @@ namespace furious {
       ComponentB( uint32_t a, float b ) : field1(a), field2(b) {}
     };
 
-    class TestSystem : public System<ComponentA, ComponentB> {
+    class TestSystem : public StaticSystem<ComponentA, ComponentB> {
       public:
+        TestSystem(SystemId id) : StaticSystem(id) {}
+        virtual ~TestSystem() = default;
         void run( ComponentA& a, ComponentB& b ) const override {
           a.field1 = b.field1;
           a.field2 = b.field2;
         }
     };
 
-    class TestSystemAssert : public System<ComponentA, ComponentB> {
+    class TestSystemAssert : public StaticSystem<ComponentA, ComponentB> {
       public:
+        TestSystemAssert(SystemId id ) : StaticSystem(id) {}
+        virtual ~TestSystemAssert() = default;
+
         void run( ComponentA& a, ComponentB& b ) const override {
           ASSERT_TRUE(a.field1 == b.field1);
           ASSERT_TRUE(a.field2 == b.field2);

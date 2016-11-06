@@ -1,76 +1,49 @@
 
 
-#ifndef _FURIOUS_SYSTEM_H_
-#define _FURIOUS_SYSTEM_H_ 
+#ifndef _FURIOus_SYSTEM_H
+#define _FURIOus_SYSTEM_H value
 
-#include "isystem.h"
+#include "common.h"
 #include "table.h"
-#include <typeinfo>
 #include <vector>
+#include <memory>
 
 namespace furious
 {
   namespace data
   {
 
-    /** Basic struct to hold the index sequence **/
-    template <std::size_t... Indices>
-      struct indices {};
+    class System;
+    using SystemPtr = std::shared_ptr<System>;
 
-    /** Induction case of the indices trick **/
-    template <std::size_t N, std::size_t... Is>
-      struct build_indices
-      : build_indices<N-1, N-1, Is...> {};
+    class System {
+      public:
+        System(SystemId id) : id_(id) {}
+        virtual ~System() = default;
+        /**
+         * Applies the system over the set of components
+         **/
+        virtual void apply( std::vector<void*>& components ) const = 0;
 
-    /** Base case of the indices trick **/
-    template <std::size_t... Is>
-      struct build_indices<0, Is...> : indices<Is...> {};
+        /**
+         * Gets the list of components this system applies to
+         */
+        virtual const std::vector<std::string>& components() const = 0;
 
-    template <size_t N>
-      using indices_list = build_indices<N>;
+        /**
+         * Gets the id of the system
+         */
+        SystemId id() { return id_; }
 
-    template<typename...Components>
-      class System : public ISystem {
-        public:
+      private:
 
-          System() : 
-            types_{typeid(Components).name()...}  {
-            }
+        SystemId id_;
 
-          ////////////////////////////////////////////////////
-          ////////////////////////////////////////////////////
-          ////////////////////////////////////////////////////
-
-
-          void apply( std::vector<void*>& components ) const override {
-            apply(components,indices_list<sizeof...(Components)>());
-          }
-
-          virtual void run( Components&...c ) const = 0; 
-
-          constexpr const std::vector<std::string>& components() const override {
-            return types_;
-          }
-
-          ////////////////////////////////////////////////////
-          ////////////////////////////////////////////////////
-          ////////////////////////////////////////////////////
-
-        private:
-
-          template<std::size_t...Indices>
-            void apply( std::vector<void*>& components, indices<Indices...> ) const {
-              run(*(static_cast<Components*>(components[Indices]))...);
-            }
-
-          ////////////////////////////////////////////////////
-          ////////////////////////////////////////////////////
-          ////////////////////////////////////////////////////
-
-          std::vector<std::string> types_;
-      };
-
+    };
   } /* data */ 
-
+  
 } /* furious */ 
+
+
+
 #endif

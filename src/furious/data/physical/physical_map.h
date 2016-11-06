@@ -4,7 +4,7 @@
 #define _FURIOUS_PHYSICAL_MAP_H value
 
 #include "physical_plan.h"
-#include "../isystem.h"
+#include "../system.h"
 
 namespace furious
 {
@@ -16,7 +16,7 @@ namespace furious
 
       public:
 
-        PhysicalMap(IPhysicalOperatorPtr input, ISystemPtr system); 
+        PhysicalMap(IPhysicalOperatorPtr input, SystemPtr system); 
         virtual ~PhysicalMap() = default;
 
         ////////////////////////////////////////////////////
@@ -29,9 +29,15 @@ namespace furious
 
         void close() override;
 
+        virtual uint32_t num_children()  const override ;
+
+        virtual IPhysicalOperatorPtr  child(uint32_t i) const override;
+
+        virtual std::string str() const override;
+
       private:
         IPhysicalOperatorPtr    input_;
-        ISystemPtr              system_;
+        SystemPtr              system_;
     };
     
   } /* data */ 

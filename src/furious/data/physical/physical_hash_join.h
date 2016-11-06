@@ -4,7 +4,7 @@
 #define _FURIOUS_PHYSICAL_HASH_JOIN_H 
 
 #include "physical_plan.h"
-#include "../itable.h"
+#include "../table.h"
 #include "../common.h"
 #include <cassert>
 #include <map>
@@ -62,6 +62,12 @@ namespace furious
         void  open() override;
 
         void  close() override;
+
+        virtual uint32_t num_children()  const override ;
+
+        virtual IPhysicalOperatorPtr  child(uint32_t i) const override;
+
+        virtual std::string str() const override;
 
       private:
 

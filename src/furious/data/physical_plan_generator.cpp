@@ -35,7 +35,7 @@ namespace furious
     void PhysicalPlanGenerator::visit(LogicScan& logic_scan) {
       PhysicalPlanGenerator gen;
       DatabasePtr database = Database::get_instance();
-      ITablePtr table = database->find_table(logic_scan.table_);
+      TablePtr table = database->find_table(logic_scan.table_);
       result_ = IPhysicalOperatorPtr( new PhysicalScan(table) );
     }
 

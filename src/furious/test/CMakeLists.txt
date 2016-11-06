@@ -36,4 +36,5 @@ create_test ("physical_map_test")
 create_test ("physical_scan_test")
 create_test ("system_test")
 create_test ("execution_engine_test")
+create_test ("physical_plan_generator_test")
 

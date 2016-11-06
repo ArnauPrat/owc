@@ -4,7 +4,7 @@
 #define _FURIOUS_PHYSICAL_SCAN_H
 
 #include "physical_plan.h"
-#include "../itable.h"
+#include "../table.h"
 #include "../common.h"
 
 namespace furious
@@ -16,7 +16,7 @@ namespace furious
 
       public:
 
-        PhysicalScan(ITablePtr table); 
+        PhysicalScan(TablePtr table); 
         virtual ~PhysicalScan() = default;
 
         ////////////////////////////////////////////////////
@@ -29,8 +29,14 @@ namespace furious
 
         void close() override;
 
+        virtual uint32_t num_children()  const override ;
+
+        virtual IPhysicalOperatorPtr  child(uint32_t i) const override;
+
+        virtual std::string str() const override;
+
       private:
-        ITablePtr   table_ptr_;
+        TablePtr   table_ptr_;
         uint32_t    table_size_;
         uint32_t    next_row_index_;
     };

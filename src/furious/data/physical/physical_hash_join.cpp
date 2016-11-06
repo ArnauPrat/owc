@@ -2,6 +2,7 @@
 
 #include "physical_hash_join.h"
 #include <functional>
+#include <cassert>
 
 namespace furious
 {
@@ -56,6 +57,20 @@ namespace furious
     uint32_t PhysicalHashJoin::get_hash_position(IRowPtr row) {
       uint32_t position = std::hash<uint32_t>{}(row->get_id()) % size;
       return position;
+    }
+
+    uint32_t PhysicalHashJoin::num_children()  const  {
+      return 2;
+    }
+
+    IPhysicalOperatorPtr  PhysicalHashJoin::child(uint32_t i ) const {
+      assert(i < 2);
+      if(i == 0) return left_;
+      return right_;
+    }
+
+    std::string PhysicalHashJoin::str() const  {
+      return "PhysicalHashJoin()";
     }
     
   } /* data */ 

@@ -1,12 +1,12 @@
 
 
-#ifndef _FURIOUS_DATA_H_
-#define _FURIOUS_DATA_H_
+#ifndef _FURIOUS_DATABASE_H_
+#define _FURIOUS_DATABASE_H_
 
 #include "database.h"
-#include "itable.h"
-#include "system.h"
 #include "table.h"
+#include "system.h"
+#include "static_table.h"
 #include "common.h"
 #include <map>
 #include <memory>
@@ -17,8 +17,8 @@
 namespace furious {
   namespace data {
 
-    using TableMap = std::map<TableId, ITablePtr>;
-    using TableMapPair = std::pair<TableId, ITablePtr>;
+    using TableMap = std::map<TableId, TablePtr>;
+    using TableMapPair = std::pair<TableId, TablePtr>;
     using TableIdMap = std::map<std::string, TableId>;
     using TableIdMapPair = std::pair<std::string, TableId>;
 
@@ -43,15 +43,14 @@ namespace furious {
          * Adds an existing table to the database
          */
         template <typename T>
-          typename Table<T>::Ptr create_table() {
+          typename StaticTable<T>::Ptr create_table() {
             assert(table_ids_.find(typeid(T).name()) == table_ids_.end());
             if(table_ids_.find(typeid(T).name()) != table_ids_.end()) return nullptr;
-            auto table = std::make_shared<Table<T>>();
-            auto sp = std::static_pointer_cast<ITable>(table);
-            TableId id = next_id_++;
-            tables_.insert(TableMapPair(id,sp));
-            table_ids_.insert(TableIdMapPair(typeid(T).name(),id));
-            return table;
+            auto table = std::make_shared<StaticTable<T>>(next_id_);
+            tables_.insert(TableMapPair(next_id_,table));
+            table_ids_.insert(TableIdMapPair(typeid(T).name(),next_id_));
+            next_id_++;
+            return table; 
           }
 
         template <typename T>
@@ -66,16 +65,16 @@ namespace furious {
          * Gets the table with the given name
          */
         template <typename T>
-          std::shared_ptr<Table<T>> find_table() {
+          std::shared_ptr<StaticTable<T>> find_table() {
             assert(table_ids_.find(typeid(T).name()) != table_ids_.end());
             if(table_ids_.find(typeid(T).name()) == table_ids_.end()) return nullptr;
-            return std::dynamic_pointer_cast<Table<T>>(find_table(get_id(typeid(T).name())));
+            return std::dynamic_pointer_cast<StaticTable<T>>(find_table(get_id(typeid(T).name())));
           }
 
         /**
          * Gets the table from name
          * */
-        ITablePtr find_table( const std::string& str) {
+        TablePtr find_table( const std::string& str) {
           assert(tables_.find(get_id(str)) != tables_.end());
           if(tables_.find(get_id(str)) == tables_.end()) return nullptr;
           return tables_.find(get_id(str))->second;
@@ -94,7 +93,7 @@ namespace furious {
         /**
          * Finds a table based on its id
          */
-        ITablePtr find_table(TableId id) {
+        TablePtr find_table(TableId id) {
           assert(tables_.find(id) != tables_.end());
           if(tables_.find(id) == tables_.end()) return nullptr;
           return tables_.find(id)->second;

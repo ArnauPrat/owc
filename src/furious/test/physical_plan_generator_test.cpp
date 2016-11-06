@@ -1,5 +1,8 @@
 
+
 #include <gtest/gtest.h>
+#include <data/physical_plan_generator.h>
+#include <data/execution_engine.h>
 #include <data/static_system.h>
 #include "data_test.h"
 
@@ -8,7 +11,8 @@ namespace furious
   namespace data
   {
 
-    class SystemTest : public DataTest {
+    class PhysicalPlanGeneratorTest : public DataTest {
+
     };
 
     class TestSystem : public StaticSystem<ComponentA> {
@@ -22,20 +26,17 @@ namespace furious
         }
     };
 
-    TEST_F(SystemTest, SystemWorks) {
+    TEST_F(PhysicalPlanGeneratorTest, PhysicalPlanGeneratorWorks) {
 
-      for(uint32_t i = 0; i < 10000; ++i) {
-        tableA_->insert(i,i*2,i*1.0);
-      }
+      auto execution_engine = ExecutionEngine::get_instance();
+      execution_engine->register_system<TestSystem>();
+      auto logic_plan = execution_engine->build_logic_plan();
 
-      TestSystem test_system(0);
+      PhysicalPlanGenerator gen{};
+      auto logic_root = logic_plan->roots_[0];
+      logic_root->accept(gen);
+      auto physical_root = gen.get_result();
 
-      for(auto it = tableA_->begin(); it != tableA_->end(); ++it) {
-        test_system.run(it->get_data());
-        ASSERT_EQ(it->get_data().field1_, 0);
-        ASSERT_EQ(it->get_data().field2_, 0.0);
-      }
-      tableA_->clear();
     }
     
   } /* data */ 

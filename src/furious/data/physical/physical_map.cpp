@@ -1,12 +1,14 @@
 
 #include "physical_map.h"
+#include <cassert>
+#include <sstream>
 
 namespace furious
 {
   namespace data
   {
 
-    PhysicalMap::PhysicalMap( IPhysicalOperatorPtr input, ISystemPtr system ) :
+    PhysicalMap::PhysicalMap( IPhysicalOperatorPtr input, SystemPtr system ) :
       input_(input),
       system_(system)
       {
@@ -37,7 +39,20 @@ namespace furious
       input_->close();
     }
 
+    uint32_t PhysicalMap::num_children()  const  {
+      return 0;
+    }
 
+    IPhysicalOperatorPtr  PhysicalMap::child(uint32_t i ) const {
+      assert(false);
+      return nullptr;
+    }
+
+    std::string PhysicalMap::str() const  {
+      std::stringstream ss;
+      ss << "PhysicalMap(" << system_->id() << ")";
+      return ss.str();
+    }
     
   } /* data */ 
   
