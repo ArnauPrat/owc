@@ -75,13 +75,18 @@ namespace furious
          */
         PhysicalPlanPtr  build_physical_plan(LogicPlanPtr logic_plan) const;
 
+
+        /**
+         * Executes the given physical plan
+         */
+        void execute_physical_plan(PhysicalPlanPtr physical_plan ) const;
+
       private:
 
         /*
          * Constructor
          * */
         ExecutionEngine() : database_(Database::get_instance()) {}
-
 
 
         SystemId                  next_id_ = 0; /** The next id to assign to a sysstem **/

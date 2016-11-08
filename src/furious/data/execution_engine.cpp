@@ -35,6 +35,17 @@ namespace furious
       }
       */
       auto logic_plan = build_logic_plan();
+      auto physical_plan = build_physical_plan(logic_plan);
+      execute_physical_plan(physical_plan);
+    }
+
+    void ExecutionEngine::execute_physical_plan(PhysicalPlanPtr physical_plan ) const {
+      for(auto root : physical_plan->roots_) {
+        IRowPtr next_row = root->next();
+        while(next_row != nullptr) {
+          next_row = root->next();
+        }
+      }
     }
 
 

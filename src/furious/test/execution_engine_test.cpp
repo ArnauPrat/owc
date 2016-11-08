@@ -142,7 +142,11 @@ namespace furious
         tableB_->insert(i,1,1.0);
       }
 
-
+      ExecutionEnginePtr execution_engine = ExecutionEngine::get_instance();
+      execution_engine->register_system<TestSystemA>();
+      execution_engine->register_system<TestSystemB>();
+      execution_engine->register_system<TestSystemAB>();
+      execution_engine->run_systems();
 
     }
   } /* data */ 
