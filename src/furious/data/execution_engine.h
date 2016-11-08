@@ -81,6 +81,12 @@ namespace furious
          */
         void execute_physical_plan(PhysicalPlanPtr physical_plan ) const;
 
+
+        /**
+         * Clears the registered systems 
+         */
+        void clear();
+
       private:
 
         /*

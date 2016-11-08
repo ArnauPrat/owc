@@ -30,8 +30,8 @@ namespace furious
         virtual ~TestSystemA() = default;
 
         void run(ComponentA& component) const override {
-          component.field1_ = 0;
-          component.field2_ = 0.0;
+          component.field1_ *= 2;
+          component.field2_ *= 2.0;
         }
     };
 
@@ -42,8 +42,8 @@ namespace furious
         virtual ~TestSystemB() = default;
 
         void run(ComponentB& component) const override {
-          component.field1_ = 1;
-          component.field2_ = 1.0;
+          component.field1_ *= 2;
+          component.field2_ *= 2.0;
         }
     };
 
@@ -73,6 +73,7 @@ namespace furious
       auto tableC = database->create_table<ComponentC>();
 
       ExecutionEnginePtr execution_engine = ExecutionEngine::get_instance();
+      execution_engine->clear();
 
       execution_engine->register_system<TestSystemA>();
       execution_engine->register_system<TestSystemB>();
@@ -134,20 +135,36 @@ namespace furious
 
     TEST_F(ExecutionEngineTest, ExecutionEngineWorks) {
 
-      for(uint32_t i = 0; i < 10000; ++i) {
-        tableA_->insert(i,1,1.0);
+
+      for(uint32_t i = 0; i < 1; ++i) {
+        tableA_->insert(i,4,4.0);
       }
 
-      for(uint32_t i = 0; i < 10000; ++i) {
-        tableB_->insert(i,1,1.0);
+      for(uint32_t i = 0; i < 1; ++i) {
+        tableB_->insert(i,16,16.0);
       }
 
       ExecutionEnginePtr execution_engine = ExecutionEngine::get_instance();
+      execution_engine->clear();
+
       execution_engine->register_system<TestSystemA>();
       execution_engine->register_system<TestSystemB>();
       execution_engine->register_system<TestSystemAB>();
       execution_engine->run_systems();
 
+      for(auto iter_tableA = tableA_->begin();
+          iter_tableA != tableA_->end();
+          ++iter_tableA) {
+        ASSERT_EQ(iter_tableA->get_data().field1_,8);
+        ASSERT_EQ(iter_tableA->get_data().field2_,8.0);
+      }
+
+      for(auto iter_tableB = tableB_->begin();
+          iter_tableB != tableB_->end();
+          ++iter_tableB) {
+        ASSERT_EQ(iter_tableB->get_data().field1_,32);
+        ASSERT_EQ(iter_tableB->get_data().field2_,32.0);
+      }
     }
   } /* data */ 
 

@@ -13,27 +13,13 @@
 #include "physical_plan_generator.h"
 #include <cstddef>
 
+#include <iostream>
+
 namespace furious
 {
   namespace data
   {
     void ExecutionEngine::run_systems() const {
-      /*for(auto system : systems_ ) {
-        std::vector<ITablePtr> tables;
-        for(auto required_component : system.second->components() ) {
-          tables.push_back(database_->find_table(required_component));
-        }
-        // TODO: Join here between tables
-        int count = tables[0]->size();
-        std::vector<void*> components(count,nullptr);
-        for(int i = 0; i < count; ++i){
-          for(uint32_t j = 0; j < tables.size(); ++j) {
-           components[j] = tables[j]->get_row(i)->get_data();
-          }
-          system.second->apply(components);
-        }
-      }
-      */
       auto logic_plan = build_logic_plan();
       auto physical_plan = build_physical_plan(logic_plan);
       execute_physical_plan(physical_plan);
@@ -41,6 +27,7 @@ namespace furious
 
     void ExecutionEngine::execute_physical_plan(PhysicalPlanPtr physical_plan ) const {
       for(auto root : physical_plan->roots_) {
+        std::cout << "ENTRA" << std::endl;
         IRowPtr next_row = root->next();
         while(next_row != nullptr) {
           next_row = root->next();
@@ -92,6 +79,10 @@ namespace furious
         physical_plan->roots_.push_back(gen.get_result());
       }
       return physical_plan;
+    }
+
+    void ExecutionEngine::clear() {
+      systems_.clear();
     }
   } /* data */ 
 } /* furious */ 
