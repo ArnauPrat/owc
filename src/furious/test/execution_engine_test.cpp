@@ -18,6 +18,9 @@ namespace furious
       ComponentC(uint32_t field1, double_t field2) : field1_(field1), field2_(field2) {}
     };
 
+    class ExecutionEngineTest : public DataTest {
+    };
+
     class SystemTest : public DataTest {
     };
 
@@ -127,14 +130,23 @@ namespace furious
       ASSERT_STREQ(filterAB_right->str().c_str(), "LogicFilter()");
       scanAB_right = filterAB_right->child(0);
       ASSERT_STREQ(scanAB_right->str().c_str(), "LogicScan(1)");
+    }
 
+    TEST_F(ExecutionEngineTest, ExecutionEngineWorks) {
+
+      for(uint32_t i = 0; i < 10000; ++i) {
+        tableA_->insert(i,1,1.0);
+      }
+
+      for(uint32_t i = 0; i < 10000; ++i) {
+        tableB_->insert(i,1,1.0);
+      }
 
 
 
     }
-    
   } /* data */ 
-  
+
 } /* furious */ 
 
 int main(int argc, char *argv[])

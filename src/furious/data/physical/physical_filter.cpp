@@ -32,12 +32,12 @@ namespace furious
     }
 
     uint32_t PhysicalFilter::num_children()  const  {
-      return 0;
+      return 1;
     }
 
     IPhysicalOperatorPtr  PhysicalFilter::child(uint32_t i ) const {
-      assert(false);
-      return nullptr;
+      assert(i == 0);
+      return input_;
     }
 
     std::string PhysicalFilter::str() const  {

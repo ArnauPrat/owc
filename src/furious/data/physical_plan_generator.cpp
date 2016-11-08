@@ -30,6 +30,7 @@ namespace furious
       PhysicalPlanGenerator gen;
       ExecutionEnginePtr execution_engine = ExecutionEngine::get_instance();
       logic_map.table_->accept(gen);
+      result_ = IPhysicalOperatorPtr(new PhysicalMap(gen.get_result(), execution_engine->get_system(logic_map.system_)));
     }
 
     void PhysicalPlanGenerator::visit(LogicScan& logic_scan) {

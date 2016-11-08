@@ -21,7 +21,7 @@ namespace furious
     class IRow {
       public:
 
-        IRow( EntityId id) : id_(id), enabled_(true) {}
+        IRow(EntityId id) : id_(id), enabled_(true) {}
         virtual ~IRow() = default;
 
         /**
@@ -74,13 +74,13 @@ namespace furious
 
     class Table {
       public:
-        Table(TableId id) : id_(id) {}
+        Table(TableId id, const std::string& name) : id_(id), name_(name) {}
         virtual ~Table() {}
 
         /**
          * Gets the name of the table
          */
-        virtual std::string table_name() const = 0;
+        virtual std::string table_name() { return name_; };
 
         /**
          * Gets the size of the table
@@ -94,12 +94,19 @@ namespace furious
 
 
         /**
+         * Gets the id of the table
+         */
+        TableId id() { return id_; }
+
+
+        /**
          * Clear the table
          */
         virtual void clear() = 0;
 
       private:
         TableId id_;
+        std::string name_;
 
     };
   } /* data */ 

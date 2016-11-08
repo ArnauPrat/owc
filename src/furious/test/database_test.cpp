@@ -30,7 +30,7 @@ namespace furious
      database->create_table<Component>();
      auto table = database->find_table<Component>();
      ASSERT_NE(table,nullptr);
-     auto table2 = database->find_table(table->table_name());
+     auto table2 = database->find_table<Component>();
      ASSERT_NE(table2,nullptr);
      auto table3 = database->find_table(database->get_id(table->table_name()));
      ASSERT_NE(table3,nullptr);

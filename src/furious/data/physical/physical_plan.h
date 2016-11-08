@@ -11,8 +11,7 @@
 
 namespace furious
 {
-  namespace data
-  {
+  namespace data {
 
     class IPhysicalOperator;
     using IPhysicalOperatorPtr = std::shared_ptr<IPhysicalOperator>;
@@ -42,6 +41,9 @@ namespace furious
     {
       return std::static_pointer_cast<IPhysicalOperator>(std::make_shared<T>(std::forward<Args>(args)...));
     }
+
+    class PhysicalPlan;
+    using PhysicalPlanPtr = std::shared_ptr<PhysicalPlan>;
 
     class PhysicalPlan {
       public:

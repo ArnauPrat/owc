@@ -5,6 +5,7 @@
 #include <data/table.h>
 #include <gtest/gtest.h>
 #include <data/execution_engine.h>
+#include "data_test.h"
 
 namespace furious {
   namespace data {
@@ -17,25 +18,13 @@ namespace furious {
         }
     };
 
-    struct ComponentA {
-      uint32_t field1;
-      float    field2;
-      ComponentA( uint32_t a, float b ) : field1(a), field2(b) {}
-    };
-
-    struct ComponentB {
-      uint32_t field1;
-      float    field2;
-      ComponentB( uint32_t a, float b ) : field1(a), field2(b) {}
-    };
-
     class TestSystem : public StaticSystem<ComponentA, ComponentB> {
       public:
         TestSystem(SystemId id) : StaticSystem(id) {}
         virtual ~TestSystem() = default;
         void run( ComponentA& a, ComponentB& b ) const override {
-          a.field1 = b.field1;
-          a.field2 = b.field2;
+          a.field1_ = b.field1_;
+          a.field2_ = b.field2_;
         }
     };
 
@@ -45,8 +34,8 @@ namespace furious {
         virtual ~TestSystemAssert() = default;
 
         void run( ComponentA& a, ComponentB& b ) const override {
-          ASSERT_TRUE(a.field1 == b.field1);
-          ASSERT_TRUE(a.field2 == b.field2);
+          ASSERT_TRUE(a.field1_ == b.field1_);
+          ASSERT_TRUE(a.field2_ == b.field2_);
         }
     };
 

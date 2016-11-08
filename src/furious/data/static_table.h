@@ -51,7 +51,7 @@ namespace furious {
         using Ptr = std::shared_ptr<StaticTable<T>>;
 
 
-        StaticTable(TableId id) : Table(id) {};
+        StaticTable(TableId id, const std::string& name) : Table(id, name)  {};
         virtual ~StaticTable() = default;
         StaticTable( const StaticTable & ) = delete;
         StaticTable & operator=( const StaticTable &) = delete;
@@ -81,10 +81,6 @@ namespace furious {
 
         uint32_t size() const override {
           return data_.size();
-        }
-
-        virtual std::string table_name() const override {
-          return std::string(typeid(T).name());
         }
 
         virtual void clear() override {

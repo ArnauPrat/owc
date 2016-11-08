@@ -10,6 +10,7 @@
 #include "physical/physical_scan.h"
 #include "physical/physical_filter.h"
 #include "physical/physical_hash_join.h"
+#include "physical_plan_generator.h"
 #include <cstddef>
 
 namespace furious
@@ -70,6 +71,16 @@ namespace furious
         }
       }
       return logic_plan;
+    }
+
+    PhysicalPlanPtr  ExecutionEngine::build_physical_plan(LogicPlanPtr logic_plan) const {
+      PhysicalPlanGenerator gen;
+      PhysicalPlanPtr physical_plan(new PhysicalPlan());
+      for(LogicPlanNodePtr node : logic_plan->roots_) {
+        node->accept(gen);
+        physical_plan->roots_.push_back(gen.get_result());
+      }
+      return physical_plan;
     }
   } /* data */ 
 } /* furious */ 

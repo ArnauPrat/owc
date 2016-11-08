@@ -31,11 +31,14 @@ namespace furious
       auto execution_engine = ExecutionEngine::get_instance();
       execution_engine->register_system<TestSystem>();
       auto logic_plan = execution_engine->build_logic_plan();
+      PhysicalPlanPtr physical_plan = execution_engine->build_physical_plan(logic_plan);
 
-      PhysicalPlanGenerator gen{};
-      auto logic_root = logic_plan->roots_[0];
-      logic_root->accept(gen);
-      auto physical_root = gen.get_result();
+      auto physical_root = physical_plan->roots_[0];
+      ASSERT_STREQ(physical_root->str().c_str(),"PhysicalMap(0)");
+      auto physical_filter = physical_root->child(0);
+      ASSERT_STREQ(physical_filter->str().c_str(),"PhysicalFilter()");
+      auto physical_scan = physical_filter->child(0);
+      ASSERT_STREQ(physical_scan->str().c_str(),"PhysicalScan(0)");
 
     }
     

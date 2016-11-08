@@ -8,6 +8,7 @@
 #include "common.h"
 #include "system.h"
 #include "database.h"
+#include "physical/physical_plan.h"
 #include <map>
 #include <memory>
 
@@ -49,6 +50,9 @@ namespace furious
          */
         void run_systems() const ;
 
+        /**
+         * Gets the specified system
+         **/
         SystemPtr get_system(SystemId system);
 
         ////////////////////////////////////////////////////
@@ -65,6 +69,12 @@ namespace furious
          */
         LogicPlanPtr build_logic_plan() const ;
 
+
+        /**
+         * Builds a physical plan out of a logic plan
+         */
+        PhysicalPlanPtr  build_physical_plan(LogicPlanPtr logic_plan) const;
+
       private:
 
         /*
@@ -77,7 +87,6 @@ namespace furious
         SystemId                  next_id_ = 0; /** The next id to assign to a sysstem **/
         SystemMap                 systems_;     /** Holds the list of registered systems **/
         std::shared_ptr<Database> database_;    /** Pointer to the database **/
-
     };
   } /* data */ 
   
