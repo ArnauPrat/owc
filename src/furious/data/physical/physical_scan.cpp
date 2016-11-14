@@ -12,16 +12,16 @@ namespace furious
 
     PhysicalScan::PhysicalScan(TablePtr table) :
       table_ptr_(table),
-      table_size_(table_ptr_->size()),
-      next_row_index_(0){}
+      iterator_(table_ptr_->begin()){}
 
     ////////////////////////////////////////////////////
     ////////////////////////////////////////////////////
     ////////////////////////////////////////////////////
     
     IRowPtr PhysicalScan::next() {
-      if(next_row_index_ >= table_size_) return nullptr;
-      return table_ptr_->get_row(next_row_index_++);
+      IRowPtr ret = (*iterator_);
+      ++iterator_;
+      return ret;
     }
 
     void PhysicalScan::open() {

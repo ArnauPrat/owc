@@ -16,6 +16,9 @@ namespace furious
       uint32_t field1_;
       double_t field2_;
       ComponentC(uint32_t field1, double_t field2) : field1_(field1), field2_(field2) {}
+
+      static std::string name() { return "ComponentC"; }
+      
     };
 
     class ExecutionEngineTest : public DataTest {
@@ -155,15 +158,17 @@ namespace furious
       for(auto iter_tableA = tableA_->begin();
           iter_tableA != tableA_->end();
           ++iter_tableA) {
-        ASSERT_EQ(iter_tableA->get_data().field1_,8);
-        ASSERT_EQ(iter_tableA->get_data().field2_,8.0);
+        ComponentA* component = static_cast<ComponentA*>(iter_tableA->get_column(0));
+        ASSERT_EQ(component->field1_,8);
+        ASSERT_EQ(component->field2_,8.0);
       }
 
       for(auto iter_tableB = tableB_->begin();
           iter_tableB != tableB_->end();
           ++iter_tableB) {
-        ASSERT_EQ(iter_tableB->get_data().field1_,32);
-        ASSERT_EQ(iter_tableB->get_data().field2_,32.0);
+        ComponentB* component = static_cast<ComponentB*>(iter_tableB->get_column(0));
+        ASSERT_EQ(component->field1_,32);
+        ASSERT_EQ(component->field2_,32.0);
       }
     }
   } /* data */ 

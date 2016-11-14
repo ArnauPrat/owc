@@ -31,9 +31,9 @@ namespace furious
       TestSystem test_system(0);
 
       for(auto it = tableA_->begin(); it != tableA_->end(); ++it) {
-        test_system.run(it->get_data());
-        ASSERT_EQ(it->get_data().field1_, 0);
-        ASSERT_EQ(it->get_data().field2_, 0.0);
+        test_system.run(*static_cast<ComponentA*>(it->get_column(0)));
+        ASSERT_EQ(static_cast<ComponentA*>(it->get_column(0))->field1_, 0);
+        ASSERT_EQ(static_cast<ComponentA*>(it->get_column(0))->field2_, 0.0);
       }
       tableA_->clear();
     }

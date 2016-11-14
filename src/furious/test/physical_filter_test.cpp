@@ -17,11 +17,11 @@ namespace furious
         tableA_->insert(i,i*2,i*1.0);
       }
 
-      for(uint32_t i = 0; i < tableA_->size(); i+=2) {
-        IRowPtr row = tableA_->get_row(i);
+      for(auto it = tableA_->begin(); it !=  tableA_->end(); ++it) {
+        IRowPtr row = *it;
         row->disable();
+        ++it;
       }
-
 
       IPhysicalOperatorPtr physical_scanA( new PhysicalScan(tableA_));
       IPhysicalOperatorPtr physical_filter( new PhysicalFilter(physical_scanA));
@@ -31,7 +31,7 @@ namespace furious
       ASSERT_NE(row, nullptr);
       uint32_t row_index = 1;
       while(row != nullptr) {
-        ComponentA* componentA = reinterpret_cast<ComponentA*>(row->get_column(0));
+        ComponentA* componentA = static_cast<ComponentA*>(row->get_column(0));
         ASSERT_EQ(componentA->field1_, row_index*2);
         ASSERT_EQ(componentA->field2_, row_index*1.0);
         row = physical_filter->next();

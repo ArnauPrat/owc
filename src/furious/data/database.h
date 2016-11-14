@@ -44,11 +44,11 @@ namespace furious {
          */
         template <typename T>
           typename StaticTable<T>::Ptr create_table() {
-            assert(table_ids_.find(typeid(T).name()) == table_ids_.end());
-            if(table_ids_.find(typeid(T).name()) != table_ids_.end()) return nullptr;
-            auto table = std::make_shared<StaticTable<T>>(next_id_, typeid(T).name());
+            assert(table_ids_.find(T::name()) == table_ids_.end());
+            if(table_ids_.find(T::name()) != table_ids_.end()) return nullptr;
+            auto table = std::make_shared<StaticTable<T>>(next_id_, T::name());
             tables_.insert(TableMapPair(next_id_,table));
-            table_ids_.insert(TableIdMapPair(typeid(T).name(),next_id_));
+            table_ids_.insert(TableIdMapPair(T::name(),next_id_));
             next_id_++;
             return table; 
           }
@@ -58,10 +58,10 @@ namespace furious {
          */
         template <typename T>
           void drop_table() {
-            assert(table_ids_.find(typeid(T).name()) != table_ids_.end());
+            assert(table_ids_.find(T::name()) != table_ids_.end());
             TableId id = get_id<T>();
             tables_.erase(id);
-            table_ids_.erase(typeid(T).name());
+            table_ids_.erase(T::name());
           }
 
         /**
@@ -69,7 +69,7 @@ namespace furious {
          * */
         template <typename T>
          typename StaticTable<T>::Ptr find_table() {
-          assert(tables_.find(get_id(str)) != tables_.end());
+          assert(tables_.find(get_id<T>()) != tables_.end());
           if(tables_.find(get_id<T>()) == tables_.end()) return nullptr;
           return std::dynamic_pointer_cast<StaticTable<T>>(tables_.find(get_id<T>())->second);
         }
@@ -79,9 +79,9 @@ namespace furious {
          */
         template <typename T>
         TableId get_id() {
-          assert(table_ids_.find(typeid(T).name()) != table_ids_.end());
-          if(table_ids_.find(typeid(T).name()) == table_ids_.end()) return INVALID_ID;
-          return table_ids_.find(typeid(T).name())->second; 
+          assert(table_ids_.find(T::name()) != table_ids_.end());
+          if(table_ids_.find(T::name()) == table_ids_.end()) return INVALID_ID;
+          return table_ids_.find(T::name())->second; 
         }
 
         /**

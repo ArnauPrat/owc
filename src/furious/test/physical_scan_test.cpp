@@ -15,7 +15,7 @@ namespace furious
 
     TEST_F(PhysicalScanTest,PhysicalScanTest) {
 
-      for(uint32_t i = 0; i < 100000; ++i) {
+      for(uint32_t i = 0; i < 1; ++i) {
         tableA_->insert(i,i*2,i*1.0);
       }
 
@@ -27,7 +27,8 @@ namespace furious
       ASSERT_TRUE(row != nullptr);
       while(row != nullptr) {
         ComponentA* component = reinterpret_cast<ComponentA*>(row->get_column(0));
-        ASSERT_TRUE((component->field1_ == (current_id*2)) && (component->field2_ == (current_id*1.0)));
+        ASSERT_EQ(component->field1_,(current_id*2)); 
+        ASSERT_EQ(component->field2_,(current_id*1.0));
         row = physical_scan.next();
         current_id+=1;
       }

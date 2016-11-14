@@ -14,6 +14,8 @@ namespace furious
         field1_(field1),
         field2_(field2) 
       {}
+
+      static std::string name() { return "ComponentA"; }
     };
 
     struct ComponentB {
@@ -23,6 +25,8 @@ namespace furious
         field1_(field1),
         field2_(field2) 
       {}
+
+      static std::string name() { return "ComponentB"; }
     };
 
     class DataTest : public ::testing::Test {

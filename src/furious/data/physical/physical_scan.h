@@ -36,9 +36,8 @@ namespace furious
         virtual std::string str() const override;
 
       private:
-        TablePtr   table_ptr_;
-        uint32_t    table_size_;
-        uint32_t    next_row_index_;
+        TablePtr            table_ptr_;
+        Table::iterator     iterator_;
     };
     
   } /* data */ 

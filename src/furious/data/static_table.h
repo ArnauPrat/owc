@@ -19,7 +19,7 @@ namespace furious {
           public:
 
             template<typename...Fields>
-              Row ( EntityId id, Fields&&...x) : IRow(id), data_(std::forward<Fields>(x)...) {}
+              Row ( EntityId id, Fields&&...x) : IRow(id), data_(std::forward<Fields>(x)...), valid_(true) {}
 
             virtual ~Row() = default;
 
@@ -41,15 +41,51 @@ namespace furious {
               return data_;
             } 
 
+            bool_t is_valid() { return valid_; }
+
+            void set_valid() { valid_ = true; }
+
+            void set_invalid() { valid_ = false; }
+
           private:
             T data_;
+            bool_t valid_;
         };
 
         public:
+
         using table_type = StaticTable;
-        using Iterator = typename std::vector<Row>::iterator;
         using Ptr = std::shared_ptr<StaticTable<T>>;
 
+        class Iterator : public Table::BaseIterator {
+          public:
+            Iterator( typename std::vector<Row>::iterator begin, typename std::vector<Row>::iterator end ) :
+              begin_(begin), end_(end) {}
+            virtual ~Iterator() = default;
+
+            virtual IRowPtr next() {
+
+              while(begin_ != end_ && !(*begin_).is_valid()) {
+                ++begin_;
+              };
+
+              if(begin_ != end_) {
+                IRowPtr ret = &(*begin_);
+                ++begin_;
+                return ret;
+              }
+
+              return nullptr;
+            };
+
+            virtual Table::BaseIteratorPtr clone() const {
+              return Table::BaseIteratorPtr(new Iterator(begin_, end_));
+            };
+
+          private:
+            typename std::vector<Row>::iterator begin_;
+            typename std::vector<Row>::iterator end_;
+        };
 
         StaticTable(TableId id, const std::string& name) : Table(id, name)  {};
         virtual ~StaticTable() = default;
@@ -60,35 +96,63 @@ namespace furious {
 
         template<typename...Fields>
           void insert( uint32_t id, Fields &&...x ) {
-            data_.emplace_back(id, std::forward<Fields>(x)...);
+            auto pos = id_index_.find(id);
+            if(pos == id_index_.end()) {
+              if(free_positions_.size() > 0) {
+                uint32_t position = free_positions_.back();
+                free_positions_.pop_back();
+                Row row(id, std::forward<Fields>(x)...);
+                data_[position] = row;
+                id_index_[id] = position;
+              } else {
+                data_.emplace_back(id, std::forward<Fields>(x)...);
+                id_index_[id] = data_.size() - 1;
+              }
+            } else {
+              Row row(id, std::forward<Fields>(x)...);
+              data_[pos->second] = row;
+            }
           }
 
-        /**
-         * Gets the ith row of the table
-         */
-        IRowPtr get_row( uint32_t row ) override {
-          return &data_[row];
+        IRowPtr get_row_by_id( uint32_t id ) override {
+          auto pos = id_index_.find(id);
+          assert(pos != id_index_.end());
+          return &data_[pos->second];
+        }
+
+        void drop_row_by_id( uint32_t id ) override {
+          auto pos = id_index_.find(id);
+          assert(pos != id_index_.end());
+          data_[pos->second].set_invalid();
+          free_positions_.push_back(pos->second);
+          id_index_.erase(id);
         }
 
 
-        Iterator begin() {
-          return std::begin(data_);
+        Table::iterator begin() {
+          return Table::iterator(Table::BaseIteratorPtr( new Iterator(std::begin(data_), std::end(data_))));
         }
 
-        Iterator end() {
-          return std::end(data_);
+        Table::iterator end() {
+          return Table::iterator(Table::BaseIteratorPtr( new Iterator(std::end(data_), std::end(data_))));
         }
 
         uint32_t size() const override {
-          return data_.size();
+          return data_.size() - free_positions_.size();
         }
 
         virtual void clear() override {
-          data_.clear();
+          free_positions_.clear();
+          for(uint32_t i = 0; i < data_.size();++i) {
+            free_positions_.push_back(i);
+          }
+          id_index_.clear();
         }
 
         private:
-        std::vector<Row>    data_;        // vector holding the table data
+        std::vector<Row>              data_;              // vector holding the table data
+        std::vector<uint32_t>         free_positions_;
+        std::map<uint32_t, uint32_t>  id_index_;
       };
   } /* data */ 
 } /* furious */ 

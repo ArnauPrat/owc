@@ -34,7 +34,7 @@ namespace furious
         public:
 
           StaticSystem(SystemId id) : System{id},
-            types_{typeid(Components).name()...}  {
+            types_{Components::name()...}  {
             }
 
           ////////////////////////////////////////////////////

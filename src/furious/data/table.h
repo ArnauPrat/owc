@@ -10,6 +10,7 @@
 #include <type_traits>
 #include <typeindex>
 #include <vector>
+#include <iterator>
 
 namespace furious
 {
@@ -72,15 +73,54 @@ namespace furious
 
     using TablePtr = std::shared_ptr<Table>;
 
+
+
     class Table {
+
+      public:
+        class BaseIterator;
+        using BaseIteratorPtr = std::shared_ptr<BaseIterator>;
+        class BaseIterator {
+          public:
+            virtual IRowPtr next() = 0;
+            virtual BaseIteratorPtr clone() const = 0;
+        };
+
+        class iterator : public std::iterator<std::input_iterator_tag, IRow> {
+          public:
+            explicit iterator(BaseIteratorPtr iter) : 
+              iter_(iter), current_(iter_->next()) {}
+
+            iterator(iterator& other) {
+              *this = other;
+            }
+
+            iterator(iterator&& other) {
+              *this = other;
+            }
+            
+            iterator& operator++() {current_ = iter_->next(); return *this;}
+            iterator  operator++(int) {iterator retval = *this; ++(*this); return retval;}
+            bool      operator==(iterator other) const {return current_ == other.current_;}
+            bool      operator!=(iterator other) const {return !(*this == other);}
+            pointer   operator*() const { return current_;  }
+            pointer   operator->() const { return current_; }
+
+            iterator& operator=(iterator& other) {
+              iter_ = other.iter_->clone();
+              current_ = other.current_;
+              return *this;
+            }
+
+          private:
+            std::shared_ptr<BaseIterator> iter_;
+            IRowPtr                       current_;
+        };
+
       public:
         Table(TableId id, const std::string& name) : id_(id), name_(name) {}
         virtual ~Table() {}
 
-        /**
-         * Gets the name of the table
-         */
-        virtual std::string table_name() { return name_; };
 
         /**
          * Gets the size of the table
@@ -88,21 +128,39 @@ namespace furious
         virtual uint32_t size() const = 0; 
 
         /**
-         * Gets a pointer to the ith element of the table
-         * */
-        virtual IRowPtr get_row(uint32_t index) = 0;
-
+         * Gets an iterator to the begin of the table
+         */
+        virtual iterator begin() = 0;
 
         /**
-         * Gets the id of the table
+         * Gets an iterator to the end of the table
          */
-        TableId id() { return id_; }
-
+        virtual iterator end() = 0;
 
         /**
          * Clear the table
          */
         virtual void clear() = 0;
+
+        /**
+         * Gets the row whose id is the given one
+         */
+        virtual IRowPtr get_row_by_id(uint32_t id) = 0;
+
+        /**
+         * Drops the row whose id is the given one
+         */
+        virtual void drop_row_by_id(uint32_t id) = 0;
+
+        /**
+         * Gets the name of the table
+         */
+        std::string table_name() { return name_; };
+
+        /**
+         * Gets the id of the table
+         */
+        TableId id() { return id_; }
 
       private:
         TableId id_;

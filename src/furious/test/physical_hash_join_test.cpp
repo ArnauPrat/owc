@@ -110,6 +110,9 @@ namespace furious
         field1_(field1),
         field2_(field2) 
       {}
+
+      static std::string name() { return "ComponentC"; }
+
     };
 
     struct ComponentD {
@@ -119,6 +122,9 @@ namespace furious
         field1_(field1),
         field2_(field2) 
       {}
+
+      static std::string name() { return "ComponentD"; }
+
     };
 
     TEST_F(PhysicalHashJoinTest, PhysicalHashJoinChain) {

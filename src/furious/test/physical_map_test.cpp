@@ -46,8 +46,8 @@ namespace furious
       physical_map->close();
 
       for(auto it = tableA_->begin(); it != tableA_->end(); ++it) {
-        ASSERT_EQ(it->get_data().field1_, 4);
-        ASSERT_EQ(it->get_data().field2_, 4.0);
+        ASSERT_EQ(static_cast<ComponentA*>(it->get_column(0))->field1_, 4);
+        ASSERT_EQ(static_cast<ComponentA*>(it->get_column(0))->field2_, 4.0);
       }
     }
     

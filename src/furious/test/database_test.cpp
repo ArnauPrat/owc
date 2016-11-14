@@ -13,6 +13,8 @@ namespace furious
         field1_(field1),
         field2_(field2)
       {}
+
+      static std::string name() { return "Component"; }
     };
 
    TEST(DatabaseTest, CreateAndDropTable) {
