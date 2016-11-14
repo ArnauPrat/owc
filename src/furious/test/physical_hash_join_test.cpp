@@ -115,6 +115,7 @@ namespace furious
 
     };
 
+
     struct ComponentD {
       uint32_t field1_;
       double_t field2_;
@@ -126,6 +127,16 @@ namespace furious
       static std::string name() { return "ComponentD"; }
 
     };
+
+    template<>
+      std::string type_name<ComponentC>() {
+        return "ComponentC";
+      }
+
+    template<>
+      std::string type_name<ComponentD>() {
+        return "ComponentD";
+      }
 
     TEST_F(PhysicalHashJoinTest, PhysicalHashJoinChain) {
 

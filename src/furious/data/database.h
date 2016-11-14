@@ -13,6 +13,7 @@
 #include <string>
 #include <typeinfo>
 #include <cassert>
+#include "reflection.h"
 
 namespace furious {
   namespace data {
@@ -44,11 +45,11 @@ namespace furious {
          */
         template <typename T>
           typename StaticTable<T>::Ptr create_table() {
-            assert(table_ids_.find(T::name()) == table_ids_.end());
-            if(table_ids_.find(T::name()) != table_ids_.end()) return nullptr;
+            assert(table_ids_.find(type_name<T>()) == table_ids_.end());
+            if(table_ids_.find(type_name<T>()) != table_ids_.end()) return nullptr;
             auto table = std::make_shared<StaticTable<T>>(next_id_, T::name());
             tables_.insert(TableMapPair(next_id_,table));
-            table_ids_.insert(TableIdMapPair(T::name(),next_id_));
+            table_ids_.insert(TableIdMapPair(type_name<T>(),next_id_));
             next_id_++;
             return table; 
           }
@@ -58,10 +59,10 @@ namespace furious {
          */
         template <typename T>
           void drop_table() {
-            assert(table_ids_.find(T::name()) != table_ids_.end());
+            assert(table_ids_.find(type_name<T>()) != table_ids_.end());
             TableId id = get_id<T>();
             tables_.erase(id);
-            table_ids_.erase(T::name());
+            table_ids_.erase(type_name<T>());
           }
 
         /**
@@ -79,9 +80,9 @@ namespace furious {
          */
         template <typename T>
         TableId get_id() {
-          assert(table_ids_.find(T::name()) != table_ids_.end());
-          if(table_ids_.find(T::name()) == table_ids_.end()) return INVALID_ID;
-          return table_ids_.find(T::name())->second; 
+          assert(table_ids_.find(type_name<T>()) != table_ids_.end());
+          if(table_ids_.find(type_name<T>()) == table_ids_.end()) return INVALID_ID;
+          return table_ids_.find(type_name<T>())->second; 
         }
 
         /**

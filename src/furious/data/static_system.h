@@ -7,6 +7,7 @@
 #include "table.h"
 #include <typeinfo>
 #include <vector>
+#include "reflection.h"
 
 namespace furious
 {
@@ -34,7 +35,7 @@ namespace furious
         public:
 
           StaticSystem(SystemId id) : System{id},
-            types_{Components::name()...}  {
+            types_{type_name<Components>()...}  {
             }
 
           ////////////////////////////////////////////////////

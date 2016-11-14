@@ -17,6 +17,11 @@ namespace furious
       static std::string name() { return "Component"; }
     };
 
+    template<>
+      std::string type_name<Component>() {
+        return "Component";
+      }
+
    TEST(DatabaseTest, CreateAndDropTable) {
      auto database = Database::get_instance();
      auto table = database->create_table<Component>();

@@ -21,6 +21,11 @@ namespace furious
       
     };
 
+    template<>
+      std::string type_name<ComponentC>() {
+        return "ComponenC";
+      }
+
     class ExecutionEngineTest : public DataTest {
     };
 
