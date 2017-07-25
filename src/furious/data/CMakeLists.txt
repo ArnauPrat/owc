@@ -2,6 +2,8 @@
 add_definitions(${FURIOUS_DEFAULT_DEFINES})
 include_directories(${FURIOUS_INCLUDE_DIR})
 
+#add_subdirectory(code_generator)
+
 add_library(data STATIC
   common.h
   database.h

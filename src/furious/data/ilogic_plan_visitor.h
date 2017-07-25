@@ -1,6 +1,5 @@
 
 
-
 #ifndef _FURIOUS_LOGIC_PLAN_VISITOR_H_
 #define _FURIOUS_LOGIC_PLAN_VISITOR_H_
 
