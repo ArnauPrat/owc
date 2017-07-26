@@ -1,8 +1,8 @@
 
 
-#include "physical_scan.h"
-#include "../database.h"
 #include <cassert>
+#include <data/database.h>
+#include <data/physical/physical_scan.h>
 #include <sstream>
 
 namespace furious

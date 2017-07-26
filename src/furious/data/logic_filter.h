@@ -7,39 +7,28 @@
 #include "logic_plan.h"
 #include <sstream>
 
-namespace  furious
-{
-  namespace data
-  {
+namespace  furious {
+namespace data {
 
-    struct LogicFilter : public LogicPlanNode {
+class LogicFilter : public LogicPlanNode {
 
-      LogicFilter(LogicPlanNodePtr table) : table_(table) {}
-      virtual ~LogicFilter() = default;
+public:
+  LogicFilter(LogicPlanNodePtr table);
+  virtual ~LogicFilter() = default;
 
-      ////////////////////////////////////////////////////
-      ////////////////////////////////////////////////////
-      ////////////////////////////////////////////////////
-      
-      virtual void accept( ILogicPlanVisitor& visitor ) { visitor.visit(*this); };
+  virtual void accept( LogicPlanVisitor& visitor );
 
-      virtual std::string str() const { 
-        std::stringstream ss;
-        ss << "LogicFilter()";
-        return ss.str();
-      };
+  virtual std::string str() const override;
 
-      virtual uint32_t num_children() const { return 1; };
+  virtual uint32_t num_children() const override;
 
-      virtual LogicPlanNodePtr child( uint32_t i ) const { 
-        assert(i == 0);
-        return table_;
-      };
+  virtual LogicPlanNodePtr child( uint32_t i ) const override; 
 
-      LogicPlanNodePtr table_;
-    };
-    
-  } /* data */ 
-  
+  const LogicPlanNodePtr p_table;
+
+};
+
+} /* data */ 
+
 } /*  furious */ 
 #endif

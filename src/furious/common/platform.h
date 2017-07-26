@@ -8,15 +8,15 @@
 
 namespace furious {
 
-    class Platform {
+class Platform {
 
-      Platform() = delete;
-      ~Platform() = delete;
+  Platform() = delete;
+  ~Platform() = delete;
 
-      public: 
-      /** Platform dependant values **/
+public: 
+  /** Platform dependant values **/
 
-    };
+};
 }
 
 #endif

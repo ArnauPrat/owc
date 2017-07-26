@@ -7,13 +7,19 @@ include_directories(${FURIOUS_INCLUDE_DIR})
 add_library(data STATIC
   common.h
   database.h
+  database.cpp
   execution_engine.cpp
   execution_engine.h
   logic_filter.h
+  logic_filter.cpp
   logic_join.h
+  logic_join.cpp
   logic_map.h
+  logic_map.cpp
   logic_plan.h
   logic_scan.h
+  logic_scan.cpp
+  logic_plan_visitor.h
   physical/physical_filter.cpp
   physical/physical_filter.h
   physical/physical_hash_join.cpp

@@ -89,21 +89,21 @@ namespace furious
       execution_engine->register_system<TestSystemABC>();
 
       LogicPlanPtr logic_plan = execution_engine->build_logic_plan(); 
-      LogicPlanNodePtr rootA = logic_plan->roots_[0];
+      LogicPlanNodePtr rootA = logic_plan->m_roots[0];
       ASSERT_STREQ(rootA->str().c_str(), "LogicMap(0)");
       LogicPlanNodePtr filterA = rootA->child(0);
       ASSERT_STREQ(filterA->str().c_str(), "LogicFilter()");
       LogicPlanNodePtr scanA = filterA->child(0);
       ASSERT_STREQ(scanA->str().c_str(), "LogicScan(0)");
 
-      LogicPlanNodePtr rootB = logic_plan->roots_[1];
+      LogicPlanNodePtr rootB = logic_plan->m_roots[1];
       ASSERT_STREQ(rootB->str().c_str(), "LogicMap(1)");
       LogicPlanNodePtr filterB = rootB->child(0);
       ASSERT_STREQ(filterB->str().c_str(), "LogicFilter()");
       LogicPlanNodePtr scanB = filterB->child(0);
       ASSERT_STREQ(scanB->str().c_str(), "LogicScan(1)");
 
-      LogicPlanNodePtr rootAB = logic_plan->roots_[2];
+      LogicPlanNodePtr rootAB = logic_plan->m_roots[2];
       ASSERT_STREQ(rootAB->str().c_str(), "LogicMap(2)");
       LogicPlanNodePtr joinAB = rootAB->child(0);
       ASSERT_STREQ(joinAB->str().c_str(), "LogicJoin()");
@@ -119,7 +119,7 @@ namespace furious
       ASSERT_STREQ(scanAB_right->str().c_str(), "LogicScan(1)");
 
 
-      LogicPlanNodePtr rootABC = logic_plan->roots_[3];
+      LogicPlanNodePtr rootABC = logic_plan->m_roots[3];
       ASSERT_STREQ(rootABC->str().c_str(), "LogicMap(3)");
       LogicPlanNodePtr joinAB_C = rootABC->child(0);
       ASSERT_STREQ(joinAB_C->str().c_str(), "LogicJoin()");

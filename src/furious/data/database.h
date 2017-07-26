@@ -3,127 +3,119 @@
 #ifndef _FURIOUS_DATABASE_H_
 #define _FURIOUS_DATABASE_H_
 
-#include "database.h"
-#include "table.h"
-#include "system.h"
-#include "static_table.h"
-#include "common.h"
+#include <data/table.h>
+#include <data/system.h>
+#include <data/static_table.h>
+#include <data/common.h>
+#include <data/reflection.h>
 #include <map>
 #include <memory>
 #include <string>
 #include <typeinfo>
 #include <cassert>
-#include "reflection.h"
 
 namespace furious {
-  namespace data {
+namespace data {
 
-    using TableMap = std::map<TableId, TablePtr>;
-    using TableMapPair = std::pair<TableId, TablePtr>;
-    using TableIdMap = std::map<std::string, TableId>;
-    using TableIdMapPair = std::pair<std::string, TableId>;
+using TableMap = std::map<TableId, TablePtr>;
+using TableMapPair = std::pair<TableId, TablePtr>;
+using TableIdMap = std::map<std::string, TableId>;
+using TableIdMapPair = std::pair<std::string, TableId>;
 
-    class Database;
-    using DatabasePtr = std::shared_ptr<Database>;
+class Database;
+using DatabasePtr = std::shared_ptr<Database>;
 
-    class Database {
-      public:
-        Database( const Database& ) = delete;
-        Database( Database&& ) = delete;
+class Database {
+public:
+  Database( const Database& ) = delete;
+  Database( Database&& ) = delete;
 
-        virtual ~Database() {} ;
+  virtual ~Database() {} ;
 
-        Database& operator=( const Database& ) = delete;
-        Database& operator=( Database&& ) = delete;
+  Database& operator=( const Database& ) = delete;
+  Database& operator=( Database&& ) = delete;
 
-        ////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////
+  /**
+   * Adds an existing table to the database
+   */
+  template <typename T>
+    typename StaticTable<T>::Ptr create_table();
 
-        /**
-         * Adds an existing table to the database
-         */
-        template <typename T>
-          typename StaticTable<T>::Ptr create_table() {
-            assert(table_ids_.find(type_name<T>()) == table_ids_.end());
-            if(table_ids_.find(type_name<T>()) != table_ids_.end()) return nullptr;
-            auto table = std::make_shared<StaticTable<T>>(next_id_, T::name());
-            tables_.insert(TableMapPair(next_id_,table));
-            table_ids_.insert(TableIdMapPair(type_name<T>(),next_id_));
-            next_id_++;
-            return table; 
-          }
+  /**
+   * Drops an existing table
+   */
+  template <typename T>
+    void drop_table();
 
-        /**
-         * Drops an existing table
-         */
-        template <typename T>
-          void drop_table() {
-            assert(table_ids_.find(type_name<T>()) != table_ids_.end());
-            TableId id = get_id<T>();
-            tables_.erase(id);
-            table_ids_.erase(type_name<T>());
-          }
+  /**
+   * Gets the table from name
+   * */
+  template <typename T>
+    typename StaticTable<T>::Ptr find_table();
+  /**
+   * Gets the internal id of a table
+   */
+  template <typename T>
+    TableId get_id();
 
-        /**
-         * Gets the table from name
-         * */
-        template <typename T>
-         typename StaticTable<T>::Ptr find_table() {
-          assert(tables_.find(get_id<T>()) != tables_.end());
-          if(tables_.find(get_id<T>()) == tables_.end()) return nullptr;
-          return std::dynamic_pointer_cast<StaticTable<T>>(tables_.find(get_id<T>())->second);
-        }
+  /**
+   * Gets the internal id of a table
+   */
+  TableId get_id(const std::string& name);
 
-        /**
-         * Gets the internal id of a table
-         */
-        template <typename T>
-        TableId get_id() {
-          assert(table_ids_.find(type_name<T>()) != table_ids_.end());
-          if(table_ids_.find(type_name<T>()) == table_ids_.end()) return INVALID_ID;
-          return table_ids_.find(type_name<T>())->second; 
-        }
+  /**
+   * Finds a table based on its id
+   */
+  TablePtr find_table(TableId id);
 
-        /**
-         * Gets the internal id of a table
-         */
-        TableId get_id(const std::string& name) {
-          assert(table_ids_.find(name) != table_ids_.end());
-          if(table_ids_.find(name) == table_ids_.end()) return INVALID_ID;
-          return table_ids_.find(name)->second; 
-        }
+  static DatabasePtr get_instance();
 
-        /**
-         * Finds a table based on its id
-         */
-        TablePtr find_table(TableId id) {
-          assert(tables_.find(id) != tables_.end());
-          if(tables_.find(id) == tables_.end()) return nullptr;
-          return tables_.find(id)->second;
-        }
+protected:
+  Database() = default;
 
+private:
 
-        ////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////
+  TableMap          m_tables;      /** Holds a map between component types and their tables **/
+  TableIdMap        m_table_ids;   /** Holds a map between table names and ids **/
+  TableId           m_next_id      = 0;
+};
 
-        static DatabasePtr get_instance() {
-          static DatabasePtr instance(new Database());
-          return instance;
-        }
-
-      protected:
-        Database() = default;
-
-      private:
-
-        TableMap          tables_;      /** Holds a map between component types and their tables **/
-        TableIdMap        table_ids_;   /** Holds a map between table names and ids **/
-        TableId           next_id_      = 0;
-        static Database*  instance_;
-    };
+template <typename T>
+typename StaticTable<T>::Ptr Database::create_table() {
+  assert(m_table_ids.find(type_name<T>()) == m_table_ids.end());
+  if(m_table_ids.find(type_name<T>()) != m_table_ids.end()) {
+    return nullptr;
   }
+  auto table = std::make_shared<StaticTable<T>>(m_next_id, type_name<T>());
+  m_tables.insert(TableMapPair(m_next_id,table));
+  m_table_ids.insert(TableIdMapPair(type_name<T>(),m_next_id));
+  m_next_id++;
+  return table; 
+}
+
+template <typename T>
+void Database::drop_table() {
+  assert(m_table_ids.find(type_name<T>()) != m_table_ids.end());
+  TableId id = get_id<T>();
+  m_tables.erase(id);
+  m_table_ids.erase(type_name<T>());
+}
+
+template <typename T>
+typename StaticTable<T>::Ptr Database::find_table() {
+  assert(m_tables.find(get_id<T>()) != m_tables.end());
+  if(m_tables.find(get_id<T>()) == m_tables.end()) return nullptr;
+  return std::dynamic_pointer_cast<StaticTable<T>>(m_tables.find(get_id<T>())->second);
+}
+
+template <typename T>
+TableId Database::get_id() {
+  assert(m_table_ids.find(type_name<T>()) != m_table_ids.end());
+  if(m_table_ids.find(type_name<T>()) == m_table_ids.end()) return INVALID_ID;
+  return m_table_ids.find(type_name<T>())->second; 
+}
+
+}
 }
 
 #endif

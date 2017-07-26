@@ -9,45 +9,28 @@
 #include <sstream>
 #include <cassert>
 
-namespace  furious
-{
-  namespace data
-  {
+namespace  furious {
+namespace data {
 
-    struct LogicJoin : public LogicPlanNode {
+class LogicJoin : public LogicPlanNode {
 
-      LogicJoin( LogicPlanNodePtr left, LogicPlanNodePtr right ) : 
-        left_(left),
-        right_(right)
-      {}
+public:
+  LogicJoin( LogicPlanNodePtr left, LogicPlanNodePtr right );
 
-      virtual ~LogicJoin() = default;
+  virtual ~LogicJoin() = default;
 
-      ////////////////////////////////////////////////////
-      ////////////////////////////////////////////////////
-      ////////////////////////////////////////////////////
+  virtual void accept( LogicPlanVisitor& visitor ) override;
 
-      virtual void accept( ILogicPlanVisitor& visitor ) { visitor.visit(*this); };
+  virtual std::string str() const override; 
 
-      virtual std::string str() const { 
-        std::stringstream ss;
-        ss << "LogicJoin()";
-        return ss.str();
-      };
+  virtual uint32_t num_children() const override; 
 
-      virtual uint32_t num_children() const { return 2; };
+  virtual LogicPlanNodePtr child( uint32_t i ) const override; 
 
-      virtual LogicPlanNodePtr child( uint32_t i ) const { 
-        assert( i < 2 );
-        if(i == 0) return left_;
-        return right_;
-      };
+  const LogicPlanNodePtr p_left;
+  const LogicPlanNodePtr p_right;
 
-      LogicPlanNodePtr left_;
-      LogicPlanNodePtr right_;
-
-
-    };
-  } /* data */ 
+};
+} /* data */ 
 } /*  furious */ 
 #endif

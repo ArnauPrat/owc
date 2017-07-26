@@ -9,42 +9,26 @@
 #include <sstream>
 #include <cassert>
 
-namespace furious
-{
+namespace furious {
+namespace data {
 
-  namespace data
-  {
+struct LogicMap : public LogicPlanNode {
 
-    struct LogicMap : public LogicPlanNode {
+  LogicMap( SystemId system, LogicPlanNodePtr table );
+  virtual ~LogicMap() = default;
 
-      LogicMap( SystemId system, LogicPlanNodePtr table ) : system_(system), table_(table) {}
-      virtual ~LogicMap() = default;
+  virtual void accept( LogicPlanVisitor& visitor ) override; 
 
-      ////////////////////////////////////////////////////
-      ////////////////////////////////////////////////////
-      ////////////////////////////////////////////////////
+  virtual std::string str() const override;
 
-      virtual void accept( ILogicPlanVisitor& visitor ) { visitor.visit(*this); };
+  virtual uint32_t num_children() const override;
 
-      virtual std::string str() const { 
-        std::stringstream ss;
-        ss << "LogicMap(" << system_ << ")";
-        return ss.str();
-      };
+  virtual LogicPlanNodePtr child( uint32_t i ) const override; 
 
-      virtual uint32_t num_children() const { return 1; };
+  SystemId  m_system;
+  LogicPlanNodePtr p_table;
 
-      virtual LogicPlanNodePtr child( uint32_t i ) const { 
-        assert(i == 0);
-        return table_;
-      };
-
-      SystemId  system_;
-      LogicPlanNodePtr table_;
-
-    };
-    
-  } /* data */ 
-  
+};
+} /* data */ 
 } /* furious */ 
 #endif
