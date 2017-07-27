@@ -38,7 +38,7 @@ namespace furious
       auto physical_filter = physical_root->child(0);
       ASSERT_STREQ(physical_filter->str().c_str(),"PhysicalFilter()");
       auto physical_scan = physical_filter->child(0);
-      ASSERT_STREQ(physical_scan->str().c_str(),"PhysicalScan(0)");
+      ASSERT_STREQ(physical_scan->str().c_str(),"PhysicalScan(ComponentA)");
 
     }
     

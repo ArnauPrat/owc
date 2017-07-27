@@ -6,7 +6,7 @@
 
 #include <memory>
 #include <vector>
-#include <data/logic_plan_visitor.h>
+#include <data/logic/logic_plan_visitor.h>
 #include <cassert>
 
 namespace furious {
@@ -31,6 +31,10 @@ class LogicPlanNode {
 public:
   LogicPlanNode() = default;
   virtual ~LogicPlanNode(){}
+
+  //////////////////////////////////////////////
+  //////////////////////////////////////////////
+  //////////////////////////////////////////////
 
   virtual void accept( LogicPlanVisitor& visitor ) = 0;
 

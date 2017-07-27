@@ -10,16 +10,16 @@ add_library(data STATIC
   database.cpp
   execution_engine.cpp
   execution_engine.h
-  logic_filter.h
-  logic_filter.cpp
-  logic_join.h
-  logic_join.cpp
-  logic_map.h
-  logic_map.cpp
-  logic_plan.h
-  logic_scan.h
-  logic_scan.cpp
-  logic_plan_visitor.h
+  logic/logic_filter.h
+  logic/logic_filter.cpp
+  logic/logic_join.h
+  logic/logic_join.cpp
+  logic/logic_map.h
+  logic/logic_map.cpp
+  logic/logic_plan.h
+  logic/logic_scan.h
+  logic/logic_scan.cpp
+  logic/logic_plan_visitor.h
   physical/physical_filter.cpp
   physical/physical_filter.h
   physical/physical_hash_join.cpp

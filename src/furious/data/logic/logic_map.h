@@ -3,19 +3,24 @@
 #ifndef _FURIOUS_LOGIC_MAP_H
 #define _FURIOUS_LOGIC_MAP_H
 
-#include "common.h"
-#include "logic_plan.h"
-#include "system.h"
+#include <data/common.h>
+#include <data/logic/logic_plan.h>
+#include <data/system.h>
 #include <sstream>
 #include <cassert>
 
 namespace furious {
 namespace data {
 
-struct LogicMap : public LogicPlanNode {
+class LogicMap : public LogicPlanNode {
 
+public:
   LogicMap( SystemId system, LogicPlanNodePtr table );
   virtual ~LogicMap() = default;
+
+  //////////////////////////////////////////////
+  //////////////////////////////////////////////
+  //////////////////////////////////////////////
 
   virtual void accept( LogicPlanVisitor& visitor ) override; 
 
@@ -25,8 +30,8 @@ struct LogicMap : public LogicPlanNode {
 
   virtual LogicPlanNodePtr child( uint32_t i ) const override; 
 
-  SystemId  m_system;
-  LogicPlanNodePtr p_table;
+  const SystemId  m_system;
+  const LogicPlanNodePtr p_table;
 
 };
 } /* data */ 

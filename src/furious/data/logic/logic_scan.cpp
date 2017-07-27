@@ -1,10 +1,10 @@
 
-#include <data/logic_scan.h>
+#include <data/logic/logic_scan.h>
 
 namespace furious {
 namespace data {
 
-LogicScan::LogicScan(TableId table) : 
+LogicScan::LogicScan(const std::string& table) : 
   m_table(table) {
   }
 

@@ -3,8 +3,8 @@
 #ifndef _FURIOUS_LOGIC_JOIN_H_
 #define _FURIOUS_LOGIC_JOIN_H_
 
-#include "common.h"
-#include "logic_plan.h"
+#include <data/common.h>
+#include <data/logic/logic_plan.h>
 #include <memory>
 #include <sstream>
 #include <cassert>
@@ -18,6 +18,10 @@ public:
   LogicJoin( LogicPlanNodePtr left, LogicPlanNodePtr right );
 
   virtual ~LogicJoin() = default;
+
+  //////////////////////////////////////////////
+  //////////////////////////////////////////////
+  //////////////////////////////////////////////
 
   virtual void accept( LogicPlanVisitor& visitor ) override;
 

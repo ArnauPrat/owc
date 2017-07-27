@@ -6,10 +6,10 @@
 #include <data/physical/physical_filter.h>
 #include <data/physical/physical_map.h>
 #include <data/database.h>
-#include <data/logic_join.h>
-#include <data/logic_map.h>
-#include <data/logic_scan.h>
-#include <data/logic_filter.h>
+#include <data/logic/logic_join.h>
+#include <data/logic/logic_map.h>
+#include <data/logic/logic_scan.h>
+#include <data/logic/logic_filter.h>
 #include <data/execution_engine.h>
 
 namespace furious {
@@ -21,31 +21,31 @@ void PhysicalPlanGenerator::visit(LogicJoin& logic_join) {
   IPhysicalOperatorPtr left = gen.get_result();
   logic_join.p_right->accept(gen);
   IPhysicalOperatorPtr right = gen.get_result();
-  result_ = IPhysicalOperatorPtr(new PhysicalHashJoin(left,right));
+  p_result = IPhysicalOperatorPtr(new PhysicalHashJoin(left,right));
 }
 
 void PhysicalPlanGenerator::visit(LogicMap& logic_map) {
   PhysicalPlanGenerator gen;
   ExecutionEnginePtr execution_engine = ExecutionEngine::get_instance();
   logic_map.p_table->accept(gen);
-  result_ = IPhysicalOperatorPtr(new PhysicalMap(gen.get_result(), execution_engine->get_system(logic_map.m_system)));
+  p_result = IPhysicalOperatorPtr(new PhysicalMap(gen.get_result(), execution_engine->get_system(logic_map.m_system)));
 }
 
 void PhysicalPlanGenerator::visit(LogicScan& logic_scan) {
   PhysicalPlanGenerator gen;
   DatabasePtr database = Database::get_instance();
   TablePtr table = database->find_table(logic_scan.m_table);
-  result_ = IPhysicalOperatorPtr( new PhysicalScan(table) );
+  p_result = IPhysicalOperatorPtr( new PhysicalScan(table) );
 }
 
 void PhysicalPlanGenerator::visit(LogicFilter& logic_filter) {
   PhysicalPlanGenerator gen;
   logic_filter.p_table->accept(gen);
-  result_ = IPhysicalOperatorPtr( new PhysicalFilter(gen.get_result()));
+  p_result = IPhysicalOperatorPtr( new PhysicalFilter(gen.get_result()));
 }
 
 IPhysicalOperatorPtr PhysicalPlanGenerator::get_result() {
-  return result_;
+  return p_result;
 }
 } /* data */ 
 } /* furious */ 

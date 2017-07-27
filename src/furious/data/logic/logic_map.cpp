@@ -1,7 +1,7 @@
 
 
 
-#include <data/logic_map.h>
+#include <data/logic/logic_map.h>
 
 namespace furious {
 namespace data {

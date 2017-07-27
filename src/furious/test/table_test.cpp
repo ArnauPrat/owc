@@ -12,17 +12,15 @@ namespace furious {
 
       Component(uint32_t field1, double_t field2) : field1_(field1), field2_(field2) {}
 
-      /*Component& operator=(Component& other) {
-        field1_ = other.field1_;
-        field2_ = other.field2_;
-        return *this;
-      }*/
+      static std::string name() {
+        return "Component";
+      }
 
     };
 
     TEST(TableTest,TableWorks) {
 
-      StaticTable<Component> table(0,"Table");
+      StaticTable<Component> table;
       for(uint32_t i = 0; i < 10000; ++i) {
         table.insert(i,i,i);
       }

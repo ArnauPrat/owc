@@ -1,6 +1,6 @@
 
 
-#include <data/logic_join.h>
+#include <data/logic/logic_join.h>
 
 namespace furious {
 namespace data {

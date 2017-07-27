@@ -118,9 +118,8 @@ namespace furious
         };
 
       public:
-        Table(TableId id, const std::string& name) : id_(id), name_(name) {}
+        Table(const std::string& name) : m_name(name) {}
         virtual ~Table() {}
-
 
         /**
          * Gets the size of the table
@@ -155,16 +154,10 @@ namespace furious
         /**
          * Gets the name of the table
          */
-        std::string table_name() { return name_; };
-
-        /**
-         * Gets the id of the table
-         */
-        TableId id() { return id_; }
+        std::string table_name() { return m_name; };
 
       private:
-        TableId id_;
-        std::string name_;
+        std::string m_name;
 
     };
   } /* data */ 

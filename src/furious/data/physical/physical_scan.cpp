@@ -42,7 +42,7 @@ namespace furious
 
     std::string PhysicalScan::str() const  {
       std::stringstream ss;
-      ss << "PhysicalScan(" << Database::get_instance()->get_id(table_ptr_->table_name()) << ")";
+      ss << "PhysicalScan(" << table_ptr_->table_name() << ")";
       return ss.str();
     }
 

@@ -3,8 +3,8 @@
 #ifndef _FURIOUS_LOGIC_FILTER_H
 #define _FURIOUS_LOGIC_FILTER_H 
 
-#include "common.h"
-#include "logic_plan.h"
+#include <data/common.h>
+#include <data/logic/logic_plan.h>
 #include <sstream>
 
 namespace  furious {
@@ -16,7 +16,11 @@ public:
   LogicFilter(LogicPlanNodePtr table);
   virtual ~LogicFilter() = default;
 
-  virtual void accept( LogicPlanVisitor& visitor );
+  //////////////////////////////////////////////
+  //////////////////////////////////////////////
+  //////////////////////////////////////////////
+
+  virtual void accept( LogicPlanVisitor& visitor ) override;
 
   virtual std::string str() const override;
 

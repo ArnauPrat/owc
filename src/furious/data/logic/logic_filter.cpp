@@ -1,6 +1,6 @@
 
 
-#include <data/logic_filter.h>
+#include <data/logic/logic_filter.h>
 
 namespace furious {
 namespace data {

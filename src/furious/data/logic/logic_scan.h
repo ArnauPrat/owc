@@ -4,7 +4,7 @@
 #define _FURIOUS_LOGIC_SCAN_H value
 
 #include <data/common.h>
-#include <data/logic_plan.h>
+#include <data/logic/logic_plan.h>
 #include <sstream>
 #include <cassert>
 
@@ -13,8 +13,12 @@ namespace data {
 class LogicScan : public LogicPlanNode {
 
 public:
-  LogicScan(TableId table);
+  LogicScan(const std::string& table);
   ~LogicScan() = default;
+
+  //////////////////////////////////////////////
+  //////////////////////////////////////////////
+  //////////////////////////////////////////////
 
   virtual void accept( LogicPlanVisitor& visitor ) override;
 
@@ -24,7 +28,7 @@ public:
 
   virtual LogicPlanNodePtr child( uint32_t i ) const override;
 
-  TableId m_table;
+  const std::string m_table;
 };
 
 } /* data */ 

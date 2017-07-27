@@ -3,8 +3,8 @@
 #ifndef _FURIOUS_EXECUTION_ENGINE_H_
 #define _FURIOUS_EXECUTION_ENGINE_H_
 
-#include <data/logic_join.h>
-#include <data/logic_plan.h>
+#include <data/logic/logic_join.h>
+#include <data/logic/logic_plan.h>
 #include <data/common.h>
 #include <data/system.h>
 #include <data/database.h>
@@ -29,6 +29,10 @@ public:
 
   ExecutionEngine& operator=( const ExecutionEngine& ) = delete;
   ExecutionEngine& operator=( ExecutionEngine&& ) = delete;
+
+  //////////////////////////////////////////////
+  //////////////////////////////////////////////
+  //////////////////////////////////////////////
 
   /**
    * Adds a system into the the execution engine
