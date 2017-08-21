@@ -19,7 +19,7 @@ namespace furious
 
       for(auto it = tableA_->begin(); it !=  tableA_->end(); ++it) {
         IRowPtr row = *it;
-        row->disable();
+        row->m_enabled = false;
         ++it;
       }
 
@@ -31,7 +31,7 @@ namespace furious
       ASSERT_NE(row, nullptr);
       uint32_t row_index = 1;
       while(row != nullptr) {
-        ComponentA* componentA = static_cast<ComponentA*>(row->get_column(0));
+        ComponentA* componentA = static_cast<ComponentA*>(row->column(0));
         ASSERT_EQ(componentA->field1_, row_index*2);
         ASSERT_EQ(componentA->field2_, row_index*1.0);
         row = physical_filter->next();

@@ -11,8 +11,6 @@ find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})
 include_directories(${FURIOUS_INCLUDE_DIR})
 
-set( FURIOUS_TEST_OUTPUT_DIR "${CMAKE_BINARY_DIR}/bin/furious/test")
-
 macro(create_test NAME )
   add_executable(${NAME}
     ${NAME}.cpp
@@ -20,12 +18,12 @@ macro(create_test NAME )
    )
 
   target_link_libraries(${NAME} ${GTEST_LIBRARIES} furious)
-  add_test(${NAME} ${FURIOUS_TEST_OUTPUT_DIR}/${NAME})
+  add_test(${NAME} ${FURIOUS_OUTPUT_DIR}/test/${NAME})
 
-  set_target_properties( ${NAME} 
-    PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${FURIOUS_TEST_OUTPUT_DIR}
-    )
+    set_target_properties( ${NAME} 
+      PROPERTIES
+      RUNTIME_OUTPUT_DIRECTORY ${FURIOUS_OUTPUT_DIR}/test
+      )
 endmacro(create_test)
 
 create_test ("database_test")

@@ -6,4 +6,8 @@ add_library(common STATIC
   platform.cpp
 )
 
-target_link_libraries(common)
+set_target_properties( common 
+  PROPERTIES
+  LIBRARY_OUTPUT_DIRECTORY ${FURIOUS_OUTPUT_DIR}
+  ARCHIVE_OUTPUT_DIRECTORY ${FURIOUS_OUTPUT_DIR}
+  )

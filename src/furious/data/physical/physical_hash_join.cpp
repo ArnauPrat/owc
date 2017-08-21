@@ -28,8 +28,8 @@ namespace furious
         uint32_t position = get_hash_position(next);
         auto candidates = hash_table_[position];
         for(auto it = candidates.begin(); it != candidates.end(); ++it ) {
-          if((*it)->get_id() == next->get_id()) {
-            auto joined_row = std::make_shared<Row>(next->get_id(), (*it), next);
+          if((*it)->m_id == next->m_id) {
+            auto joined_row = std::make_shared<Row>(next->m_id, (*it), next);
             joined_rows_.push_back(joined_row);
             return joined_row.get();
           }
@@ -55,7 +55,7 @@ namespace furious
     }
 
     uint32_t PhysicalHashJoin::get_hash_position(IRowPtr row) {
-      uint32_t position = std::hash<uint32_t>{}(row->get_id()) % size;
+      uint32_t position = std::hash<uint32_t>{}(row->m_id) % size;
       return position;
     }
 

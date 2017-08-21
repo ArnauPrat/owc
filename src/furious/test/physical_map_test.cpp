@@ -8,51 +8,50 @@
 #include <data/physical/physical_scan.h>
 #include <data/static_system.h>
 
-namespace furious
-{
-  namespace data
-  {
-    class PhysicalMapTest : public DataTest {
-    };
+namespace furious {
+namespace data {
 
-    class TestSystem : public StaticSystem<ComponentA> {
-      public:
+class PhysicalMapTest : public DataTest {
+};
 
-        TestSystem(SystemId id ) : StaticSystem(id) {}
-        virtual ~TestSystem() = default; 
+class TestSystem : public StaticSystem<ComponentA> {
+public:
 
-        void run(ComponentA& component) const override {
-          component.field1_ = 4;
-          component.field2_ = 4.0;
-        }
-    };
+  TestSystem(SystemId id ) : StaticSystem(id) {}
+  virtual ~TestSystem() = default; 
 
-    TEST_F(PhysicalMapTest, PhysicalMapWorks) {
+  void run(ComponentA& component) override {
+    component.field1_ = 4;
+    component.field2_ = 4.0;
+  }
+};
 
-      for(uint32_t i = 0; i < 10000; ++i) {
-        tableA_->insert(i,i*2,i*1.0);
-      }
+TEST_F(PhysicalMapTest, PhysicalMapWorks) {
 
-      ExecutionEnginePtr engine = ExecutionEngine::get_instance(); 
-      SystemPtr system = SystemPtr(new TestSystem(0));
+  for(uint32_t i = 0; i < 10000; ++i) {
+    tableA_->insert(i,i*2,i*1.0);
+  }
 
-      IPhysicalOperatorPtr physical_scanA( new PhysicalScan(tableA_));
-      IPhysicalOperatorPtr physical_map( new PhysicalMap(physical_scanA, system) );
-      physical_map->open();
-      IRowPtr row = physical_map->next();
-      while(row != nullptr) {
-        row = physical_map->next();
-      }
-      physical_map->close();
+  ExecutionEnginePtr engine = ExecutionEngine::get_instance(); 
+  SystemPtr system = SystemPtr(new TestSystem(0));
 
-      for(auto it = tableA_->begin(); it != tableA_->end(); ++it) {
-        ASSERT_EQ(static_cast<ComponentA*>(it->get_column(0))->field1_, 4);
-        ASSERT_EQ(static_cast<ComponentA*>(it->get_column(0))->field2_, 4.0);
-      }
-    }
-    
-  } /* data */ 
-  
+  IPhysicalOperatorPtr physical_scanA( new PhysicalScan(tableA_));
+  IPhysicalOperatorPtr physical_map( new PhysicalMap(physical_scanA, system) );
+  physical_map->open();
+  IRowPtr row = physical_map->next();
+  while(row != nullptr) {
+    row = physical_map->next();
+  }
+  physical_map->close();
+
+  for(auto it = tableA_->begin(); it != tableA_->end(); ++it) {
+    ASSERT_EQ(static_cast<ComponentA*>(it->column(0))->field1_, 4);
+    ASSERT_EQ(static_cast<ComponentA*>(it->column(0))->field2_, 4.0);
+  }
+}
+
+} /* data */ 
+
 } /* furious */ 
 
 int main(int argc, char *argv[])

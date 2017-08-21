@@ -13,16 +13,22 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}  -O0 -g -pg ")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2 -DNDEBUG ")
 
 set(TNASDK_DEFAULT_DEFINES " ")
-set(TNASDK_INCLUDE_DIR ${CMAKE_SOURCE_DIR})
+set(TNASDK_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(TNASDK_OUTPUT_DIR "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/tnasdk")
+
+MESSAGE(STATUS "TNASDK INCLUDE DIR: ${TNASDK_INCLUDE_DIR}")
+
+add_subdirectory(./bullet)
 
 include_directories(./)
 
 add_library(tnasdk STATIC
   common.h
-  physical_factory.h
-  physical_unit.cpp
-  physical_unit.h
+  movement.h
+  collision_engine.h
+  bbox.h
+  terrain.h
+  terrain.cpp
   tnasdk.cpp
   tnasdk.h
   troop_type.cpp
@@ -30,10 +36,31 @@ add_library(tnasdk STATIC
   types.h
   unit.cpp
   unit.h
-  )  
+  vector.h
+)  
 
-set_target_properties(furious 
+target_link_libraries(tnasdk tnabullet ${TNABULLET_LIBRARIES})
+
+set_target_properties(tnasdk
   PROPERTIES
   LIBRARY_OUTPUT_DIRECTORY ${TNASDK_OUTPUT_DIR}
   ARCHIVE_OUTPUT_DIRECTORY ${TNASDK_OUTPUT_DIR}
 )
+
+SET(TNASDK_LIBRARIES 
+  tnasdk 
+  ${TNABULLET_LIBRARIES})
+
+SET(TNASDK_LIBRARIES 
+  tnasdk 
+  ${TNABULLET_LIBRARIES}
+  PARENT_SCOPE)
+
+SET(TNASDK_LIBRARY_DIR 
+  ${TNABULLET_LIBRARY_DIR})
+
+SET(TNASDK_LIBRARY_DIR 
+  ${TNABULLET_LIBRARY_DIR}
+  PARENT_SCOPE)
+
+add_subdirectory(./test)

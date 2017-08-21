@@ -30,7 +30,7 @@ public:
   TestSystemA(SystemId id) : StaticSystem(id) {}
   virtual ~TestSystemA() = default;
 
-  void run(ComponentA& component) const override {
+  void run(ComponentA& component) override {
     component.field1_ *= 2;
     component.field2_ *= 2.0;
   }
@@ -42,7 +42,7 @@ public:
   TestSystemB(SystemId id) : StaticSystem(id) {}
   virtual ~TestSystemB() = default;
 
-  void run(ComponentB& component) const override {
+  void run(ComponentB& component) override {
     component.field1_ *= 2;
     component.field2_ *= 2.0;
   }
@@ -54,7 +54,7 @@ public:
   TestSystemAB(SystemId id) : StaticSystem(id) {}
   virtual ~TestSystemAB() = default;
 
-  void run(ComponentA& componentA, ComponentB& componentB) const override {
+  void run(ComponentA& componentA, ComponentB& componentB) override {
   }
 };
 
@@ -64,7 +64,7 @@ public:
   TestSystemABC(SystemId id) : StaticSystem(id) {}
   virtual ~TestSystemABC() = default;
 
-  void run(ComponentA& componentA, ComponentB& componentB, ComponentC& componentC) const override {
+  void run(ComponentA& componentA, ComponentB& componentB, ComponentC& componentC) override {
   }
 };
 
@@ -81,6 +81,7 @@ TEST_F(SystemTest, LogicPlan) {
   execution_engine->register_system<TestSystemAB>();
   execution_engine->register_system<TestSystemABC>();
 
+  
   LogicPlanPtr logic_plan = execution_engine->build_logic_plan(); 
   LogicPlanNodePtr rootA = logic_plan->m_roots[0];
   ASSERT_STREQ(rootA->str().c_str(), "LogicMap(0)");
@@ -111,7 +112,6 @@ TEST_F(SystemTest, LogicPlan) {
   LogicPlanNodePtr scanAB_right = filterAB_right->child(0);
   ASSERT_STREQ(scanAB_right->str().c_str(), "LogicScan(ComponentB)");
 
-
   LogicPlanNodePtr rootABC = logic_plan->m_roots[3];
   ASSERT_STREQ(rootABC->str().c_str(), "LogicMap(3)");
   LogicPlanNodePtr joinAB_C = rootABC->child(0);
@@ -136,7 +136,6 @@ TEST_F(SystemTest, LogicPlan) {
 
 TEST_F(ExecutionEngineTest, ExecutionEngineWorks) {
 
-
   for(uint32_t i = 0; i < 1; ++i) {
     tableA_->insert(i,4,4.0);
   }
@@ -156,7 +155,7 @@ TEST_F(ExecutionEngineTest, ExecutionEngineWorks) {
   for(auto iter_tableA = tableA_->begin();
       iter_tableA != tableA_->end();
       ++iter_tableA) {
-    ComponentA* component = static_cast<ComponentA*>(iter_tableA->get_column(0));
+    ComponentA* component = static_cast<ComponentA*>(iter_tableA->column(0));
     ASSERT_EQ(component->field1_,8);
     ASSERT_EQ(component->field2_,8.0);
   }
@@ -164,7 +163,7 @@ TEST_F(ExecutionEngineTest, ExecutionEngineWorks) {
   for(auto iter_tableB = tableB_->begin();
       iter_tableB != tableB_->end();
       ++iter_tableB) {
-    ComponentB* component = static_cast<ComponentB*>(iter_tableB->get_column(0));
+    ComponentB* component = static_cast<ComponentB*>(iter_tableB->column(0));
     ASSERT_EQ(component->field1_,32);
     ASSERT_EQ(component->field2_,32.0);
   }

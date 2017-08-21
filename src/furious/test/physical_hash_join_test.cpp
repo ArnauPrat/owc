@@ -31,9 +31,9 @@ namespace furious
       EntityId entity_id = 0;
       ASSERT_NE(joined_row, nullptr);
       while(joined_row != nullptr) {
-        ASSERT_TRUE(joined_row->get_id() == entity_id);
-        ComponentA* componentA = reinterpret_cast<ComponentA*>(joined_row->get_column(0));
-        ComponentB* componentB = reinterpret_cast<ComponentB*>(joined_row->get_column(1));
+        ASSERT_TRUE(joined_row->m_id == entity_id);
+        ComponentA* componentA = reinterpret_cast<ComponentA*>(joined_row->column(0));
+        ComponentB* componentB = reinterpret_cast<ComponentB*>(joined_row->column(1));
         ASSERT_EQ(componentA->field1_, entity_id*2);
         ASSERT_EQ(componentA->field2_, entity_id*1.0);
         ASSERT_EQ(componentB->field1_, entity_id*4);
@@ -65,9 +65,9 @@ namespace furious
       EntityId entity_id = 2500; 
       ASSERT_NE(joined_row, nullptr);
       while(joined_row != nullptr) {
-        ASSERT_TRUE(joined_row->get_id() == entity_id);
-        ComponentA* componentA = reinterpret_cast<ComponentA*>(joined_row->get_column(0));
-        ComponentB* componentB = reinterpret_cast<ComponentB*>(joined_row->get_column(1));
+        ASSERT_TRUE(joined_row->m_id == entity_id);
+        ComponentA* componentA = reinterpret_cast<ComponentA*>(joined_row->column(0));
+        ComponentB* componentB = reinterpret_cast<ComponentB*>(joined_row->column(1));
         ASSERT_EQ(componentA->field1_, entity_id*2);
         ASSERT_EQ(componentA->field2_, entity_id*1.0);
         ASSERT_EQ(componentB->field1_, entity_id*4);
@@ -173,23 +173,23 @@ namespace furious
       EntityId entity_id = 0; 
       ASSERT_NE(joined_row, nullptr);
       while(joined_row != nullptr) {
-        ASSERT_EQ(joined_row->get_id(), entity_id);
+        ASSERT_EQ(joined_row->m_id, entity_id);
         ASSERT_EQ(joined_row->num_columns(), 4);
-        ASSERT_EQ(sizeof(ComponentA),joined_row->size_of_column(0));
-        ASSERT_EQ(sizeof(ComponentB),joined_row->size_of_column(1));
-        ASSERT_EQ(sizeof(ComponentC),joined_row->size_of_column(2));
-        ASSERT_EQ(sizeof(ComponentD),joined_row->size_of_column(3));
+        ASSERT_EQ(sizeof(ComponentA),joined_row->column_size(0));
+        ASSERT_EQ(sizeof(ComponentB),joined_row->column_size(1));
+        ASSERT_EQ(sizeof(ComponentC),joined_row->column_size(2));
+        ASSERT_EQ(sizeof(ComponentD),joined_row->column_size(3));
 
-        ComponentA* componentA = reinterpret_cast<ComponentA*>(joined_row->get_column(0));
+        ComponentA* componentA = reinterpret_cast<ComponentA*>(joined_row->column(0));
         ASSERT_EQ(componentA->field1_, entity_id*2);
         ASSERT_EQ(componentA->field2_, entity_id*1.0);
-        ComponentB* componentB = reinterpret_cast<ComponentB*>(joined_row->get_column(1));
+        ComponentB* componentB = reinterpret_cast<ComponentB*>(joined_row->column(1));
         ASSERT_EQ(componentB->field1_, entity_id*4);
         ASSERT_EQ(componentB->field2_, entity_id*3.0);
-        ComponentC* componentC = reinterpret_cast<ComponentC*>(joined_row->get_column(2));
+        ComponentC* componentC = reinterpret_cast<ComponentC*>(joined_row->column(2));
         ASSERT_EQ(componentC->field1_, entity_id*8);
         ASSERT_EQ(componentC->field2_, entity_id*6.0);
-        ComponentD* componentD = reinterpret_cast<ComponentD*>(joined_row->get_column(3));
+        ComponentD* componentD = reinterpret_cast<ComponentD*>(joined_row->column(3));
         ASSERT_EQ(componentD->field1_, entity_id*16);
         ASSERT_EQ(componentD->field2_, entity_id*9.0);
         joined_row = physical_hash_join3->next();

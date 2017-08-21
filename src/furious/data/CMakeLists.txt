@@ -2,8 +2,6 @@
 add_definitions(${FURIOUS_DEFAULT_DEFINES})
 include_directories(${FURIOUS_INCLUDE_DIR})
 
-#add_subdirectory(code_generator)
-
 add_library(data STATIC
   common.h
   database.h
@@ -36,4 +34,8 @@ add_library(data STATIC
   table.h
 )
 
-target_link_libraries(data)
+set_target_properties( data 
+ PROPERTIES
+ LIBRARY_OUTPUT_DIRECTORY ${FURIOUS_OUTPUT_DIR}
+ ARCHIVE_OUTPUT_DIRECTORY ${FURIOUS_OUTPUT_DIR}
+)

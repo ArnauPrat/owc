@@ -12,7 +12,6 @@
 #include <data/physical/physical_scan.h>
 #include <data/physical_plan_generator.h>
 #include <cstddef>
-#include <iostream>
 
 namespace furious {
 namespace data {
@@ -49,17 +48,17 @@ LogicPlanPtr ExecutionEngine::build_logic_plan() const {
       auto logic_filter = MakeLogicPlanNodePtr<LogicFilter>(logic_scan);
       auto logic_map = MakeLogicPlanNodePtr<LogicMap>(system.first,logic_filter);
       logic_plan->m_roots.push_back(logic_map);
-    } else { // Case when we have at least one join
-      auto component_iterator = system.second->components().begin();
-      auto first_component = *component_iterator++;
-      auto second_component = *component_iterator++;
+    } else { // Case when we have at least one join (2-component case)
+      std::vector<std::string> components = system.second->components();
+      std::string first_component = components[0];
+      std::string second_component = components[1];
       auto logic_scan_first = MakeLogicPlanNodePtr<LogicScan>(first_component);
       auto logic_filter_first = MakeLogicPlanNodePtr<LogicFilter>(logic_scan_first);
       auto logic_scan_second = MakeLogicPlanNodePtr<LogicScan>(second_component);
       auto logic_filter_second = MakeLogicPlanNodePtr<LogicFilter>(logic_scan_second);
       auto previous_join = MakeLogicPlanNodePtr<LogicJoin>(logic_filter_first, logic_filter_second);
-      for(;component_iterator != system.second->components().end(); ++component_iterator ) {
-        auto next_component = *component_iterator;
+      for (size_t i = 2; i < components.size(); ++i ) {
+        std::string next_component = components[i];
         auto logic_scan_next = MakeLogicPlanNodePtr<LogicScan>(next_component);
         auto logic_filter_next = MakeLogicPlanNodePtr<LogicFilter>(logic_scan_next);
         auto next_join = MakeLogicPlanNodePtr<LogicJoin>(previous_join,logic_filter_next);

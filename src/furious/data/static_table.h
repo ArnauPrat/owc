@@ -20,21 +20,23 @@ template<typename T>
     public:
 
       template<typename...Fields>
-        Row ( EntityId id, Fields&&...x) : IRow(id), data_(std::forward<Fields>(x)...), valid_(true) {}
+        Row ( EntityId id, Fields&&...x) : IRow(id), 
+                                           data_(std::forward<Fields>(x)...), 
+                                           valid_(true) {}
 
       virtual ~Row() = default;
 
-      virtual void* get_column(uint32_t column) override {
+      virtual void* column(uint32_t column) override {
         assert(column == 0);
         return &data_;
       }
 
-      virtual uint32_t size_of_column( uint32_t column)  override {
+      virtual uint32_t column_size( uint32_t column) const override {
         assert(column == 0);
         return sizeof(T);
       }
 
-      virtual uint32_t num_columns() override {
+      virtual uint32_t num_columns() const override {
         return 1;
       }
 

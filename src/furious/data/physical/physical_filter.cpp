@@ -16,7 +16,7 @@ namespace furious
 
     IRowPtr PhysicalFilter::next() {
       IRowPtr next_row = input_->next();
-      while(next_row != nullptr && !next_row->is_enabled()) {
+      while(next_row != nullptr && !next_row->m_enabled) {
         next_row = input_->next();
       }
       return next_row;

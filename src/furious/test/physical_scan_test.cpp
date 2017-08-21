@@ -26,7 +26,7 @@ namespace furious
       IRowPtr row = physical_scan.next();
       ASSERT_TRUE(row != nullptr);
       while(row != nullptr) {
-        ComponentA* component = reinterpret_cast<ComponentA*>(row->get_column(0));
+        ComponentA* component = reinterpret_cast<ComponentA*>(row->column(0));
         ASSERT_EQ(component->field1_,(current_id*2)); 
         ASSERT_EQ(component->field2_,(current_id*1.0));
         row = physical_scan.next();

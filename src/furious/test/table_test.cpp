@@ -27,8 +27,8 @@ namespace furious {
 
       uint32_t i = 0;
       for(auto iter = table.begin(); iter != table.end(); ++iter) {
-        ASSERT_EQ(static_cast<Component*>(iter->get_column(0))->field1_,i);
-        ASSERT_EQ(static_cast<Component*>(iter->get_column(0))->field2_,i);
+        ASSERT_EQ(static_cast<Component*>(iter->column(0))->field1_,i);
+        ASSERT_EQ(static_cast<Component*>(iter->column(0))->field2_,i);
         ++i;
       }
 
@@ -52,14 +52,14 @@ namespace furious {
       ASSERT_EQ(table.size(),5000);
 
       for(auto iter = table.begin(); iter != table.end(); ++iter) {
-        data.erase(iter->get_id());
+        data.erase(iter->m_id);
       }
 
       ASSERT_EQ(data.size(), 0);
       ASSERT_EQ(table.size(), 5000);
 
       IRowPtr row = table.get_row_by_id(7500);
-      ASSERT_EQ(row->get_id(), 7500);
+      ASSERT_EQ(row->m_id, 7500);
     }
   }
 }

@@ -8,40 +8,40 @@
 #include <vector>
 #include <memory>
 
-namespace furious
-{
-  namespace data
-  {
+namespace furious {
+namespace data {
 
-    class System;
-    using SystemPtr = std::shared_ptr<System>;
+class System;
+using SystemPtr = std::shared_ptr<System>;
 
-    class System {
-      public:
-        System(SystemId id) : id_(id) {}
-        virtual ~System() = default;
-        /**
-         * Applies the system over the set of components
-         **/
-        virtual void apply( std::vector<void*>& components ) const = 0;
+class System {
+public:
+  System(const SystemId id) : m_id(id) {}
+  virtual ~System() = default;
 
-        /**
-         * Gets the list of components this system applies to
-         */
-        virtual const std::vector<std::string>& components() const = 0;
+  /**
+   * @brief Applies the system over the set of components
+   *
+   * @param components The set of components to apply the system on
+   */
+  virtual void apply( const std::vector<void*>& components ) = 0;
 
-        /**
-         * Gets the id of the system
-         */
-        SystemId id() { return id_; }
-
-      private:
-
-        SystemId id_;
-
-    };
-  } /* data */ 
   
+  /**
+   * @brief Gets the names of the components this system is for
+   *
+   * @return A vector with the names of the components this system is for
+   */
+  virtual std::vector<std::string> components() const = 0;
+
+  /**
+   * @brief The id of the system.
+   */
+  const SystemId m_id;
+
+};
+} /* data */ 
+
 } /* furious */ 
 
 

@@ -1,38 +1,41 @@
 
-
-
-#ifndef TNASDK_UNIT_H_
-#define TNASDK_UNIT_H_
+#ifndef _TNASDK_UNIT_H_
+#define _TNASDK_UNIT_H_
 #include <common.h>
+#include <vector>
 
 namespace tnasdk {
 
-class PhysicalUnit;
+class BBox;
 
 /**
  * @brief A unit of The Ninth Age. 
  */
-class Unit {
+struct Unit {
 public:
+  Unit() = delete;
   Unit ( TroopType troop_type,
-         uint8_t num_ranks, 
-         uint8_t num_files,
-         uint8_t troop_width,
-         uint8_t troop_height);
+         int32_t num_ranks, 
+         int32_t num_files,
+         float_t troop_width,
+         float_t troop_height);
+
   virtual ~Unit ();
 
   ////////////////////////////////////////////////
   ////////////////////////////////////////////////
   ////////////////////////////////////////////////
-
-
-private:
-  TroopType     m_troop_type;
-  PhysicalUnit* p_punit;
-
+  
+  const TroopType     m_troop_type;
+  int32_t             m_num_ranks;
+  int32_t             m_num_files;
+  float_t             m_troop_width;
+  float_t             m_troop_height;
+  std::vector<bool_t> m_troop_mask; // a vector of size num_ranks x num_files
+  BBox*               p_bbox;
 };
 } /* tnasdk */ 
 
-#endif /* UNIT_H */
+#endif /* _TNASDK_UNIT_H_ */
 
 

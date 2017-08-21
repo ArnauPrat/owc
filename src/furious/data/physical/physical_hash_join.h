@@ -9,81 +9,90 @@
 #include <cassert>
 #include <map>
 
-namespace furious 
-{
-  namespace data
-  {
-    class PhysicalHashJoin : public IPhysicalOperator {
+namespace furious  {
+namespace data {
 
-      public:
-        class Row : public IRow {
-          public:
-            Row ( EntityId id, IRowPtr row_left, IRowPtr row_right) : 
-              IRow(id),
-              row_left_(row_left),
-              row_right_(row_right) {}
+class PhysicalHashJoin : public IPhysicalOperator {
 
-            virtual ~Row() = default;
+public:
+  class Row : public IRow {
+  public:
+    Row ( EntityId id, IRowPtr row_left, IRowPtr row_right) : 
+      IRow(id),
+      row_left_(row_left),
+      row_right_(row_right) {}
 
-            virtual void* get_column(uint32_t column) override {
-              assert(column < num_columns());
-              return column < row_left_->num_columns() ? row_left_->get_column(column) : row_right_->get_column(get_right_column(column));
-            }
+    virtual ~Row() = default;
 
-            virtual uint32_t size_of_column( uint32_t column)  override {
-              assert(column < num_columns());
-              return column < row_left_->num_columns() ? row_left_->size_of_column(column) : row_right_->size_of_column(get_right_column(column));
-            }
+    virtual void* column(uint32_t column) override {
+      assert(column < num_columns());
+      return column < row_left_->num_columns() ? row_left_->column(column) 
+                                               : row_right_->column(right_column_index(column));
+    }
 
-            virtual uint32_t num_columns() override {
-              return row_left_->num_columns() + row_right_->num_columns();
-            }
+    virtual uint32_t column_size( uint32_t column) const override {
+      assert(column < num_columns());
+      return column < row_left_->num_columns() ? row_left_->column_size(column) 
+                                               : row_right_->column_size(right_column_index(column));
+    }
 
-          private:
-            uint32_t get_right_column( uint32_t column ) {
-              return column - row_left_->num_columns();
-            }
+    virtual uint32_t num_columns() const override {
+      return row_left_->num_columns() + row_right_->num_columns();
+    }
 
-            IRowPtr row_left_;
-            IRowPtr row_right_;
-        };
+  private:
 
-      public:
+    /**
+     * @brief Translates the column index of the row to the one of the right row
+     *
+     * @param column The column index
+     *
+     * @return The right column index
+     */
+    uint32_t right_column_index( uint32_t column ) const {
+      return column - row_left_->num_columns();
+    }
 
-        PhysicalHashJoin( IPhysicalOperatorPtr left, IPhysicalOperatorPtr right); 
-        virtual ~PhysicalHashJoin() = default;
+    IRowPtr row_left_;
+    IRowPtr row_right_;
+  };
 
-        ////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////
+public:
 
-        IRowPtr next() override;
+  PhysicalHashJoin( IPhysicalOperatorPtr left, IPhysicalOperatorPtr right); 
+  virtual ~PhysicalHashJoin() = default;
 
-        void  open() override;
+  ////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////
 
-        void  close() override;
+  IRowPtr next() override;
 
-        virtual uint32_t num_children()  const override ;
+  void  open() override;
 
-        virtual IPhysicalOperatorPtr  child(uint32_t i) const override;
+  void  close() override;
 
-        virtual std::string str() const override;
+  virtual uint32_t num_children()  const override ;
 
-      private:
+  virtual IPhysicalOperatorPtr  child(uint32_t i) const override;
 
-        uint32_t get_hash_position(IRowPtr row);
+  virtual std::string str() const override;
 
-        ////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////
-         
-        IPhysicalOperatorPtr   left_;
-        IPhysicalOperatorPtr   right_;
-        std::vector<std::vector<IRowPtr>>     hash_table_;
-        std::vector<std::shared_ptr<Row>>     joined_rows_;
-    };
-    
-  } /* data */ 
-  
+private:
+
+  uint32_t get_hash_position(IRowPtr row);
+
+  ////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////
+
+  IPhysicalOperatorPtr   left_;
+  IPhysicalOperatorPtr   right_;
+  std::vector<std::vector<IRowPtr>>     hash_table_;
+  std::vector<std::shared_ptr<Row>>     joined_rows_;
+};
+
+} /* data */ 
+
 } /* physical_hash_join */ 
 #endif

@@ -20,7 +20,7 @@ namespace furious
         TestSystem(SystemId id) : StaticSystem(id) {}
         virtual ~TestSystem() = default;
 
-        void run(ComponentA& component) const override {
+        void run(ComponentA& component) override {
           component.field1_ = 0;
           component.field2_ = 0.0;
         }

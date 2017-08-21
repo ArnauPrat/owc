@@ -4,26 +4,23 @@
 #define _TNASDK_TYPES_H 
 #include <types.h>
 #include <troop_type.h>
+#include <vector.h>
 
 namespace tnasdk {
 
-/**
- * @brief A 2D vector of float
- */
-struct Vector2f {
-  float x;
-  float y;
-};
+#define INCHES_TO_CMS 2.54f
+#define INCHES_TO_MMS 25.4f
+#define MMS_TO_INCHES 0.0394
+#define CMS_TO_INCHES 0.394
 
-/**
- * @brief A 2D vector of uint8_t
- */
-struct Vector2u8 {
-  uint8_t x;
-  uint8_t y;
-};
-  
+#define PI 3.14159265359f
+#define DEGREES_TO_RADS PI/180.0f
+#define RADS_TO_DEGREES 180.0f/PI
 
+enum class Footprint {
+  E_HALF,
+  E_FULL
+};
 } /* tnasdk */ 
 
 #endif /* ifndef _TNASDK_TYPES_H */
