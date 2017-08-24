@@ -1,1 +1,2 @@
 
+- implement battlefield border checks for the battlefield borders

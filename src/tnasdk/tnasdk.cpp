@@ -65,14 +65,12 @@ void remove( Unit* unit ) {
 }
 
 bool_t is_valid( Unit* unit, Vector2f position, float_t rotation ) {
-  /*BBox* bbox = cengine->create_bbox();
-  Vector2f scale{unit->p_bbox->width(), unit->p_bbox->height()};
-  Transform transform{position,rotation,scale};
-  bool_t result = bbox->transform(transform);
+  BBox* bbox = cengine->create_bbox();
+  bbox->width(unit->width());
+  bbox->height(unit->height());
+  bool_t result = bbox->transform(position, rotation);
   cengine->destroy_bbox(bbox);
   return !result;
-  */
-  return false;
 }
 
 Movement start_movement(Unit* unit, bool_t marching) {

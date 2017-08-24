@@ -7,7 +7,7 @@
 
 namespace tnasdk {
 
-class DeployTest : public ::testing::Test {
+class BattlefieldTest : public ::testing::Test {
 
       protected:
         virtual void SetUp() {
@@ -23,7 +23,7 @@ class DeployTest : public ::testing::Test {
         CollisionEngine* cengine;
 };
 
-TEST_F(DeployTest, Deploy) {
+TEST_F(BattlefieldTest, Deploy) {
   Unit* unit_a = create_unit(TroopType::E_INFANTRY, 5, 5, 20.0f*MMS_TO_INCHES, 20.0f*MMS_TO_INCHES );
   Vector2f position{24, 24};
   float_t rotation{45.0f};
@@ -62,6 +62,25 @@ TEST_F(DeployTest, Deploy) {
   remove(unit_a);
   remove(unit_b);
 
+  destroy_unit(unit_a);
+  destroy_unit(unit_b);
+}
+
+TEST_F(BattlefieldTest, ) {
+  Unit* unit_a = create_unit(TroopType::E_INFANTRY, 5, 5, 20.0f*MMS_TO_INCHES, 20.0f*MMS_TO_INCHES );
+  Vector2f position{24, 24};
+  float_t rotation{45.0f};
+  deploy(unit_a, position, rotation);
+
+  Unit* unit_b = create_unit(TroopType::E_INFANTRY, 5, 5, 20.0f*MMS_TO_INCHES, 20.0f*MMS_TO_INCHES );
+  bool_t result = is_valid(unit_b, position, rotation);
+  ASSERT_FALSE(result);
+
+  result = is_valid(unit_b, Vector2f{48.0f, 48.0f}, rotation);
+  ASSERT_TRUE(result);
+
+
+  remove(unit_a);
   destroy_unit(unit_a);
   destroy_unit(unit_b);
 }
