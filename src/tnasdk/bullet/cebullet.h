@@ -25,15 +25,13 @@ public:
   ////////////////////////////////////////////////
   ////////////////////////////////////////////////
 
-  bool_t transform(Transform transform) override;
+  bool_t transform(Vector2f position, float_t rotation) override;
 
-  Transform transform() const override;
-
-  void position( Vector2f position ) override;
+  bool_t position( Vector2f position ) override;
 
   Vector2f position() const override;
   
-  void rotation( float_t angle ) override;
+  bool_t rotation( float_t angle ) override;
 
   float_t rotation() const override;
 

@@ -23,28 +23,23 @@ public:
   
 
   /**
-   * @brief Sets the transform of this physical unit
+   * @brief Transforms the position and the rotation of this bounding box 
    *
-   * @param transform The tranform to set
+   * @param position The position to set
+   * @param rotation The rotation to set
    *
    * @return Returns true if bbox collides with something
    */
-  virtual bool_t transform(Transform transform) = 0;
-
-  /**
-   * @brief Gets the transform of this physical unit
-   *
-   * @return Returns the current transform of this physical unit
-   */
-  virtual Transform transform() const = 0;
-
+  virtual bool_t transform(Vector2f position, float_t rotation) = 0;
 
   /**
    * @brief Sets the position of the bounding box
    *
    * @param position The position to set
+   *
+   * @return Returns true if bbox collides with something
    */
-  virtual void position( Vector2f position ) = 0;
+  virtual bool_t position( Vector2f position ) = 0;
 
   /**
    * @brief Gets the position of the bounding box
@@ -56,9 +51,9 @@ public:
   /**
    * @brief Sets the rotation of the bounding box
    *
-   * @param angle The angle of the rotation to set
+   * @return Returns true if bbox collides with something
    */
-  virtual void rotation( float_t angle )  = 0;
+  virtual bool_t rotation( float_t angle )  = 0;
 
   /**
    * @brief Gets the rotation of the bounding box

@@ -3,6 +3,7 @@
 #include <common.h>
 #include <bbox.h>
 #include <tnasdk.h>
+#include <cassert>
 #include <unit.h>
 #include <collision_engine.h>
 
@@ -46,40 +47,41 @@ Unit* unit = new Unit(troop_type,
 }
 
 void destroy_unit(Unit* unit) {
+  assert(unit->p_bbox == nullptr);
   delete unit;
 }
 
 bool_t deploy( Unit* unit, Vector2f position, float_t rotation ) {
-  unit->p_bbox->enable();
-  Vector2f scale{unit->p_bbox->width(), unit->p_bbox->height()};
-  Transform transform{position,rotation,scale};
-  bool_t result =  unit->p_bbox->transform(transform);
-  if(result) {
-    unit->p_bbox->disable();
+  attach_bbox(unit);
+  if(unit->p_bbox->transform(position, rotation)){
+    detach_bbox(unit);
     return false;
   }
   return true;
 }
 
 void remove( Unit* unit ) {
-  unit->p_bbox->disable();
+  detach_bbox(unit);
 }
 
 bool_t is_valid( Unit* unit, Vector2f position, float_t rotation ) {
-  unit->p_bbox->enable();
+  /*BBox* bbox = cengine->create_bbox();
   Vector2f scale{unit->p_bbox->width(), unit->p_bbox->height()};
   Transform transform{position,rotation,scale};
-  bool_t result = unit->p_bbox->transform(transform);
-  unit->p_bbox->disable();
+  bool_t result = bbox->transform(transform);
+  cengine->destroy_bbox(bbox);
   return !result;
+  */
+  return false;
 }
 
 Movement start_movement(Unit* unit, bool_t marching) {
-  BBox* bbox = unit->p_bbox;
+  /*BBox* bbox = unit->p_bbox;
   Transform transform = bbox->transform();
   Vector2f start_position = transform.m_position;
   float_t start_rotation = transform.m_rotation;
   return Movement{unit, start_position, start_rotation, 6.0, false};
+  */
 }
 
 bool_t end_movement( const Movement& movement, 

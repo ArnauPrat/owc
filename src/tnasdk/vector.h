@@ -2,15 +2,20 @@
 #ifndef _TNASDK_VECTOR_H_
 #define _TNASDK_VECTOR_H_ value
 
+#include <types.h>
+
 namespace tnasdk {
 
 /**
  * @brief A 2D vector of float
  */
 struct Vector2f {
-  float x;
-  float y;
+  float_t x;
+  float_t y;
 };
+
+bool_t operator==(const Vector2f& a, const Vector2f& b);
+bool_t operator!=(const Vector2f& a, const Vector2f& b);
 
 /**
  * @brief A 2D vector of uint8_t

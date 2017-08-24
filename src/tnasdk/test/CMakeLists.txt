@@ -27,7 +27,7 @@ macro(create_test NAME )
       )
 endmacro(create_test)
 
-create_test ("unit_test")
+create_test ("bbox_test")
 create_test ("deploy_test")
 create_test ("terrain_test")
 

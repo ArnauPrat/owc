@@ -2,6 +2,7 @@
 
 #include <btBulletDynamicsCommon.h>
 #include <cebullet.h>
+#include <iostream>
 
 namespace tnasdk {
 
@@ -14,6 +15,7 @@ CbBBox::CbBBox(btCollisionWorld* world ) :
   btQuaternion rotation;
   rotation.setRotation(btVector3{0.0f,0.0f,1.0}, 0.0f);
   m_cobject->getWorldTransform().setRotation(rotation);
+  m_world->addCollisionObject(m_cobject);
 }
 
 CbBBox::~CbBBox() {
@@ -22,14 +24,50 @@ CbBBox::~CbBBox() {
   delete m_shape;
 }
 
-bool_t CbBBox::transform(Transform transform) {
-  width(transform.m_scale.x);
-  height(transform.m_scale.y);
-  m_cobject->getWorldTransform().setOrigin( btVector3{transform.m_position.x, 
-                                                     transform.m_position.y, 
-                                                     0.0} );
+bool_t CbBBox::transform(Vector2f position, float_t rotation) {
+  m_cobject->getWorldTransform().setOrigin( btVector3{position.x, 
+                                                      position.y, 
+                                                      0.0} );
+  btQuaternion rotation_qt;
+  rotation_qt.setRotation(btVector3{0.0f,0.0f,1.0}, rotation*DEGREES_TO_RADS);
+  m_cobject->getWorldTransform().setRotation(rotation_qt);
+  m_world->performDiscreteCollisionDetection();
+
+  int numManifolds = m_world->getDispatcher()->getNumManifolds();
+  //For each contact manifold
+  for (int i = 0; i < numManifolds; i++) {
+    btPersistentManifold* contactManifold = m_world->getDispatcher()->getManifoldByIndexInternal(i);
+    const btCollisionObject* obA = static_cast<const btCollisionObject*>(contactManifold->getBody0());
+    const btCollisionObject* obB = static_cast<const btCollisionObject*>(contactManifold->getBody1());
+    if ((obA == m_cobject || obB == m_cobject) && contactManifold->getNumContacts() > 0 ) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool_t CbBBox::position( Vector2f position ) {
+  m_cobject->getWorldTransform().setOrigin(btVector3{position.x, position.y, 0.0f});
+  m_world->performDiscreteCollisionDetection();
+  int numManifolds = m_world->getDispatcher()->getNumManifolds();
+  //For each contact manifold
+  for (int i = 0; i < numManifolds; i++) {
+    btPersistentManifold* contactManifold = m_world->getDispatcher()->getManifoldByIndexInternal(i);
+    const btCollisionObject* obA = static_cast<const btCollisionObject*>(contactManifold->getBody0());
+    const btCollisionObject* obB = static_cast<const btCollisionObject*>(contactManifold->getBody1());
+    if (obA == m_cobject || obB == m_cobject) return true;
+  }
+  return false;
+} 
+
+Vector2f CbBBox::position() const {
+  btVector3 position = m_cobject->getWorldTransform().getOrigin();
+  return Vector2f{position.getX(), position.getY()};
+} 
+
+bool_t CbBBox::rotation( float_t angle ) {
   btQuaternion rotation;
-  rotation.setRotation(btVector3{0.0f,0.0f,1.0}, transform.m_rotation*DEGREES_TO_RADS);
+  rotation.setRotation(btVector3{0.0f,0.0f,1.0}, angle*DEGREES_TO_RADS);
   m_cobject->getWorldTransform().setRotation(rotation);
   m_world->performDiscreteCollisionDetection();
   int numManifolds = m_world->getDispatcher()->getNumManifolds();
@@ -41,33 +79,6 @@ bool_t CbBBox::transform(Transform transform) {
     if (obA == m_cobject || obB == m_cobject) return true;
   }
   return false;
-}
-
-Transform CbBBox::transform() const {
-  Vector2f position {m_cobject->getWorldTransform().getOrigin().getX(),
-                     m_cobject->getWorldTransform().getOrigin().getY()}; 
-  float_t rotation = m_cobject->getWorldTransform().getRotation().getAngle();
-  btTransform transform;
-  btVector3 minAABB;
-  btVector3 maxAABB;
-  m_cobject->getCollisionShape()->getAabb(transform,minAABB,maxAABB);
-  Vector2f scale = {maxAABB.getX() - minAABB.getX(), maxAABB.getY() - minAABB.getY()};
-  return Transform{position,rotation*RADS_TO_DEGREES,scale};
-}
-
-void CbBBox::position( Vector2f position ) {
-  m_cobject->getWorldTransform().setOrigin(btVector3{position.x, position.y, 0.0f});
-} 
-
-Vector2f CbBBox::position() const {
-  btVector3 position = m_cobject->getWorldTransform().getOrigin();
-  return Vector2f{position.getX(), position.getY()};
-} 
-
-void CbBBox::rotation( float_t angle ) {
-  btQuaternion rotation;
-  rotation.setRotation(btVector3{0.0f,0.0f,1.0}, angle*DEGREES_TO_RADS);
-  m_cobject->getWorldTransform().setRotation(rotation);
 } 
 
 float_t CbBBox::rotation() const {

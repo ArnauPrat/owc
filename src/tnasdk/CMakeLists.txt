@@ -37,6 +37,7 @@ add_library(tnasdk STATIC
   unit.cpp
   unit.h
   vector.h
+  vector.cpp
 )  
 
 target_link_libraries(tnasdk tnabullet ${TNABULLET_LIBRARIES})
