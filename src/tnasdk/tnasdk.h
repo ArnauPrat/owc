@@ -13,10 +13,10 @@ class CollisionEngine;
 class Unit;
 
 extern CollisionEngine* cengine;
-extern float_t          xmin;
-extern float_t          ymin;
-extern float_t          xmax;
-extern float_t          ymax;
+extern float_t          bat_xmin;
+extern float_t          bat_ymin;
+extern float_t          bat_xmax;
+extern float_t          bat_ymax;
 
 ////////////////////////////////////////////////
 ////////////////////////////////////////////////
@@ -29,7 +29,7 @@ extern float_t          ymax;
  * @param bwidth  The width of the battlefield in inches
  * @param bheight The height of the battlefield in inches
  */
-void init_tnasdk( CollisionEngine* cengine, uint32_t bwidth, uint32_t bheight );
+void init_tnasdk( CollisionEngine* cengine, float_t bwidth, float_t bheight );
 
 /**
  * @brief Releases the resources acquired by tnasdk

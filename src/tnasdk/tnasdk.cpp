@@ -5,28 +5,29 @@
 #include <tnasdk.h>
 #include <cassert>
 #include <unit.h>
+#include <iostream>
 #include <collision_engine.h>
 
 namespace tnasdk {
 
 CollisionEngine*  cengine = nullptr;
-float_t           xmin = 0;
-float_t           ymin = 0;
-float_t           xmax = 0;
-float_t           ymax = 0;
+float_t           bat_xmin = 0;
+float_t           bat_ymin = 0;
+float_t           bat_xmax = 0;
+float_t           bat_ymax = 0;
 
 ////////////////////////////////////////////////
 ////////////////////////////////////////////////
 ////////////////////////////////////////////////
 
 void init_tnasdk( CollisionEngine* cengine_,
-                  uint32_t bwidth,
-                  uint32_t bheight) {
+                  float_t bwidth,
+                  float_t bheight) {
   cengine = cengine_;
-  xmin = -bwidth/2.0f;
-  ymin = -bheight/2.0f;
-  xmax = bwidth/2.0f;
-  ymax = bheight/2.0f;
+  bat_xmin = -bwidth/2.0f;
+  bat_ymin = -bheight/2.0f;
+  bat_xmax = bwidth/2.0f;
+  bat_ymax = bheight/2.0f;
 }
 
 void release_tnasdk() {
@@ -51,7 +52,43 @@ void destroy_unit(Unit* unit) {
   delete unit;
 }
 
+static bool_t inside_battlefield( float_t width, 
+                                  float_t height, 
+                                  Vector2f position, 
+                                  float_t angle ) {
+
+  float_t half_width = width / 2.0f;
+  float_t half_height = height / 2.0f;
+
+  Vector2f top_right = Vector2f{ half_width, half_height };
+  Vector2f top_left = Vector2f{ -half_width, half_height };
+  Vector2f bottom_right = Vector2f{ half_width, -half_height };
+  Vector2f bottom_left = Vector2f{ -half_width, -half_height };
+
+  Vector2f top_right_r = rotate( top_right, angle ) + position;
+  Vector2f top_left_r = rotate( top_left, angle ) + position;
+  Vector2f bottom_right_r = rotate( bottom_right, angle) + position;
+  Vector2f bottom_left_r = rotate( bottom_left, angle ) + position;
+
+  float_t xmin = std::min( std::min( top_right_r.x, top_left_r.x ), std::min( bottom_right_r.x, bottom_left_r.x ));
+  float_t ymin = std::min( std::min( top_right_r.y, top_left_r.y ), std::min( bottom_right_r.y, bottom_left_r.y ));
+  float_t xmax = std::max( std::max( top_right_r.x, top_left_r.x ), std::max( bottom_right_r.x, bottom_left_r.x ));
+  float_t ymax = std::max( std::max( top_right_r.y, top_left_r.y ), std::max( bottom_right_r.y, bottom_left_r.y ));
+
+  if( xmax > bat_xmax || 
+      xmin < bat_xmin ||
+      ymax > bat_ymax || 
+      ymin < bat_ymin ) {
+    return false;
+  }
+
+  return true;
+}
+
 bool_t deploy( Unit* unit, Vector2f position, float_t rotation ) {
+  if( !inside_battlefield(unit->width(), unit->height(), position, rotation) ) {
+    return false;
+  }
   attach_bbox(unit);
   if(unit->p_bbox->transform(position, rotation)){
     detach_bbox(unit);
@@ -65,6 +102,9 @@ void remove( Unit* unit ) {
 }
 
 bool_t is_valid( Unit* unit, Vector2f position, float_t rotation ) {
+  if( !inside_battlefield(unit->width(), unit->height(), position, rotation) ) {
+    return false;
+  }
   BBox* bbox = cengine->create_bbox();
   bbox->width(unit->width());
   bbox->height(unit->height());
@@ -74,12 +114,7 @@ bool_t is_valid( Unit* unit, Vector2f position, float_t rotation ) {
 }
 
 Movement start_movement(Unit* unit, bool_t marching) {
-  /*BBox* bbox = unit->p_bbox;
-  Transform transform = bbox->transform();
-  Vector2f start_position = transform.m_position;
-  float_t start_rotation = transform.m_rotation;
-  return Movement{unit, start_position, start_rotation, 6.0, false};
-  */
+  return Movement{unit, unit->position(), unit->rotation(), 6.0, false};
 }
 
 bool_t end_movement( const Movement& movement, 

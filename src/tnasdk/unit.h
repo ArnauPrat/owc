@@ -25,7 +25,35 @@ public:
   ////////////////////////////////////////////////
   ////////////////////////////////////////////////
   ////////////////////////////////////////////////
-  
+
+  /**
+   * @brief Gets the position of the unit
+   *
+   * @return Returns the position of the uni
+   */
+  Vector2f position();
+
+  /**
+   * @brief Sets the position of the unit
+   *
+   * @param position The position to set
+   */
+  void  position( Vector2f position );
+
+  /**
+   * @brief Gets the rotation of the unit
+   *
+   * @return Returns the rotation of the unit
+   */
+  float_t rotation();
+
+  /**
+   * @brief Sets the rotation of the unit
+   *
+   * @param rotation The rotation to set
+   */
+  void rotation( float_t rotation );
+
   /**
    * @brief Gets the width of the unit in inches
    *
@@ -40,12 +68,12 @@ public:
    */
   float_t height();
 
-  
   const TroopType     m_troop_type;
-  int32_t             m_num_ranks;
-  int32_t             m_num_files;
-  float_t             m_troop_width;
-  float_t             m_troop_height;
+  const int32_t       m_num_ranks;
+  const int32_t       m_num_files;
+  const float_t       m_troop_width;
+  const float_t       m_troop_height;
+
   std::vector<bool_t> m_troop_mask; // a vector of size num_ranks x num_files
   BBox*               p_bbox;
 };

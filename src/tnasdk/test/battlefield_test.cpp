@@ -11,8 +11,8 @@ class BattlefieldTest : public ::testing::Test {
 
       protected:
         virtual void SetUp() {
-          cengine = new Cebullet(180,120);
-          init_tnasdk(cengine,180,120);
+          cengine = new Cebullet(180*CMS_TO_INCHES,120*CMS_TO_INCHES);
+          init_tnasdk(cengine,180*CMS_TO_INCHES,120*CMS_TO_INCHES);
         }
 
         virtual void TearDown() {
@@ -24,40 +24,47 @@ class BattlefieldTest : public ::testing::Test {
 };
 
 TEST_F(BattlefieldTest, Deploy) {
+
   Unit* unit_a = create_unit(TroopType::E_INFANTRY, 5, 5, 20.0f*MMS_TO_INCHES, 20.0f*MMS_TO_INCHES );
-  Vector2f position{24, 24};
-  float_t rotation{45.0f};
-  bool_t result = deploy(unit_a, position, rotation);
-  ASSERT_TRUE(result);
-  ASSERT_TRUE(std::abs(rotation - unit_a->p_bbox->rotation()) < 0.0001);
-  ASSERT_EQ(position, unit_a->p_bbox->position());
+  Vector2f pos_a{0.0f, 0.0f};
+  float_t rot_a{45.0f};
+  ASSERT_TRUE(deploy(unit_a, pos_a, rot_a));
+  ASSERT_TRUE(std::abs(rot_a - unit_a->rotation()) < 0.0001);
+  ASSERT_EQ(pos_a, unit_a->position());
+  ASSERT_TRUE(std::abs(unit_a->rotation() - rot_a) < 0.001);
 
   Unit* unit_b = create_unit(TroopType::E_INFANTRY, 5, 5, 20.0f*MMS_TO_INCHES, 20.0f*MMS_TO_INCHES );
-  result = deploy(unit_b, position, rotation);
-  ASSERT_FALSE(result);
+  Vector2f pos_b{0.0f, 0.0f};
+  float_t rot_b{45.0f};
+  ASSERT_FALSE(deploy(unit_b, pos_b, rot_b));
 
   remove(unit_a);
 
-  result = deploy(unit_b, position, rotation);
-  ASSERT_TRUE(result);
-  ASSERT_EQ(position, unit_b->p_bbox->position());
+  ASSERT_TRUE(deploy(unit_b, pos_b, rot_b));
+  ASSERT_EQ(pos_b, unit_b->position());
+  ASSERT_TRUE(std::abs(unit_b->rotation() - rot_b) < 0.001);
 
-  result = deploy(unit_a, position, rotation);
-  ASSERT_FALSE(result);
+  ASSERT_FALSE(deploy(unit_a, pos_a, rot_a));
+
   remove(unit_b);
 
-  result = deploy(unit_a, position, rotation);
-  ASSERT_TRUE(result);
-  ASSERT_EQ(position, unit_a->p_bbox->position());
+  ASSERT_TRUE(deploy(unit_a, pos_a, rot_a));
+  ASSERT_EQ(pos_a, unit_a->position());
+  ASSERT_TRUE(std::abs(unit_a->rotation() - rot_a) < 0.001);
+
   remove(unit_a);
 
-  result = deploy(unit_a, Vector2f{24,24}, 0.0f);
-  ASSERT_TRUE(result);
-  ASSERT_EQ(unit_a->p_bbox->position(), (Vector2f{24,24}));
+  pos_a = {12.0f,12.0f};
+  rot_a = 0.0f;
+  ASSERT_TRUE(deploy(unit_a, pos_a, rot_a));
+  ASSERT_EQ(unit_a->position(), pos_a);
+  ASSERT_TRUE(std::abs(unit_a->rotation() - rot_a) < 0.001);
 
-  result = deploy(unit_b, Vector2f{48,48}, 0.0f);
-  ASSERT_TRUE(result);
-  ASSERT_EQ(unit_b->p_bbox->position(), (Vector2f{48,48}));
+  pos_b = {18.0f,18.0f};
+  rot_b = 90.0f;
+  ASSERT_TRUE(deploy(unit_b, pos_b, rot_b));
+  ASSERT_EQ(unit_b->position(), pos_b);
+  ASSERT_TRUE(std::abs(unit_b->rotation() - rot_b) < 0.001);
 
   remove(unit_a);
   remove(unit_b);
@@ -66,19 +73,16 @@ TEST_F(BattlefieldTest, Deploy) {
   destroy_unit(unit_b);
 }
 
-TEST_F(BattlefieldTest, ) {
+TEST_F(BattlefieldTest, IsValidTest) {
   Unit* unit_a = create_unit(TroopType::E_INFANTRY, 5, 5, 20.0f*MMS_TO_INCHES, 20.0f*MMS_TO_INCHES );
-  Vector2f position{24, 24};
+  Vector2f position{0.0f, 0.0f};
   float_t rotation{45.0f};
-  deploy(unit_a, position, rotation);
+  ASSERT_TRUE(deploy(unit_a, position, rotation));
 
   Unit* unit_b = create_unit(TroopType::E_INFANTRY, 5, 5, 20.0f*MMS_TO_INCHES, 20.0f*MMS_TO_INCHES );
-  bool_t result = is_valid(unit_b, position, rotation);
-  ASSERT_FALSE(result);
+  ASSERT_FALSE(is_valid(unit_b, position, rotation));
 
-  result = is_valid(unit_b, Vector2f{48.0f, 48.0f}, rotation);
-  ASSERT_TRUE(result);
-
+  ASSERT_TRUE(is_valid(unit_b, Vector2f{18.0f, 18.0f}, rotation));
 
   remove(unit_a);
   destroy_unit(unit_a);

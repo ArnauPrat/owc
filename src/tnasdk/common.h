@@ -2,9 +2,7 @@
 
 #ifndef _TNASDK_TYPES_H
 #define _TNASDK_TYPES_H 
-#include <types.h>
-#include <troop_type.h>
-#include <vector.h>
+
 
 namespace tnasdk {
 
@@ -22,6 +20,10 @@ enum class Footprint {
   E_FULL
 };
 } /* tnasdk */ 
+
+#include <types.h>
+#include <troop_type.h>
+#include <vector.h>
 
 #endif /* ifndef _TNASDK_TYPES_H */
 

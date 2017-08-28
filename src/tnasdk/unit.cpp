@@ -27,6 +27,32 @@ Unit::Unit ( TroopType troop_type,
 Unit::~Unit () {
 }
 
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+
+
+Vector2f Unit::position() {
+  assert( p_bbox != nullptr );
+  return p_bbox->position();
+}
+
+void  Unit::position( Vector2f position ) {
+  assert( p_bbox != nullptr );
+  p_bbox->position(position);
+}
+
+
+float_t Unit::rotation() {
+  assert(p_bbox != nullptr);
+  return p_bbox->rotation();
+}
+
+void Unit::rotation( float_t rotation ) {
+  assert(p_bbox != nullptr);
+  p_bbox->rotation( rotation );
+}
+
 float_t Unit::width() {
   return m_num_files*m_troop_width;
 }
@@ -34,6 +60,12 @@ float_t Unit::width() {
 float_t Unit::height() {
   return m_num_ranks*m_troop_height;
 }
+
+
+
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+////////////////////////////////////////////////
 
 void attach_bbox(Unit* unit) {
   assert(unit->p_bbox == nullptr);

@@ -16,14 +16,17 @@ struct Vector2f {
 
 bool_t operator==(const Vector2f& a, const Vector2f& b);
 bool_t operator!=(const Vector2f& a, const Vector2f& b);
+Vector2f operator+(const Vector2f& a, const Vector2f& b);
 
 /**
- * @brief A 2D vector of uint8_t
+ * @brief Rotates a vector a given angle (counter clockwise)
+ *
+ * @param vector The vector to rotate
+ * @param angle The angle to rotate in degrees
+ *
+ * @return  Returns the vector rotated.
  */
-struct Vector2u8 {
-  uint8_t x;
-  uint8_t y;
-};
+Vector2f rotate( Vector2f vector, float_t angle );
   
 } /* tnasdk */ 
 

@@ -28,6 +28,7 @@ macro(create_test NAME )
 endmacro(create_test)
 
 create_test ("bbox_test")
+create_test ("vector_test")
 create_test ("battlefield_test")
 create_test ("terrain_test")
 
