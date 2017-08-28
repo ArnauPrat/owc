@@ -28,18 +28,16 @@ public:
    * @param position The position to set
    * @param rotation The rotation to set
    *
-   * @return Returns true if bbox collides with something
    */
-  virtual bool_t transform(Vector2f position, float_t rotation) = 0;
+  virtual void transform(Vector2f position, float_t rotation) = 0;
 
   /**
    * @brief Sets the position of the bounding box
    *
    * @param position The position to set
    *
-   * @return Returns true if bbox collides with something
    */
-  virtual bool_t position( Vector2f position ) = 0;
+  virtual void position( Vector2f position ) = 0;
 
   /**
    * @brief Gets the position of the bounding box
@@ -51,9 +49,8 @@ public:
   /**
    * @brief Sets the rotation of the bounding box
    *
-   * @return Returns true if bbox collides with something
    */
-  virtual bool_t rotation( float_t angle )  = 0;
+  virtual void rotation( float_t angle )  = 0;
 
   /**
    * @brief Gets the rotation of the bounding box

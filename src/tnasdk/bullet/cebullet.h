@@ -4,6 +4,7 @@
 
 #include <common.h>
 #include <collision_engine.h>
+#include <vector>
 #include <bbox.h>
 
 class btCollisionConfiguration;
@@ -25,13 +26,13 @@ public:
   ////////////////////////////////////////////////
   ////////////////////////////////////////////////
 
-  bool_t transform(Vector2f position, float_t rotation) override;
+  void transform(Vector2f position, float_t rotation) override;
 
-  bool_t position( Vector2f position ) override;
+  void position( Vector2f position ) override;
 
   Vector2f position() const override;
   
-  bool_t rotation( float_t angle ) override;
+  void rotation( float_t angle ) override;
 
   float_t rotation() const override;
 
@@ -64,11 +65,13 @@ public:
 
   void destroy_bbox( BBox* bbox ) override;
 
+  std::vector<Collision> detect_collisions() override;
+
 private:
-  btCollisionConfiguration* bt_collision_configuration;
-  btCollisionDispatcher*    bt_dispatcher;
-  btBroadphaseInterface*    bt_broadphase;
-  btCollisionWorld*         bt_collision_world;
+  btCollisionConfiguration* m_configuration;
+  btCollisionDispatcher*    m_dispatcher;
+  btBroadphaseInterface*    m_broadphase;
+  btCollisionWorld*         m_world;
 };
 
 } /* tnasdk */ 

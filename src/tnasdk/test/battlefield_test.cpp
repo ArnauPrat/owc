@@ -29,7 +29,6 @@ TEST_F(BattlefieldTest, Deploy) {
   Vector2f pos_a{0.0f, 0.0f};
   float_t rot_a{45.0f};
   ASSERT_TRUE(deploy(unit_a, pos_a, rot_a));
-  ASSERT_TRUE(std::abs(rot_a - unit_a->rotation()) < 0.0001);
   ASSERT_EQ(pos_a, unit_a->position());
   ASSERT_TRUE(std::abs(unit_a->rotation() - rot_a) < 0.001);
 

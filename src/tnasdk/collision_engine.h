@@ -5,10 +5,16 @@
 
 #include <common.h>
 #include <transform.h>
+#include <vector>
 
 namespace tnasdk {
 
 class BBox;
+
+struct Collision {
+  const BBox* p_bbox_a;
+  const BBox* p_bbox_b;
+};
 
 /**
  * @brief Interface of a factory in charge of creating PhysicalUnits
@@ -32,6 +38,14 @@ public:
    * @param punit A pointer to the bounding box willing to destroy
    */
   virtual void destroy_bbox( BBox* bbox ) = 0;
+
+
+  /**
+   * @brief Detexts the collisions between BBoxes
+   *
+   * @return Returns a vector with the collisions information
+   */
+  virtual std::vector<Collision> detect_collisions() = 0;
 };
 
 } /* tnasdk */ 

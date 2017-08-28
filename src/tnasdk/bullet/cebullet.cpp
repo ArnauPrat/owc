@@ -9,6 +9,7 @@ namespace tnasdk {
 CbBBox::CbBBox(btCollisionWorld* world ) : 
   m_world(world) {
   m_cobject = new btCollisionObject();
+  m_cobject->setUserPointer(this);
   m_shape = new btBoxShape(btVector3{0.5f, 0.5f, 0.5f});
   m_cobject->setCollisionShape(m_shape);
   m_cobject->getWorldTransform().setOrigin(btVector3{0.0f, 0.0f, 0.0f});
@@ -24,17 +25,17 @@ CbBBox::~CbBBox() {
   delete m_shape;
 }
 
-bool_t CbBBox::transform(Vector2f position, float_t rotation) {
+void CbBBox::transform(Vector2f position, float_t rotation) {
   m_cobject->getWorldTransform().setOrigin( btVector3{position.x, 
                                                       position.y, 
                                                       0.0} );
   btQuaternion rotation_qt;
   rotation_qt.setRotation(btVector3{0.0f,0.0f,1.0}, rotation*DEGREES_TO_RADS);
   m_cobject->getWorldTransform().setRotation(rotation_qt);
+  /*
   m_world->performDiscreteCollisionDetection();
 
   int numManifolds = m_world->getDispatcher()->getNumManifolds();
-  //For each contact manifold
   for (int i = 0; i < numManifolds; i++) {
     btPersistentManifold* contactManifold = m_world->getDispatcher()->getManifoldByIndexInternal(i);
     const btCollisionObject* obA = static_cast<const btCollisionObject*>(contactManifold->getBody0());
@@ -43,21 +44,11 @@ bool_t CbBBox::transform(Vector2f position, float_t rotation) {
       return true;
     }
   }
-  return false;
+  return false; */
 }
 
-bool_t CbBBox::position( Vector2f position ) {
+void CbBBox::position( Vector2f position ) {
   m_cobject->getWorldTransform().setOrigin(btVector3{position.x, position.y, 0.0f});
-  m_world->performDiscreteCollisionDetection();
-  int numManifolds = m_world->getDispatcher()->getNumManifolds();
-  //For each contact manifold
-  for (int i = 0; i < numManifolds; i++) {
-    btPersistentManifold* contactManifold = m_world->getDispatcher()->getManifoldByIndexInternal(i);
-    const btCollisionObject* obA = static_cast<const btCollisionObject*>(contactManifold->getBody0());
-    const btCollisionObject* obB = static_cast<const btCollisionObject*>(contactManifold->getBody1());
-    if (obA == m_cobject || obB == m_cobject) return true;
-  }
-  return false;
 } 
 
 Vector2f CbBBox::position() const {
@@ -65,20 +56,10 @@ Vector2f CbBBox::position() const {
   return Vector2f{position.getX(), position.getY()};
 } 
 
-bool_t CbBBox::rotation( float_t angle ) {
+void CbBBox::rotation( float_t angle ) {
   btQuaternion rotation;
   rotation.setRotation(btVector3{0.0f,0.0f,1.0}, angle*DEGREES_TO_RADS);
   m_cobject->getWorldTransform().setRotation(rotation);
-  m_world->performDiscreteCollisionDetection();
-  int numManifolds = m_world->getDispatcher()->getNumManifolds();
-  //For each contact manifold
-  for (int i = 0; i < numManifolds; i++) {
-    btPersistentManifold* contactManifold = m_world->getDispatcher()->getManifoldByIndexInternal(i);
-    const btCollisionObject* obA = static_cast<const btCollisionObject*>(contactManifold->getBody0());
-    const btCollisionObject* obB = static_cast<const btCollisionObject*>(contactManifold->getBody1());
-    if (obA == m_cobject || obB == m_cobject) return true;
-  }
-  return false;
 } 
 
 float_t CbBBox::rotation() const {
@@ -146,25 +127,41 @@ Cebullet::Cebullet (uint32_t width, uint32_t height) {
   int32_t max_objects = 512;
   btVector3 worldAabbMin(-width/2, -height/2, -1);
   btVector3 worldAabbMax(width/2, height/2, 1);
-  bt_collision_configuration = new btDefaultCollisionConfiguration();
-  bt_dispatcher = new btCollisionDispatcher(bt_collision_configuration);
-  bt_broadphase = new bt32BitAxisSweep3(worldAabbMin, worldAabbMax, max_objects, 0, true);
-  bt_collision_world = new btCollisionWorld(bt_dispatcher, bt_broadphase, bt_collision_configuration);
+  m_configuration = new btDefaultCollisionConfiguration();
+  m_dispatcher = new btCollisionDispatcher(m_configuration);
+  m_broadphase = new bt32BitAxisSweep3(worldAabbMin, worldAabbMax, max_objects, 0, true);
+  m_world = new btCollisionWorld(m_dispatcher, m_broadphase, m_configuration);
 }
 
 Cebullet::~Cebullet () {
-  delete bt_collision_world;
-  delete bt_broadphase;
-  delete bt_dispatcher;
-  delete bt_collision_configuration;
+  delete m_world;
+  delete m_broadphase;
+  delete m_dispatcher;
+  delete m_configuration;
 }
 
 BBox* Cebullet::create_bbox() {
-  return new CbBBox(bt_collision_world);
+  return new CbBBox(m_world);
 }
 
 void Cebullet::destroy_bbox( BBox* bbox ) {
   delete bbox;
+}
+
+
+std::vector<Collision> Cebullet::detect_collisions() {
+  std::vector<Collision> collisions;
+  m_world->performDiscreteCollisionDetection();
+  int numManifolds = m_world->getDispatcher()->getNumManifolds();
+  for (int i = 0; i < numManifolds; i++) {
+    btPersistentManifold* contactManifold = m_world->getDispatcher()->getManifoldByIndexInternal(i);
+    const btCollisionObject* obA = static_cast<const btCollisionObject*>(contactManifold->getBody0());
+    const btCollisionObject* obB = static_cast<const btCollisionObject*>(contactManifold->getBody1());
+    if (contactManifold->getNumContacts() > 0 ) {
+      collisions.push_back( Collision{static_cast<CbBBox*>(obA->getUserPointer()), static_cast<CbBBox*>(obB->getUserPointer())});
+    }
+  }
+  return collisions;
 }
   
 } /* tnasdk */ 

@@ -90,9 +90,14 @@ bool_t deploy( Unit* unit, Vector2f position, float_t rotation ) {
     return false;
   }
   attach_bbox(unit);
-  if(unit->p_bbox->transform(position, rotation)){
-    detach_bbox(unit);
-    return false;
+  unit->p_bbox->position(position);
+  unit->p_bbox->rotation(rotation);
+  std::vector<Collision> collisions = cengine->detect_collisions();
+  for (const Collision& collision : collisions) {
+    if (collision.p_bbox_a == unit->p_bbox || collision.p_bbox_b == unit->p_bbox) {
+      detach_bbox(unit);
+      return false;
+    }
   }
   return true;
 }
@@ -108,9 +113,17 @@ bool_t is_valid( Unit* unit, Vector2f position, float_t rotation ) {
   BBox* bbox = cengine->create_bbox();
   bbox->width(unit->width());
   bbox->height(unit->height());
-  bool_t result = bbox->transform(position, rotation);
+  bbox->position(position);
+  bbox->rotation(rotation);
+  bool_t collides = false;
+  std::vector<Collision> collisions = cengine->detect_collisions();
+  for (const Collision& collision : collisions) {
+    if (collision.p_bbox_a == bbox || collision.p_bbox_b == bbox) {
+      collides = true;
+    }
+  }
   cengine->destroy_bbox(bbox);
-  return !result;
+  return !collides;
 }
 
 Movement start_movement(Unit* unit, bool_t marching) {
