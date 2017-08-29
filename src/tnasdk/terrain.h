@@ -8,6 +8,7 @@
 #include <troop_type.h>
 #include <transform.h>
 #include <vector>
+#include <bf_object.h>
 
 namespace tnasdk {
 
@@ -29,10 +30,9 @@ struct CoverModifier {
   Footprint m_footprint;
 };
 
-class Terrain {
+class Terrain : public BFObject {
 public:
-  Terrain() = delete;
-  Terrain( Transform fransform );
+  Terrain();
   virtual ~Terrain();
 
   bool_t                      m_obscuring;  // Whether the terrain is obscuring

@@ -8,13 +8,15 @@
 
 namespace tnasdk {
 
+struct BFObject;
+
 /**
  * @brief Interface representing a bounding box of a battlefield element (i.e. its
  * position, space, etc.)
  */
 class BBox {
 public:
-  BBox() = default;
+  BBox( BFObject* user_data );
   virtual ~BBox() = default;
 
   ////////////////////////////////////////////////
@@ -98,6 +100,8 @@ public:
    * collisions
    */
   virtual void disable() = 0;
+
+  BFObject const *   p_user_data; ///< pointer holding user provided data
 };
 
 } /* tnasdk */ 

@@ -3,6 +3,7 @@
 #define _TNASDK_UNIT_H_
 #include <common.h>
 #include <vector>
+#include <bf_object.h>
 
 namespace tnasdk {
 
@@ -11,7 +12,7 @@ class BBox;
 /**
  * @brief A unit of The Ninth Age. 
  */
-struct Unit {
+struct Unit : public BFObject {
 public:
   Unit() = delete;
   Unit ( TroopType troop_type,
@@ -68,11 +69,11 @@ public:
    */
   float_t height();
 
-  const TroopType     m_troop_type;
-  const int32_t       m_num_ranks;
-  const int32_t       m_num_files;
-  const float_t       m_troop_width;
-  const float_t       m_troop_height;
+  const TroopType     m_troop_type;   ///< The troop type
+  const int32_t       m_num_ranks;    ///< The number of ranks
+  const int32_t       m_num_files;    ///< The number of files
+  const float_t       m_troop_width;  ///< The troop type width
+  const float_t       m_troop_height; ///< The troop type height
 
   std::vector<bool_t> m_troop_mask; // a vector of size num_ranks x num_files
   BBox*               p_bbox;

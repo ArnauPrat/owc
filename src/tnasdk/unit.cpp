@@ -14,6 +14,7 @@ Unit::Unit ( TroopType troop_type,
              int32_t num_files,
              float_t troop_width,
              float_t troop_height) :
+  BFObject("unit"),
   m_troop_type(troop_type),
   m_num_ranks(num_ranks),
   m_num_files(num_files),
@@ -69,7 +70,7 @@ float_t Unit::height() {
 
 void attach_bbox(Unit* unit) {
   assert(unit->p_bbox == nullptr);
-  unit->p_bbox = cengine->create_bbox();
+  unit->p_bbox = cengine->create_bbox(unit);
   unit->p_bbox->width(unit->width());
   unit->p_bbox->height(unit->height());
 }

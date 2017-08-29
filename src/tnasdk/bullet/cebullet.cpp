@@ -1,12 +1,13 @@
 
 
 #include <btBulletDynamicsCommon.h>
-#include <cebullet.h>
+#include <bullet/cebullet.h>
 #include <iostream>
 
 namespace tnasdk {
 
-CbBBox::CbBBox(btCollisionWorld* world ) : 
+CbBBox::CbBBox( BFObject* user_data, btCollisionWorld* world ) : 
+  BBox( user_data ),
   m_world(world) {
   m_cobject = new btCollisionObject();
   m_cobject->setUserPointer(this);
@@ -141,8 +142,8 @@ Cebullet::~Cebullet () {
   delete m_configuration;
 }
 
-BBox* Cebullet::create_bbox() {
-  return new CbBBox(m_world);
+BBox* Cebullet::create_bbox( BFObject* user_data ) {
+  return new CbBBox(user_data, m_world);
 }
 
 void Cebullet::destroy_bbox( BBox* bbox ) {

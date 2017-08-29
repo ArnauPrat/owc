@@ -10,6 +10,7 @@
 namespace tnasdk {
 
 class BBox;
+class BFObject;
 
 struct Collision {
   const BBox* p_bbox_a;
@@ -28,9 +29,12 @@ public:
    * @brief Creates a bounding box at origin, size 1.0f and rotation 0.0f. The
    * bbox is disabled by default 
    *
+   * @param user_data A void pointer with the user data to associate with the
+   * bbox
+   *
    * @return Returns a newly created bounding box
    */
-  virtual BBox* create_bbox() = 0;
+  virtual BBox* create_bbox( BFObject* user_data ) = 0;
 
   /**
    * @brief Destroys a bounding box 

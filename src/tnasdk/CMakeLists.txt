@@ -16,17 +16,35 @@ set(TNASDK_DEFAULT_DEFINES " ")
 set(TNASDK_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(TNASDK_OUTPUT_DIR "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/tnasdk")
 
+
+### Setting up bullet
+SET(BULLET_ROOT "/usr/")
+SET(BULLET_INCLUDE_DIR "${BULLET_ROOT}/include/bullet")
+SET(BULLET_LIBRARY_DIR "${BULLET_ROOT}/lib")
+
+SET(BULLET_LIBRARIES
+  ${BULLET_LIBRARY_DIR}/libBullet3Common.so
+  ${BULLET_LIBRARY_DIR}/libBulletCollision.so
+  ${BULLET_LIBRARY_DIR}/libBullet3Collision.so
+  ${BULLET_LIBRARY_DIR}/libBulletDynamics.so
+  ${BULLET_LIBRARY_DIR}/libBullet3Dynamics.so
+  ${BULLET_LIBRARY_DIR}/libBullet3Geometry.so
+  ${BULLET_LIBRARY_DIR}/libLinearMath.so
+)
+
 MESSAGE(STATUS "TNASDK INCLUDE DIR: ${TNASDK_INCLUDE_DIR}")
 
-add_subdirectory(./bullet)
-
 include_directories(./)
+include_directories(${BULLET_INCLUDE_DIR})
 
 add_library(tnasdk STATIC
+  bf_object.h
+  bf_object.cpp
   common.h
   movement.h
   collision_engine.h
   bbox.h
+  bbox.cpp
   terrain.h
   terrain.cpp
   tnasdk.cpp
@@ -38,9 +56,11 @@ add_library(tnasdk STATIC
   unit.h
   vector.h
   vector.cpp
+  bullet/cebullet.h
+  bullet/cebullet.cpp
 )  
 
-target_link_libraries(tnasdk tnabullet ${TNABULLET_LIBRARIES})
+target_link_libraries(tnasdk ${BULLET_LIBRARIES})
 
 set_target_properties(tnasdk
   PROPERTIES

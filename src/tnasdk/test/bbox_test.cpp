@@ -24,7 +24,7 @@ class BBoxTest : public ::testing::Test {
 
 
 TEST_F(BBoxTest, BBoxWidth) {
-  BBox* bbox = cengine->create_bbox();
+  BBox* bbox = cengine->create_bbox(nullptr);
   bbox->width(10.0f*CMS_TO_INCHES);
   ASSERT_TRUE(std::abs(bbox->width() - 10*CMS_TO_INCHES) < 0.001);
   cengine->destroy_bbox(bbox);
@@ -32,14 +32,14 @@ TEST_F(BBoxTest, BBoxWidth) {
 
 
 TEST_F(BBoxTest, BBoxHeight) {
-  BBox* bbox = cengine->create_bbox();
+  BBox* bbox = cengine->create_bbox(nullptr);
   bbox->height(10.0f*CMS_TO_INCHES);
   ASSERT_TRUE(std::abs(bbox->height() - 10*CMS_TO_INCHES) < 0.001);
   cengine->destroy_bbox(bbox);
 }
 
 TEST_F(BBoxTest, BBoxPosition) {
-  BBox* bbox = cengine->create_bbox();
+  BBox* bbox = cengine->create_bbox(nullptr);
   bbox->position(Vector2f{1.0f, 2.0f});
   Vector2f position = bbox->position();
   ASSERT_EQ(position.x, 1.0f);
@@ -48,7 +48,7 @@ TEST_F(BBoxTest, BBoxPosition) {
 }
 
 TEST_F(BBoxTest, BBoxRotation) {
-  BBox* bbox = cengine->create_bbox();
+  BBox* bbox = cengine->create_bbox(nullptr);
   float_t angle = 180.5f;
   bbox->rotation(angle);
   ASSERT_EQ(bbox->rotation(), angle);
@@ -56,7 +56,7 @@ TEST_F(BBoxTest, BBoxRotation) {
 }
 
 TEST_F(BBoxTest, BBoxEnableDisable) {
-  BBox* bbox = cengine->create_bbox();
+  BBox* bbox = cengine->create_bbox(nullptr);
   bbox->enable();
   bbox->disable();
   bbox->disable();

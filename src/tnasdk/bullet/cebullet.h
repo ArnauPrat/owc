@@ -14,12 +14,14 @@ class btCollisionWorld;
 class btCollisionObject;
 class btBoxShape;
 
+class BFObject;
+
 namespace tnasdk {
 
 class CbBBox : public BBox {
 public:
   CbBBox() = delete;
-  CbBBox( btCollisionWorld* world );
+  CbBBox( BFObject* user_data, btCollisionWorld* world );
   virtual ~CbBBox();
 
   ////////////////////////////////////////////////
@@ -61,7 +63,7 @@ public:
   Cebullet (uint32_t width, uint32_t height);
   virtual ~Cebullet ();
 
-  BBox* create_bbox() override;
+  BBox* create_bbox( BFObject* user_data ) override;
 
   void destroy_bbox( BBox* bbox ) override;
 

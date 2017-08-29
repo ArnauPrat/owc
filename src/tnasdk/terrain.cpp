@@ -4,15 +4,16 @@
 #include <bbox.h>
 #include <tnasdk.h>
 #include <collision_engine.h>
+#include <bf_object.h>
 
 namespace tnasdk {
 
-Terrain::Terrain( Transform transform) {
-  p_bbox = cengine->create_bbox();
+Terrain::Terrain() : 
+  BFObject("terrain"), 
+  p_bbox(nullptr) {
 }
 
 Terrain::~Terrain() {
-  cengine->destroy_bbox(p_bbox);
 }
   
 } /* tnasdk */ 

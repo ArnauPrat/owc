@@ -16,8 +16,19 @@ float_t           bat_ymin = 0;
 float_t           bat_xmax = 0;
 float_t           bat_ymax = 0;
 
+/**
+ * @brief Creates a unit spacing box around a unit, used to guarantee the unit
+ * spacing rule
+ *
+ * @param unit The unit to crete the box from 
+ * @param position The position of the box
+ * @param rotation The rotation of the box
+ *
+ * @return Returns a BBox containing an extra width and height of 1.0f inch 
+ * to account for the unit spacing
+ */
 static BBox* create_unit_spacing_box(Unit* unit, Vector2f position, float_t rotation) {
-  BBox* bbox = cengine->create_bbox();
+  BBox* bbox = cengine->create_bbox(unit);
   bbox->width(unit->width() + 1.90f);
   bbox->height(unit->height() + 1.99f);
   bbox->position(position);
