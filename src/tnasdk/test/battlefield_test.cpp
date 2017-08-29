@@ -88,6 +88,26 @@ TEST_F(BattlefieldTest, IsValidTest) {
   destroy_unit(unit_b);
 }
 
+TEST_F(BattlefieldTest, UnitSpacingTest) {
+  Unit* unit_a = create_unit(TroopType::E_INFANTRY, 5, 5, 20.0f*MMS_TO_INCHES, 20.0f*MMS_TO_INCHES );
+  Unit* unit_b = create_unit(TroopType::E_INFANTRY, 5, 5, 20.0f*MMS_TO_INCHES, 20.0f*MMS_TO_INCHES );
+
+  float_t unit_width = 20.0f*MMS_TO_INCHES*5;
+
+  ASSERT_TRUE(deploy(unit_a, Vector2f{0.0f, 0.0f}, 0.0f));
+
+  ASSERT_FALSE(deploy(unit_b, Vector2f{unit_width, 0.0}, 0.0f));
+  ASSERT_FALSE(deploy(unit_b, Vector2f{unit_width+0.5f, 0.0f}, 0.0f));
+  ASSERT_FALSE(deploy(unit_b, Vector2f{unit_width+0.75f, 0.0f}, 0.0f));
+  ASSERT_FALSE(deploy(unit_b, Vector2f{unit_width+0.90f, 0.0f}, 0.0f));
+  ASSERT_TRUE(deploy(unit_b, Vector2f{unit_width+1.0f, 0.0}, 0.0f));
+
+  remove(unit_a);
+  remove(unit_b);
+  destroy_unit(unit_a);
+  destroy_unit(unit_b);
+}
+
 }  
 
 int main(int argc, char *argv[])

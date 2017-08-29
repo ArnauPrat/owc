@@ -11,6 +11,7 @@ CbBBox::CbBBox(btCollisionWorld* world ) :
   m_cobject = new btCollisionObject();
   m_cobject->setUserPointer(this);
   m_shape = new btBoxShape(btVector3{0.5f, 0.5f, 0.5f});
+  m_shape->setMargin(0.0f);
   m_cobject->setCollisionShape(m_shape);
   m_cobject->getWorldTransform().setOrigin(btVector3{0.0f, 0.0f, 0.0f});
   btQuaternion rotation;

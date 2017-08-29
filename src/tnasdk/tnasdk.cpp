@@ -16,6 +16,15 @@ float_t           bat_ymin = 0;
 float_t           bat_xmax = 0;
 float_t           bat_ymax = 0;
 
+static BBox* create_unit_spacing_box(Unit* unit, Vector2f position, float_t rotation) {
+  BBox* bbox = cengine->create_bbox();
+  bbox->width(unit->width() + 1.90f);
+  bbox->height(unit->height() + 1.99f);
+  bbox->position(position);
+  bbox->rotation(rotation);
+  return bbox;
+}
+
 ////////////////////////////////////////////////
 ////////////////////////////////////////////////
 ////////////////////////////////////////////////
@@ -89,16 +98,29 @@ bool_t deploy( Unit* unit, Vector2f position, float_t rotation ) {
   if( !inside_battlefield(unit->width(), unit->height(), position, rotation) ) {
     return false;
   }
+
+  // We create a bbox which includes the unit spacing
+  BBox* margin_bbox = create_unit_spacing_box(unit, position, rotation);
+  std::vector<Collision> collisions = cengine->detect_collisions();
+  bool_t found = false;
+  for (const Collision& collision : collisions) {
+    if (collision.p_bbox_a == margin_bbox || collision.p_bbox_b == margin_bbox) {
+      found = true;
+      break;
+    }
+  }
+  cengine->destroy_bbox(margin_bbox);
+
+  // If we found a collision
+  if(found) {
+    return false;
+  }
+
+  // If we fulfill the unit spacing rule, we can deployt the unit (i.e. attach
+  // it a bounding box)
   attach_bbox(unit);
   unit->p_bbox->position(position);
   unit->p_bbox->rotation(rotation);
-  std::vector<Collision> collisions = cengine->detect_collisions();
-  for (const Collision& collision : collisions) {
-    if (collision.p_bbox_a == unit->p_bbox || collision.p_bbox_b == unit->p_bbox) {
-      detach_bbox(unit);
-      return false;
-    }
-  }
   return true;
 }
 
@@ -107,23 +129,11 @@ void remove( Unit* unit ) {
 }
 
 bool_t is_valid( Unit* unit, Vector2f position, float_t rotation ) {
-  if( !inside_battlefield(unit->width(), unit->height(), position, rotation) ) {
-    return false;
+  if(deploy( unit, position, rotation )) {
+    detach_bbox(unit);
+    return true;
   }
-  BBox* bbox = cengine->create_bbox();
-  bbox->width(unit->width());
-  bbox->height(unit->height());
-  bbox->position(position);
-  bbox->rotation(rotation);
-  bool_t collides = false;
-  std::vector<Collision> collisions = cengine->detect_collisions();
-  for (const Collision& collision : collisions) {
-    if (collision.p_bbox_a == bbox || collision.p_bbox_b == bbox) {
-      collides = true;
-    }
-  }
-  cengine->destroy_bbox(bbox);
-  return !collides;
+  return false;
 }
 
 Movement start_movement(Unit* unit, bool_t marching) {
