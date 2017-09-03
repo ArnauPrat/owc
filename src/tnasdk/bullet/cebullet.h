@@ -69,7 +69,10 @@ public:
 
   std::vector<Collision> detect_collisions() override;
 
+  std::vector<BBox*>  bboxes() override;
+
 private:
+  std::vector<BBox*>        m_bboxes;
   btCollisionConfiguration* m_configuration;
   btCollisionDispatcher*    m_dispatcher;
   btBroadphaseInterface*    m_broadphase;

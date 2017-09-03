@@ -50,6 +50,15 @@ public:
    * @return Returns a vector with the collisions information
    */
   virtual std::vector<Collision> detect_collisions() = 0;
+
+
+  /**
+   * @brief Gets the bboxes created
+   *
+   * @return Returns a vector with the bboxes created
+   */
+  virtual std::vector<BBox*>  bboxes() = 0;
+
 };
 
 } /* tnasdk */ 

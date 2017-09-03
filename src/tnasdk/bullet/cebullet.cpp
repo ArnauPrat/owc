@@ -34,19 +34,6 @@ void CbBBox::transform(Vector2f position, float_t rotation) {
   btQuaternion rotation_qt;
   rotation_qt.setRotation(btVector3{0.0f,0.0f,1.0}, rotation*DEGREES_TO_RADS);
   m_cobject->getWorldTransform().setRotation(rotation_qt);
-  /*
-  m_world->performDiscreteCollisionDetection();
-
-  int numManifolds = m_world->getDispatcher()->getNumManifolds();
-  for (int i = 0; i < numManifolds; i++) {
-    btPersistentManifold* contactManifold = m_world->getDispatcher()->getManifoldByIndexInternal(i);
-    const btCollisionObject* obA = static_cast<const btCollisionObject*>(contactManifold->getBody0());
-    const btCollisionObject* obB = static_cast<const btCollisionObject*>(contactManifold->getBody1());
-    if ((obA == m_cobject || obB == m_cobject) && contactManifold->getNumContacts() > 0 ) {
-      return true;
-    }
-  }
-  return false; */
 }
 
 void CbBBox::position( Vector2f position ) {
@@ -143,10 +130,18 @@ Cebullet::~Cebullet () {
 }
 
 BBox* Cebullet::create_bbox( BFObject* user_data ) {
-  return new CbBBox(user_data, m_world);
+  BBox* bbox =  new CbBBox(user_data, m_world);
+  m_bboxes.push_back(bbox);
+  return bbox;
 }
 
 void Cebullet::destroy_bbox( BBox* bbox ) {
+  for (std::vector<BBox*>::const_iterator i = m_bboxes.begin(); i != m_bboxes.end(); ++i) {
+    if( *i == bbox ) {
+      m_bboxes.erase(i);
+      break;
+    }
+  }
   delete bbox;
 }
 
@@ -164,6 +159,10 @@ std::vector<Collision> Cebullet::detect_collisions() {
     }
   }
   return collisions;
+}
+
+std::vector<BBox*>  Cebullet::bboxes() {
+  return m_bboxes;
 }
   
 } /* tnasdk */ 

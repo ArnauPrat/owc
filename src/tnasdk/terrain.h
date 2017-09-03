@@ -7,7 +7,6 @@
 #include <common.h>
 #include <troop_type.h>
 #include <transform.h>
-#include <vector>
 #include <bf_object.h>
 
 namespace tnasdk {
@@ -18,6 +17,15 @@ class BBox;
 ////////////////////////////////////////////////
 ////////////////////////////////////////////////
 
+enum class TerrainFeature {
+  E_IMPASSABLE,
+  E_FIELD,
+  E_HILL,
+  E_FOREST,
+  E_RUINS,
+  E_WALL,
+  E_BUILDING
+};
 
 enum class CoverType {
   E_SOFT,
@@ -30,17 +38,28 @@ struct CoverModifier {
   Footprint m_footprint;
 };
 
-class Terrain : public BFObject {
-public:
-  Terrain();
-  virtual ~Terrain();
+struct Terrain : public BFObject {
 
-  bool_t                      m_obscuring;  // Whether the terrain is obscuring
-  bool_t                      m_dangerous;  // Wehther the terrain is dangerous
-  std::vector<TroopType>      m_dtroops;    // Troop types affected by dangerous terrain
-  std::vector<CoverModifier>  m_cover;      // The type of cover of this terrain
-  BBox*                       p_bbox;
+  Terrain( TerrainFeature type, float_t width, float_t height );
+  virtual ~Terrain() = default;
+
+  ////////////////////////////////////////////////
+  ////////////////////////////////////////////////
+  ////////////////////////////////////////////////
+
+  float_t width() override;
+
+  float_t height() override;
+
+  ////////////////////////////////////////////////
+  ////////////////////////////////////////////////
+  ////////////////////////////////////////////////
+
+  TerrainFeature                    m_feature;    ///< The feature type of the terrain
+  float_t                           m_width;      ///< The width of the terrain
+  float_t                           m_height;     ///< The height of the terrain
 };
+
 
 } /* tnasdk */ 
 #endif /* _TNASDK_TERRAIN_H_ */

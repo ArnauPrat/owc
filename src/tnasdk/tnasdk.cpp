@@ -5,6 +5,7 @@
 #include <tnasdk.h>
 #include <cassert>
 #include <unit.h>
+#include <terrain.h>
 #include <iostream>
 #include <collision_engine.h>
 
@@ -17,61 +18,15 @@ float_t           bat_xmax = 0;
 float_t           bat_ymax = 0;
 
 /**
- * @brief Creates a unit spacing box around a unit, used to guarantee the unit
- * spacing rule
+ * @brief Tests whether a box is a inside the battlefield
  *
- * @param unit The unit to crete the box from 
+ * @param width The width of the box
+ * @param height The height of the box
  * @param position The position of the box
- * @param rotation The rotation of the box
+ * @param angle The rotation of the box
  *
- * @return Returns a BBox containing an extra width and height of 1.0f inch 
- * to account for the unit spacing
+ * @return Returns true if the box is inside the battlefield
  */
-static BBox* create_unit_spacing_box(Unit* unit, Vector2f position, float_t rotation) {
-  BBox* bbox = cengine->create_bbox(unit);
-  bbox->width(unit->width() + 1.90f);
-  bbox->height(unit->height() + 1.99f);
-  bbox->position(position);
-  bbox->rotation(rotation);
-  return bbox;
-}
-
-////////////////////////////////////////////////
-////////////////////////////////////////////////
-////////////////////////////////////////////////
-
-void init_tnasdk( CollisionEngine* cengine_,
-                  float_t bwidth,
-                  float_t bheight) {
-  cengine = cengine_;
-  bat_xmin = -bwidth/2.0f;
-  bat_ymin = -bheight/2.0f;
-  bat_xmax = bwidth/2.0f;
-  bat_ymax = bheight/2.0f;
-}
-
-void release_tnasdk() {
-}
-
-Unit* create_unit(TroopType troop_type,
-                  int32_t num_ranks, 
-                  int32_t num_files,
-                  float_t troop_width,
-                  float_t troop_height) {
-
-Unit* unit = new Unit(troop_type, 
-                      num_ranks,
-                      num_files,
-                      troop_width,
-                      troop_height);
-  return unit;
-}
-
-void destroy_unit(Unit* unit) {
-  assert(unit->p_bbox == nullptr);
-  delete unit;
-}
-
 static bool_t inside_battlefield( float_t width, 
                                   float_t height, 
                                   Vector2f position, 
@@ -105,43 +60,120 @@ static bool_t inside_battlefield( float_t width,
   return true;
 }
 
-bool_t deploy( Unit* unit, Vector2f position, float_t rotation ) {
-  if( !inside_battlefield(unit->width(), unit->height(), position, rotation) ) {
+
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+
+void init_tnasdk( CollisionEngine* cengine_,
+                  float_t bwidth,
+                  float_t bheight) {
+  cengine = cengine_;
+  bat_xmin = -bwidth/2.0f;
+  bat_ymin = -bheight/2.0f;
+  bat_xmax = bwidth/2.0f;
+  bat_ymax = bheight/2.0f;
+}
+
+void release_tnasdk() {
+  assert(cengine->bboxes().size() == 0);
+}
+
+Unit* create_unit(TroopType troop_type,
+                  int32_t num_ranks, 
+                  int32_t num_files,
+                  float_t troop_width,
+                  float_t troop_height) {
+
+Unit* unit = new Unit(troop_type, 
+                      num_ranks,
+                      num_files,
+                      troop_width,
+                      troop_height);
+  return unit;
+}
+
+void destroy_unit(Unit* unit) {
+  assert(unit->p_bbox == nullptr);
+  delete unit;
+}
+
+Terrain* create_terrain( TerrainFeature type, float_t width, float_t height ) {
+  return new Terrain(type, width, height);
+}
+
+void destroy_terrain( Terrain* terrain ) {
+  delete terrain;
+}
+
+/**
+ * @brief Tests wether a box can be deployed or not at he given position and
+ * rotation
+ *
+ * @param width     The width of the box
+ * @param height    The height of the box
+ * @param position  The position of the box
+ * @param rotation  The rotation of the box
+ *
+ * @return 
+ */
+static bool_t deploy( float_t width, float_t height, Vector2f position, float_t rotation ) {
+  if( !inside_battlefield(width, height, position, rotation) ) {
     return false;
   }
 
-  // We create a bbox which includes the unit spacing
-  BBox* margin_bbox = create_unit_spacing_box(unit, position, rotation);
+  BBox* bbox = cengine->create_bbox(nullptr);
+  bbox->width(width);
+  bbox->height(height);
+  bbox->position(position);
+  bbox->rotation(rotation);
   std::vector<Collision> collisions = cengine->detect_collisions();
   bool_t found = false;
   for (const Collision& collision : collisions) {
-    if (collision.p_bbox_a == margin_bbox || collision.p_bbox_b == margin_bbox) {
+    if (collision.p_bbox_a == bbox || collision.p_bbox_b == bbox) {
       found = true;
       break;
     }
   }
-  cengine->destroy_bbox(margin_bbox);
+  cengine->destroy_bbox(bbox);
+  return !found;
+}
 
-  // If we found a collision
-  if(found) {
+bool_t deploy( BFObject* object, Vector2f position, float_t rotation ) {
+
+  if(!deploy(object->width(), object->height(), position, rotation)) {
     return false;
   }
 
+  float_t offset = 0.0f;
+
+  if( object->m_type == "unit" || 
+      (object->m_type == "terrain" && 
+       static_cast<Terrain*>(object)->m_feature == TerrainFeature::E_IMPASSABLE)) {
+    offset = 1.99f;
+  }
+
   // If we fulfill the unit spacing rule, we can deployt the unit (i.e. attach
-  // it a bounding box)
-  attach_bbox(unit);
-  unit->p_bbox->position(position);
-  unit->p_bbox->rotation(rotation);
+  // it a bounding box) with a bbox acounting for the unit spacing
+  BBox* bbox = cengine->create_bbox(object);
+  bbox->width(object->width() + offset);
+  bbox->height(object->height() + offset);
+  bbox->position(position);
+  bbox->rotation(rotation);
+  object->p_bbox = bbox;
   return true;
 }
 
-void remove( Unit* unit ) {
-  detach_bbox(unit);
+void remove( BFObject* unit ) {
+  cengine->destroy_bbox(unit->p_bbox);
+  unit->p_bbox = nullptr;
 }
 
-bool_t is_valid( Unit* unit, Vector2f position, float_t rotation ) {
-  if(deploy( unit, position, rotation )) {
-    detach_bbox(unit);
+
+bool_t is_valid( BFObject* object, Vector2f position, float_t rotation ) {
+  if(deploy( object, position, rotation )) {
+    cengine->destroy_bbox(object->p_bbox);
+    object->p_bbox = nullptr;
     return true;
   }
   return false;

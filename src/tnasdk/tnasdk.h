@@ -6,6 +6,7 @@
 #include <common.h>
 #include <movement.h>
 #include <transform.h>
+#include <terrain.h>
 
 namespace tnasdk {
 
@@ -61,21 +62,40 @@ Unit* create_unit(TroopType troop_type,
 void destroy_unit(Unit* unit);
 
 /**
- * @brief Adds a unit to the battlefield
+ * @brief Creates a terrain
  *
- * @param unit The unit to add
- * @param position A Vector2f indicating the position of the unit 
- * @param rotation The rotation angle indicating the orientation of the unit
- * @return True if the unit can be added to the given position and orientation
+ * @param type The type of terrain
+ * @param width The width of the terrain
+ * @param height The height of the terrain
+ *
+ * @return Returns and instance of a terrain
  */
-bool_t deploy( Unit* unit, Vector2f position, float_t rotation );
+Terrain* create_terrain( TerrainFeature type, float_t width, float_t height );
+
+/**
+ * @brief Destroys a terrain
+ *
+ * @param terrain The terrain to destroy
+ */
+void destroy_terrain(Terrain* terrain);
+
+/**
+ * @brief Adds a bfobject to the battlefield
+ *
+ * @param object The bfobject to add
+ * @param position A Vector2f indicating the position of the bfobject 
+ * @param rotation The rotation angle indicating the orientation of the bfobject
+ * @return True if the bfobject can be added to the given position and orientation
+ */
+bool_t deploy( BFObject* object, Vector2f position, float_t rotation );
+
 
 /**
  * @brief  Removes a unit from the battlefield
  *
  * @param unit The unit to remove
  */
-void remove( Unit* unit );
+void remove( BFObject* unit );
 
 
 /**
@@ -106,16 +126,17 @@ bool_t end_movement( const Movement& movement,
                      float_t rotation );
 
 /**
- * @brief Tells if the given position and rotation are valid for the given unit
+ * @brief Tells if the given position and rotation are valid for the given
+ * object
  *
- * @param unit The unit to test the position and rotation for
- * @param position A Vector2f indicating the position of the unit 
- * @param rotation The rotation angle indicating the orientation of the unit
+ * @param object The object to test the position and rotation for
+ * @param position A Vector2f indicating the position of the object 
+ * @param rotation The rotation angle indicating the orientation of the object
  *
  * @return Returns true if the pair <poisition,rotations> configures a valid
- * placement for the given unit
+ * placement for the given object
  */
-bool_t is_valid( Unit* unit, Vector2f position, float_t rotation );
+bool_t is_valid( BFObject* object, Vector2f position, float_t rotation );
 
 /**
  * @brief Tests whether there is line of sight between two units

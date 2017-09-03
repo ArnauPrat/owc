@@ -108,6 +108,22 @@ TEST_F(BattlefieldTest, UnitSpacingTest) {
   destroy_unit(unit_b);
 }
 
+TEST_F(BattlefieldTest, TerrainTest) {
+  Terrain* terrain_a = create_terrain( TerrainFeature::E_IMPASSABLE, 10.0f, 5.0f );
+  ASSERT_TRUE(deploy(terrain_a, Vector2f{0.0f, 0.0f}, 0.0f));
+
+  Terrain* terrain_b = create_terrain( TerrainFeature::E_IMPASSABLE, 10.0f, 5.0f );
+  ASSERT_FALSE(deploy(terrain_b, Vector2f{0.0f, 0.0f}, 0.0f));
+  ASSERT_FALSE(deploy(terrain_b, Vector2f{10.0f, 0.0f}, 0.0f));
+  ASSERT_TRUE(deploy(terrain_b, Vector2f{11.0f, 0.0f}, 0.0f));
+  
+  remove(terrain_a);
+  remove(terrain_b);
+
+  destroy_terrain(terrain_a);
+  destroy_terrain(terrain_b);
+}
+
 }  
 
 int main(int argc, char *argv[])

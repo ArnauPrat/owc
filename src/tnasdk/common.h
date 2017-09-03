@@ -17,7 +17,8 @@ namespace tnasdk {
 
 enum class Footprint {
   E_HALF,
-  E_FULL
+  E_FULL,
+  E_OUT
 };
 } /* tnasdk */ 
 
