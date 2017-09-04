@@ -8,6 +8,7 @@
 #include <terrain.h>
 #include <iostream>
 #include <collision_engine.h>
+#include <bullet/cebullet.h>
 
 namespace tnasdk {
 
@@ -65,10 +66,9 @@ static bool_t inside_battlefield( float_t width,
 ////////////////////////////////////////////////
 ////////////////////////////////////////////////
 
-void init_tnasdk( CollisionEngine* cengine_,
-                  float_t bwidth,
-                  float_t bheight) {
-  cengine = cengine_;
+void init_tnasdk(float_t bwidth,
+                 float_t bheight) {
+  cengine = new Cebullet(bwidth*CMS_TO_INCHES,bheight*CMS_TO_INCHES);
   bat_xmin = -bwidth/2.0f;
   bat_ymin = -bheight/2.0f;
   bat_xmax = bwidth/2.0f;
@@ -77,6 +77,7 @@ void init_tnasdk( CollisionEngine* cengine_,
 
 void release_tnasdk() {
   assert(cengine->bboxes().size() == 0);
+  delete cengine;
 }
 
 Unit* create_unit(TroopType troop_type,

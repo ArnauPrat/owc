@@ -30,7 +30,7 @@ extern float_t          bat_ymax;
  * @param bwidth  The width of the battlefield in inches
  * @param bheight The height of the battlefield in inches
  */
-void init_tnasdk( CollisionEngine* cengine, float_t bwidth, float_t bheight );
+void init_tnasdk(float_t bwidth, float_t bheight );
 
 /**
  * @brief Releases the resources acquired by tnasdk

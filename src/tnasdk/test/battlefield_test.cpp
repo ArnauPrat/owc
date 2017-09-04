@@ -11,16 +11,13 @@ class BattlefieldTest : public ::testing::Test {
 
       protected:
         virtual void SetUp() {
-          cengine = new Cebullet(180*CMS_TO_INCHES,120*CMS_TO_INCHES);
-          init_tnasdk(cengine,180*CMS_TO_INCHES,120*CMS_TO_INCHES);
+          init_tnasdk(180*CMS_TO_INCHES,120*CMS_TO_INCHES);
         }
 
         virtual void TearDown() {
           release_tnasdk();
-          delete cengine;
         }
 
-        CollisionEngine* cengine;
 };
 
 TEST_F(BattlefieldTest, Deploy) {

@@ -4,7 +4,6 @@
 
 #include <OgreCamera.h>
 #include <OgreEntity.h>
-#include <OgreLogManager.h>
 #include <OgreRoot.h>
 #include <OgreSceneManager.h>
 #include <OgreRenderWindow.h>
@@ -14,18 +13,14 @@
 
 #include <Compositor/OgreCompositorManager2.h>
 
-#include <OISEvents.h>
-#include <OISInputManager.h>
-#include <OISKeyboard.h>
-#include <OISMouse.h>
+union SDL_Event;
+class SDL_Window;
 
 namespace owc {
 namespace client {
 
 class Client : public Ogre::FrameListener, 
-                     public Ogre::WindowEventListener, 
-                     public OIS::KeyListener, 
-                     public OIS::MouseListener
+                     public Ogre::WindowEventListener
 {
 public:
     Client(void);
@@ -35,6 +30,7 @@ public:
 
 protected:
     virtual bool setup();
+    virtual bool cleanup();
     virtual bool configure(void);
     virtual void chooseSceneManager(void);
     virtual void createCamera(void);
@@ -46,18 +42,16 @@ protected:
     virtual void setupCompositor(void);
     virtual void createResourceListener(void);
     virtual void loadResources(void);
+    virtual bool frameStarted(const Ogre::FrameEvent& evt) override;
     virtual bool frameRenderingQueued(const Ogre::FrameEvent& evt) override;
 
-    virtual bool keyPressed(const OIS::KeyEvent &arg) override;
-    virtual bool keyReleased(const OIS::KeyEvent &arg) override;
-    virtual bool mouseMoved(const OIS::MouseEvent &arg) override;
-    virtual bool mousePressed(const OIS::MouseEvent &arg, OIS::MouseButtonID id) override;
-    virtual bool mouseReleased(const OIS::MouseEvent &arg, OIS::MouseButtonID id) override;
 
     // Adjust mouse clipping area
     virtual void windowResized(Ogre::RenderWindow* rw) override;
-    // Unattach OIS before window shutdown (very important under Linux)
-    virtual void windowClosed(Ogre::RenderWindow* rw) override;
+
+    virtual void onKeywordEvent( const SDL_Event& event );
+    virtual void onMouseEvent( const SDL_Event& event );
+
 
 
     Ogre::Root*                 m_root;
@@ -72,13 +66,10 @@ protected:
 
     bool                        m_shutdown;
 
-    //OIS Input devices
-    OIS::InputManager*          m_inputmanager;
-    OIS::Mouse*                 m_mouse;
-    OIS::Keyboard*              m_keyboard;
-
     // Added for Mac compatibility
     Ogre::String                m_resourcepath;
+
+    SDL_Window*                  m_sdl_window;
 };
 
 }
