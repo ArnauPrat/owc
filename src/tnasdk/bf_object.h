@@ -3,10 +3,10 @@
 #ifndef _TNASDK_BFOBJECT_H_
 #define _TNASDK_BFOBJECT_H_
 
-#include <common.h>
-#include <string>
-#include <bbox.h>
-#include <vector.h>
+#include "common.h"
+#include "string"
+#include "bbox.h"
+#include "vector.h"
 
 namespace tnasdk {
 

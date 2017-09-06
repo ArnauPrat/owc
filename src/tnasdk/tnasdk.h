@@ -3,10 +3,11 @@
 #ifndef _TNASDK_H_
 #define _TNASDK_H_ value
 
-#include <common.h>
-#include <movement.h>
-#include <transform.h>
-#include <terrain.h>
+#include "common.h"
+#include "movement.h"
+#include "transform.h"
+#include "terrain.h"
+#include "bullet/cebullet.h"
 
 namespace tnasdk {
 

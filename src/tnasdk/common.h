@@ -22,9 +22,9 @@ enum class Footprint {
 };
 } /* tnasdk */ 
 
-#include <types.h>
-#include <troop_type.h>
-#include <vector.h>
+#include "types.h"
+#include "troop_type.h"
+#include "vector.h"
 
 #endif /* ifndef _TNASDK_TYPES_H */
 

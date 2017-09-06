@@ -3,11 +3,12 @@
 #ifndef _FURIOUS_DATABASE_H_
 #define _FURIOUS_DATABASE_H_
 
-#include <data/table.h>
-#include <data/system.h>
-#include <data/static_table.h>
-#include <data/common.h>
-#include <data/reflection.h>
+#include "table.h"
+#include "system.h"
+#include "static_table.h"
+#include "common.h"
+#include "reflection.h"
+
 #include <map>
 #include <memory>
 #include <string>

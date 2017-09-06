@@ -2,10 +2,10 @@
 #ifndef _TNASDK_CEBULLET_H
 #define _TNASDK_CEBULLET_H
 
-#include <common.h>
-#include <collision_engine.h>
-#include <vector>
-#include <bbox.h>
+#include "../common.h"
+#include "../collision_engine.h"
+#include "../vector"
+#include "../bbox.h"
 
 class btCollisionConfiguration;
 class btCollisionDispatcher;

@@ -3,7 +3,7 @@
 #ifndef _TNASDK_TROOP_TYPE_H_
 #define _TNASDK_TROOP_TYPE_H_ value
 
-#include <common.h>
+#include "common.h"
 
 namespace tnasdk {
 

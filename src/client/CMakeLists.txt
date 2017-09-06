@@ -12,22 +12,30 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wno-ignored-attributes
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}  -O0 -g -pg ")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2 -DNDEBUG ")
 
-INCLUDE_DIRECTORIES(${TNASDK_INCLUDE_DIR})
+MESSAGE(STATUS "FURIOUS DIR: ${FURIOUS_INCLUDE_DIR}")
+
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src)
 INCLUDE_DIRECTORIES(${OGRE_INCLUDE_DIRS})
-INCLUDE_DIRECTORIES(${OIS_INCLUDE_DIRS})
-INCLUDE_DIRECTORIES("./")
 
 SET(OPENWARCLIENT_SOURCE_FILES 
   main.cpp
   client.cpp
   client.h
+  owc.h
+  owc.cpp
+  components/unit_component.h
+  components/unit_component.cpp
+  components/rect_component.h
+  components/rect_component.cpp
   )
 
 ADD_EXECUTABLE(openwarclient ${OPENWARCLIENT_SOURCE_FILES})  
 
 ADD_DEPENDENCIES(openwarclient furious ${OGRE_DEPENDENCY} tnasdk )
+
 LINK_DIRECTORIES(${TNASDK_LIBRARY_DIR})
-TARGET_LINK_LIBRARIES(openwarclient furious ${OGRE_LIBRARIES} ${OIS_LIBRARIES} tnasdk libSDL2.so)
+TARGET_LINK_LIBRARIES(openwarclient furious ${OGRE_LIBRARIES} ${OIS_LIBRARIES}
+  tnasdk libSDL2.so)
 
 
 set_target_properties(openwarclient 

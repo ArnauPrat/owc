@@ -4,10 +4,10 @@
 #ifndef _TNASDK_TERRAIN_H_
 #define _TNASDK_TERRAIN_H_
 
-#include <common.h>
-#include <troop_type.h>
-#include <transform.h>
-#include <bf_object.h>
+#include "common.h"
+#include "troop_type.h"
+#include "transform.h"
+#include "bf_object.h"
 
 namespace tnasdk {
 

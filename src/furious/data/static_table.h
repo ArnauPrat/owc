@@ -2,13 +2,14 @@
 #ifndef _FURIOUS_STATIC_TABLE_H_
 #define _FURIOUS_STATIC_TABLE_H_
 
+#include "../common/types.h"
+#include "reflection.h"
+#include "table.h"
+
 #include <vector>
 #include <utility>
-#include <common/types.h>
-#include <data/reflection.h>
 #include <iterator>
 
-#include "table.h"
 #include <cassert>
 
 namespace furious {
