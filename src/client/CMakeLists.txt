@@ -18,15 +18,15 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src)
 INCLUDE_DIRECTORIES(${OGRE_INCLUDE_DIRS})
 
 SET(OPENWARCLIENT_SOURCE_FILES 
-  main.cpp
-  client.cpp
-  client.h
-  owc.h
-  owc.cpp
-  components/unit_component.h
-  components/unit_component.cpp
-  components/rect_component.h
   components/rect_component.cpp
+  components/rect_component.h
+  components/unit_component.cpp
+  components/unit_component.h
+  game_state.cpp
+  game_state.h
+  main.cpp
+  owc.cpp
+  owc.h
   )
 
 ADD_EXECUTABLE(openwarclient ${OPENWARCLIENT_SOURCE_FILES})  

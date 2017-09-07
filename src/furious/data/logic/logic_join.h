@@ -3,14 +3,14 @@
 #ifndef _FURIOUS_LOGIC_JOIN_H_
 #define _FURIOUS_LOGIC_JOIN_H_
 
-#include <data/common.h>
-#include <data/logic/logic_plan.h>
+#include "../common.h"
+#include "logic_plan.h"
+
 #include <memory>
 #include <sstream>
 #include <cassert>
 
 namespace  furious {
-namespace data {
 
 class LogicJoin : public LogicPlanNode {
 
@@ -35,6 +35,5 @@ public:
   const LogicPlanNodePtr p_right;
 
 };
-} /* data */ 
 } /*  furious */ 
 #endif

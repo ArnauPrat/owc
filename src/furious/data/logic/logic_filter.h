@@ -3,12 +3,12 @@
 #ifndef _FURIOUS_LOGIC_FILTER_H
 #define _FURIOUS_LOGIC_FILTER_H 
 
-#include <data/common.h>
-#include <data/logic/logic_plan.h>
+#include "../common.h"
+#include "logic_plan.h"
+
 #include <sstream>
 
 namespace  furious {
-namespace data {
 
 class LogicFilter : public LogicPlanNode {
 
@@ -31,8 +31,6 @@ public:
   const LogicPlanNodePtr p_table;
 
 };
-
-} /* data */ 
 
 } /*  furious */ 
 #endif

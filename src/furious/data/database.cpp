@@ -1,10 +1,9 @@
 
 
 
-#include <data/database.h>
+#include "database.h"
 
 namespace furious {
-namespace data {
 
 DatabasePtr Database::get_instance() {
   static DatabasePtr instance(new Database());
@@ -22,5 +21,4 @@ void Database::clear() {
   m_tables.clear();
 }
   
-} /* data */ 
 } /* furious */ 

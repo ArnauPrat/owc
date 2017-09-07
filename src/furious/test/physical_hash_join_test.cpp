@@ -1,13 +1,10 @@
 
 
 #include "data_test.h"
-#include <data/physical/physical_scan.h>
-#include <data/physical/physical_hash_join.h>
+#include "../data/physical/physical_scan.h"
+#include "../data/physical/physical_hash_join.h"
 
-namespace furious
-{
-  namespace data
-  {
+namespace furious {
 
     class PhysicalHashJoinTest : public DataTest {
     };
@@ -105,8 +102,8 @@ namespace furious
 
     struct ComponentC {
       uint32_t field1_;
-      double_t field2_;
-      ComponentC(uint32_t field1, double_t field2 ) : 
+      double field2_;
+      ComponentC(uint32_t field1, double field2 ) : 
         field1_(field1),
         field2_(field2) 
       {}
@@ -118,8 +115,8 @@ namespace furious
 
     struct ComponentD {
       uint32_t field1_;
-      double_t field2_;
-      ComponentD(uint32_t field1, double_t field2 ) : 
+      double field2_;
+      ComponentD(uint32_t field1, double field2 ) : 
         field1_(field1),
         field2_(field2) 
       {}
@@ -205,8 +202,6 @@ namespace furious
       database_->drop_table<ComponentD>();
     }
     
-  } /* daa */ 
-  
 } /* furious */ 
 
 

@@ -2,12 +2,9 @@
 
 #include <gtest/gtest.h>
 #include "data_test.h"
-#include <data/physical/physical_scan.cpp>
+#include "../data/physical/physical_scan.cpp"
 
-namespace furious
-{
-  namespace data
-  {
+namespace furious {
 
     class PhysicalScanTest : public DataTest {
 
@@ -35,8 +32,6 @@ namespace furious
       physical_scan.close();
 
     }
-    
-  } /* data */ 
   
 } /* furious */ 
 

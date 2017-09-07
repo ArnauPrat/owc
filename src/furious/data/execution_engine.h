@@ -3,17 +3,16 @@
 #ifndef _FURIOUS_EXECUTION_ENGINE_H_
 #define _FURIOUS_EXECUTION_ENGINE_H_
 
-#include <data/logic/logic_join.h>
-#include <data/logic/logic_plan.h>
-#include <data/common.h>
-#include <data/system.h>
-#include <data/database.h>
-#include <data/physical/physical_plan.h>
+#include "logic/logic_join.h"
+#include "logic/logic_plan.h"
+#include "common.h"
+#include "system.h"
+#include "database.h"
+#include "physical/physical_plan.h"
 #include <map>
 #include <memory>
 
 namespace furious {
-namespace data {
 
 class ExecutionEngine;
 using ExecutionEnginePtr = std::shared_ptr<ExecutionEngine>;
@@ -92,7 +91,7 @@ SystemId ExecutionEngine::register_system(Args&&...x) {
   m_systems.insert(SystemMapPair(m_next_id,sp));
   return m_next_id++;
 }
-} /* data */ 
+
 } /* furious */ 
 
 #endif

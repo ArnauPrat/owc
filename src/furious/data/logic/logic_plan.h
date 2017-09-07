@@ -4,13 +4,13 @@
 #ifndef _FURIOUS_LOGIC_PLAN_H_
 #define _FURIOUS_LOGIC_PLAN_H_ 
 
+#include "logic_plan_visitor.h"
+
 #include <memory>
 #include <vector>
-#include <data/logic/logic_plan_visitor.h>
 #include <cassert>
 
 namespace furious {
-namespace data {
 
 class LogicPlanNode;
 using LogicPlanNodePtr = std::shared_ptr<LogicPlanNode>;
@@ -56,6 +56,5 @@ class LogicPlan {
 public:
   std::vector<LogicPlanNodePtr> m_roots; // The root node of the logic plan
 };
-} /* data */ 
 } /* furious */ 
 #endif

@@ -1,12 +1,9 @@
 
 #include "test/data_test.h"
-#include <data/physical/physical_scan.h>
-#include <data/physical/physical_filter.h>
+#include "../data/physical/physical_scan.h"
+#include "../data/physical/physical_filter.h"
 
-namespace furious
-{
-  namespace data
-  {
+namespace furious {
 
     class PhysicalFilterTest : public DataTest {
     };
@@ -41,8 +38,6 @@ namespace furious
       tableA_->clear();
       tableB_->clear();
     }
-    
-  } /* data */ 
   
 } /* furious */ 
 

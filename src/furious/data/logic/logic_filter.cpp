@@ -1,9 +1,8 @@
 
 
-#include <data/logic/logic_filter.h>
+#include "logic_filter.h"
 
 namespace furious {
-namespace data {
 
 LogicFilter::LogicFilter(LogicPlanNodePtr table) : p_table(table) {
 }
@@ -27,5 +26,4 @@ LogicPlanNodePtr LogicFilter::child( uint32_t i ) const {
   return p_table;
 };
   
-} /* data */ 
 } /* furious  */ 

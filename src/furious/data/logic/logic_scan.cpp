@@ -1,8 +1,7 @@
 
-#include <data/logic/logic_scan.h>
+#include "logic_scan.h"
 
 namespace furious {
-namespace data {
 
 LogicScan::LogicScan(const std::string& table) : 
   m_table(table) {
@@ -27,5 +26,4 @@ LogicPlanNodePtr LogicScan::child( uint32_t i ) const {
   return nullptr;
 };
 
-} /* data */ 
 } /* furious */ 

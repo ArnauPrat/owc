@@ -1,19 +1,19 @@
 
 
-#include <gtest/gtest.h> 
 #include "data_test.h"
-#include <data/static_system.h>
-#include <data/execution_engine.h>
-#include <data/logic/logic_plan.h>
+#include "../data/static_system.h"
+#include "../data/execution_engine.h"
+#include "../data/logic/logic_plan.h"
+
+#include <gtest/gtest.h> 
 #include <iostream>
 
 namespace furious {
-namespace data {
 
 struct ComponentC {
   uint32_t field1_;
-  double_t field2_;
-  ComponentC(uint32_t field1, double_t field2) : field1_(field1), field2_(field2) {}
+  double field2_;
+  ComponentC(uint32_t field1, double field2) : field1_(field1), field2_(field2) {}
 
   static std::string name() { return "ComponentC"; }
 
@@ -168,7 +168,6 @@ TEST_F(ExecutionEngineTest, ExecutionEngineWorks) {
     ASSERT_EQ(component->field2_,32.0);
   }
 }
-} /* data */ 
 } /* furious */ 
 
 int main(int argc, char *argv[])

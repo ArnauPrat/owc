@@ -1,15 +1,15 @@
 
 
 
-#include <gtest/gtest.h>
 #include "data_test.h"
-#include <data/execution_engine.h>
-#include <data/physical/physical_map.h>
-#include <data/physical/physical_scan.h>
-#include <data/static_system.h>
+#include "../data/execution_engine.h"
+#include "../data/physical/physical_map.h"
+#include "../data/physical/physical_scan.h"
+#include "../data/static_system.h"
+
+#include <gtest/gtest.h>
 
 namespace furious {
-namespace data {
 
 class PhysicalMapTest : public DataTest {
 };
@@ -49,8 +49,6 @@ TEST_F(PhysicalMapTest, PhysicalMapWorks) {
     ASSERT_EQ(static_cast<ComponentA*>(it->column(0))->field2_, 4.0);
   }
 }
-
-} /* data */ 
 
 } /* furious */ 
 

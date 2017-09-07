@@ -7,40 +7,35 @@
 #include "../table.h"
 #include "../common.h"
 
-namespace furious
-{
-  namespace data
-  {
+namespace furious {
 
-    class PhysicalScan : public IPhysicalOperator {
+class PhysicalScan : public IPhysicalOperator {
 
-      public:
+public:
 
-        PhysicalScan(TablePtr table); 
-        virtual ~PhysicalScan() = default;
+  PhysicalScan(TablePtr table); 
+  virtual ~PhysicalScan() = default;
 
-        ////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////
 
-        IRowPtr next() override;
+  IRowPtr next() override;
 
-        void open() override;
+  void open() override;
 
-        void close() override;
+  void close() override;
 
-        virtual uint32_t num_children()  const override ;
+  virtual uint32_t num_children()  const override ;
 
-        virtual IPhysicalOperatorPtr  child(uint32_t i) const override;
+  virtual IPhysicalOperatorPtr  child(uint32_t i) const override;
 
-        virtual std::string str() const override;
+  virtual std::string str() const override;
 
-      private:
-        TablePtr            table_ptr_;
-        Table::iterator     iterator_;
-    };
-    
-  } /* data */ 
-  
+private:
+  TablePtr            table_ptr_;
+  Table::iterator     iterator_;
+};
+
 } /* furious */ 
 #endif

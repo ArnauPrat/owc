@@ -5,11 +5,11 @@
 
 #include "common.h"
 #include "table.h"
+
 #include <vector>
 #include <memory>
 
 namespace furious {
-namespace data {
 
 class System;
 using SystemPtr = std::shared_ptr<System>;
@@ -40,7 +40,6 @@ public:
   const SystemId m_id;
 
 };
-} /* data */ 
 
 } /* furious */ 
 

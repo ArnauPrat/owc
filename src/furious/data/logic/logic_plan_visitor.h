@@ -4,7 +4,6 @@
 #define _FURIOUS_LOGIC_PLAN_VISITOR_H_
 
 namespace furious {
-namespace data {
 
 class LogicJoin;
 class LogicMap;
@@ -21,6 +20,5 @@ public:
   virtual void visit(LogicScan& logic_scan) = 0;
   virtual void visit(LogicFilter& logic_filter) = 0;
 };
-} /* data*/
 } /* furious */ 
 #endif

@@ -17,7 +17,6 @@
 #include <iostream>
 
 namespace furious {
-namespace data {
 
 using TableMap = std::map<std::string, TablePtr>;
 using TableMapPair = std::pair<std::string, TablePtr>;
@@ -102,7 +101,6 @@ typename StaticTable<T>::Ptr Database::find_table() {
   return std::dynamic_pointer_cast<StaticTable<T>>(table->second);
 }
 
-}
 }
 
 #endif

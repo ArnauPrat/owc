@@ -7,13 +7,11 @@
 #include <iostream>
 
 namespace furious {
-namespace data {
 
 template <typename T>
   std::string type_name() {
     return T::name();
   }  
-} /* data */ 
 } /* furious */ 
 
 #endif

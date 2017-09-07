@@ -1,14 +1,13 @@
 
-#include <data/database.h>
+#include "../data/database.h"
 #include <gtest/gtest.h>
 
 namespace furious {
-namespace data {
 
 struct Component {
   uint32_t field1_;
-  double_t field2_;
-  Component(uint32_t field1, double_t field2) : 
+  double field2_;
+  Component(uint32_t field1, double field2) : 
     field1_(field1),
     field2_(field2)
   {}
@@ -45,7 +44,6 @@ TEST(DatabaseTest, FindTable) {
   database->drop_table<Component>();
 }
 
-} /* data */ 
 } /* furious */ 
 
 int main(int argc, char *argv[])

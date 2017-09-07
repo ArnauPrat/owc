@@ -1,19 +1,18 @@
 
 
-#include <data/physical_plan_generator.h>
-#include <data/physical/physical_hash_join.h>
-#include <data/physical/physical_scan.h>
-#include <data/physical/physical_filter.h>
-#include <data/physical/physical_map.h>
-#include <data/database.h>
-#include <data/logic/logic_join.h>
-#include <data/logic/logic_map.h>
-#include <data/logic/logic_scan.h>
-#include <data/logic/logic_filter.h>
-#include <data/execution_engine.h>
+#include "physical_plan_generator.h"
+#include "physical/physical_hash_join.h"
+#include "physical/physical_scan.h"
+#include "physical/physical_filter.h"
+#include "physical/physical_map.h"
+#include "database.h"
+#include "logic/logic_join.h"
+#include "logic/logic_map.h"
+#include "logic/logic_scan.h"
+#include "logic/logic_filter.h"
+#include "execution_engine.h"
 
 namespace furious {
-namespace data {
 
 void PhysicalPlanGenerator::visit(LogicJoin& logic_join) {
   PhysicalPlanGenerator gen;
@@ -47,5 +46,5 @@ void PhysicalPlanGenerator::visit(LogicFilter& logic_filter) {
 IPhysicalOperatorPtr PhysicalPlanGenerator::get_result() {
   return p_result;
 }
-} /* data */ 
+
 } /* furious */ 

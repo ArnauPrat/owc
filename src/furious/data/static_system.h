@@ -4,12 +4,12 @@
 
 #include "system.h"
 #include "table.h"
-#include <typeinfo>
-#include <vector>
 #include "reflection.h"
 
+#include <typeinfo>
+#include <vector>
+
 namespace furious {
-namespace data {
 
 /** Basic struct to hold the index sequence **/
 template <std::size_t... Indices>
@@ -79,6 +79,5 @@ void StaticSystem<Components...>::apply( const std::vector<void*> components,
   run(*(static_cast<Components*>(components[Indices]))...);
 }
 
-} /* data */ 
 } /* furious */ 
 #endif

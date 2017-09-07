@@ -1,6 +1,6 @@
 
 #include "owc.h"
-#include "client.h"
+#include "game_state.h"
 #include "components/unit_component.h"
 
 #include <OgreCommon.h>
@@ -18,111 +18,27 @@
 #include <iostream>
 
 using namespace furious;
-using namespace furious::data;
 
 namespace owc {
 
+  
 Ogre::Root*                 root = nullptr;
 Ogre::Camera*               camera = nullptr;
 Ogre::SceneManager*         scenemgr = nullptr;
-Ogre::RenderWindow*         window = nullptr;
-Ogre::String                resourcescfg = Ogre::BLANKSTRING;
-Ogre::String                pluginscfg = Ogre::BLANKSTRING;
 
 Ogre::CompositorManager2*   compositor = nullptr;
 Ogre::CompositorWorkspace*  workspace = nullptr;
 
-bool                        shutdown;
+bool                        shutdown = false;
 
-// Added for Mac compatibility
+
+Ogre::RenderWindow*         window = nullptr;
+Ogre::String                resourcescfg = Ogre::BLANKSTRING;
+Ogre::String                pluginscfg = Ogre::BLANKSTRING;
+
 Ogre::String                resourcepath;
 SDL_Window*                 sdl_window;
 
-Client*                     client = nullptr;
-
-static void chooseSceneManager(void) {
-  // Get the SceneManager, in this case a generic one
-  scenemgr = root->createSceneManager("DefaultSceneManager",
-                                          1,
-                                          Ogre::INSTANCING_CULLING_SINGLETHREAD);
-}
-
-static void createCamera(void) {
-  // Create the camera
-  camera = scenemgr->createCamera("PlayerCam");
-
-  // Position it at 500 in Z direction
-  camera->setPosition(Ogre::Vector3(0,0,80));
-
-  // Look back along -Z
-  camera->lookAt(Ogre::Vector3(0,0,-300));
-  camera->setNearClipDistance(5);
-}
-
-static void setupCompositor(void) {
-  compositor = root->getCompositorManager2();
-
-  const Ogre::String workspaceName( "Owc Workspace" );
-  if(!compositor->hasWorkspaceDefinition( workspaceName ) ) {
-    compositor->createBasicWorkspaceDef( workspaceName, Ogre::ColourValue{0.0,0.0,1.0,1.0},
-                                                Ogre::IdString() );
-  }
-
-  workspace =  compositor->addWorkspace( scenemgr, 
-                                         window, 
-                                         camera,
-                                         workspaceName, 
-                                         true );
-}
-
-static void createFrameListener(void) {
-  size_t windowHnd = 0;
-  std::ostringstream windowHndStr;
-
-  window->getCustomAttribute("WINDOW", &windowHnd);
-  windowHndStr << windowHnd;
-
-  client = new Client();
-  // Register as a Window listener
-  Ogre::WindowEventUtilities::addWindowEventListener(window, client);
-  
-  root->addFrameListener(client);
-}
-
-static void createViewports(void) {
-  // Create one viewport, entire window
-  Ogre::Viewport* vp = new Ogre::Viewport(window,0,0,1,1);
-  //vp->setBackgroundColour(Ogre::ColourValue(0,0,0));
-
-  // Alter the camera aspect ratio to match the viewport
-  camera->setAspectRatio(Ogre::Real(vp->getActualWidth()) / Ogre::Real(vp->getActualHeight()));
-  
-}
-
-static void setupResources(void) {
-
-  // Load resource paths from config file
-  Ogre::ConfigFile cf;
-  cf.load(resourcescfg);
-
-  // Go through all sections & settings in the file
-  Ogre::ConfigFile::SectionIterator seci = cf.getSectionIterator();
-
-  Ogre::String sec_name, typeName, archName;
-  while (seci.hasMoreElements()) {
-    sec_name = seci.peekNextKey();
-    Ogre::ConfigFile::SettingsMultiMap *settings = seci.getNext();
-    Ogre::ConfigFile::SettingsMultiMap::iterator i;
-    for (i = settings->begin(); i != settings->end(); ++i) {
-      typeName = i->first;
-      archName = i->second;
-      Ogre::ResourceGroupManager::getSingleton().
-                                  addResourceLocation(archName, 
-                                                      typeName, 
-                                                      sec_name);
-    }
-  }
-}
 
 void start(void) {
 
@@ -142,13 +58,31 @@ void start(void) {
   }   
 
   root = new Ogre::Root(pluginscfg);
-  setupResources();
 
-  // Show the configuration dialog and initialise the system.
-  // You can skip this and use root.restoreConfig() to load configuration
-  // settings if you were sure there are valid ones saved in ogre.cfg.
-  if(!root->restoreConfig() && root->showConfigDialog()) {
-    std::cout << "ENTRA!" << std::endl;
+  // Setup Resources
+  Ogre::ConfigFile cf;
+  cf.load(resourcescfg);
+  Ogre::ConfigFile::SectionIterator seci = cf.getSectionIterator();
+
+  Ogre::String sec_name, typeName, archName;
+  while (seci.hasMoreElements()) {
+    sec_name = seci.peekNextKey();
+    Ogre::ConfigFile::SettingsMultiMap *settings = seci.getNext();
+    Ogre::ConfigFile::SettingsMultiMap::iterator i;
+    for (i = settings->begin(); i != settings->end(); ++i) {
+      typeName = i->first;
+      archName = i->second;
+      Ogre::ResourceGroupManager::getSingleton().
+                                  addResourceLocation(archName, 
+                                                      typeName, 
+                                                      sec_name);
+    }
+  }
+
+  // Configure window
+  if(root->restoreConfig() || root->showConfigDialog()) {
+    root->saveConfig();
+
     Ogre::String w_title = "OWC";
     // If returned true, user clicked OK so initialise.
     // Here we choose to let the system create a default rendering window by passing 'true'.
@@ -249,36 +183,63 @@ void start(void) {
     return;
   }
 
-  chooseSceneManager();
-  createCamera();
-  setupCompositor();
-  createViewports();
+
+  // Initializing Scene Manager
+  scenemgr = root->createSceneManager("DefaultSceneManager",
+                                          1,
+                                          Ogre::INSTANCING_CULLING_SINGLETHREAD);
+
+  // Create the camera
+  camera = scenemgr->createCamera("PlayerCam");
+  camera->setPosition(Ogre::Vector3(0,0,80));
+  camera->lookAt(Ogre::Vector3(0,0,-300));
+  camera->setNearClipDistance(5);
+
+
+  // Setup Compositor
+  compositor = root->getCompositorManager2();
+
+  const Ogre::String workspaceName( "Owc Workspace" );
+  if(!compositor->hasWorkspaceDefinition( workspaceName ) ) {
+    compositor->createBasicWorkspaceDef( workspaceName, Ogre::ColourValue{0.0,0.0,1.0,1.0},
+                                                Ogre::IdString() );
+  }
+
+  workspace =  compositor->addWorkspace( scenemgr, 
+                                         window, 
+                                         camera,
+                                         workspaceName, 
+                                         true );
+
+  // Create Viewport 
+  Ogre::Viewport* vp = new Ogre::Viewport(window,0,0,1,1);
+  camera->setAspectRatio(Ogre::Real(vp->getActualWidth()) / Ogre::Real(vp->getActualHeight()));
+
 
   // Set default mipmap level (NB some APIs ignore this)
   Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
 
-  // Initializes tnasdk library
-  tnasdk::init_tnasdk(180*CMS_TO_INCHES, 120*CMS_TO_INCHES);
 
-  createFrameListener();
 
+  // Create Frame and Window Listener
+  GameState* game_state= new GameState();
+  if(!game_state->initialize()) {
+    return;
+  }
+
+  Ogre::WindowEventUtilities::addWindowEventListener(window, game_state);
+  root->addFrameListener(game_state);
+
+  // Start game loop
   root->startRendering();
 
-}
+  game_state->release();
 
-
-void stop(void) {
-
-  tnasdk::release_tnasdk();
-
-  // Remove ourself as a Window listener
-  Ogre::WindowEventUtilities::removeWindowEventListener(window, client);
-
-  delete client;
+  Ogre::WindowEventUtilities::removeWindowEventListener(window, game_state);
+  delete game_state;
   delete root;
   SDL_SetWindowFullscreen(sdl_window,0);
   SDL_DestroyWindow(sdl_window);
 	SDL_Quit();
 }
-
 } /* owc */ 

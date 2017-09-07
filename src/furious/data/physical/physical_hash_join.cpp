@@ -4,10 +4,7 @@
 #include <functional>
 #include <cassert>
 
-namespace furious
-{
-  namespace data
-  {
+namespace furious {
 
     static uint32_t size = 1024;
 
@@ -73,7 +70,5 @@ namespace furious
       return "PhysicalHashJoin()";
     }
     
-  } /* data */ 
-  
 } /* furious
  */ 

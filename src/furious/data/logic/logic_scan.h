@@ -3,13 +3,13 @@
 #ifndef _FURIOUS_LOGIC_SCAN_H
 #define _FURIOUS_LOGIC_SCAN_H value
 
-#include <data/common.h>
-#include <data/logic/logic_plan.h>
+#include "../common.h"
+#include "logic_plan.h"
+
 #include <sstream>
 #include <cassert>
 
 namespace furious {
-namespace data {
 class LogicScan : public LogicPlanNode {
 
 public:
@@ -31,6 +31,5 @@ public:
   const std::string m_table;
 };
 
-} /* data */ 
 } /* furious */ 
 #endif

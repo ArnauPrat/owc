@@ -6,41 +6,35 @@
 #include "physical_plan.h"
 #include "../system.h"
 
-namespace furious
-{
-  namespace data
-  {
+namespace furious {
 
+class PhysicalMap : public IPhysicalOperator {
 
-    class PhysicalMap : public IPhysicalOperator {
+public:
 
-      public:
+  PhysicalMap(IPhysicalOperatorPtr input, SystemPtr system); 
+  virtual ~PhysicalMap() = default;
 
-        PhysicalMap(IPhysicalOperatorPtr input, SystemPtr system); 
-        virtual ~PhysicalMap() = default;
+  ////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////
 
-        ////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////
+  IRowPtr next() override;
 
-        IRowPtr next() override;
+  void open() override;
 
-        void open() override;
+  void close() override;
 
-        void close() override;
+  virtual uint32_t num_children()  const override ;
 
-        virtual uint32_t num_children()  const override ;
+  virtual IPhysicalOperatorPtr  child(uint32_t i) const override;
 
-        virtual IPhysicalOperatorPtr  child(uint32_t i) const override;
+  virtual std::string str() const override;
 
-        virtual std::string str() const override;
+private:
+  IPhysicalOperatorPtr    input_;
+  SystemPtr              system_;
+};
 
-      private:
-        IPhysicalOperatorPtr    input_;
-        SystemPtr              system_;
-    };
-    
-  } /* data */ 
-  
 } /* furious */ 
 #endif

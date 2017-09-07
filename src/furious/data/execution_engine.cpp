@@ -1,20 +1,20 @@
 
 
-#include <common/types.h>
-#include <data/execution_engine.h>
-#include <data/logic/logic_filter.h>
-#include <data/logic/logic_join.h>
-#include <data/logic/logic_map.h>
-#include <data/logic/logic_scan.h>
-#include <data/physical/physical_filter.h>
-#include <data/physical/physical_hash_join.h>
-#include <data/physical/physical_plan.h>
-#include <data/physical/physical_scan.h>
-#include <data/physical_plan_generator.h>
+#include "../common/types.h"
+#include "execution_engine.h"
+#include "logic/logic_filter.h"
+#include "logic/logic_join.h"
+#include "logic/logic_map.h"
+#include "logic/logic_scan.h"
+#include "physical/physical_filter.h"
+#include "physical/physical_hash_join.h"
+#include "physical/physical_plan.h"
+#include "physical/physical_scan.h"
+#include "physical_plan_generator.h"
+
 #include <cstddef>
 
 namespace furious {
-namespace data {
 
 std::shared_ptr<ExecutionEngine> ExecutionEngine::get_instance() {
   static ExecutionEnginePtr instance(new ExecutionEngine());
@@ -84,5 +84,4 @@ PhysicalPlanPtr  ExecutionEngine::build_physical_plan(LogicPlanPtr logic_plan) c
 void ExecutionEngine::clear() {
   m_systems.clear();
 }
-} /* data */ 
 } /* furious */ 

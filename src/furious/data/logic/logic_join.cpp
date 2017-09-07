@@ -1,9 +1,8 @@
 
 
-#include <data/logic/logic_join.h>
+#include "logic_join.h"
 
 namespace furious {
-namespace data {
 
 LogicJoin::LogicJoin( LogicPlanNodePtr left, LogicPlanNodePtr right ) : 
   p_left(left),
@@ -30,5 +29,4 @@ LogicPlanNodePtr LogicJoin::child( uint32_t i ) const {
   return p_right;
 };
 
-} /* data */ 
 } /* furious */ 

@@ -19,27 +19,17 @@ class SDL_Window;
 
 namespace owc {
 
-class Client;
-
 extern Ogre::Root*                 root;
 extern Ogre::Camera*               camera;
 extern Ogre::SceneManager*         scenemgr;
-extern Ogre::RenderWindow*         window;
-extern Ogre::String                resourcescfg;
-extern Ogre::String                pluginscfg;
 
 extern Ogre::CompositorManager2*   compositor;
 extern Ogre::CompositorWorkspace*  workspace;
+extern Ogre::RenderWindow*         window;
 
-extern bool                        shutdown;
-
-// Added for Mac compatibility
-extern Ogre::String                resourcepath;
-extern SDL_Window*                 sdl_window;
+extern bool shutdown;
 
 void start(void);
-void stop(void);
-
 
 }
 

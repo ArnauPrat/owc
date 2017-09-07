@@ -6,11 +6,11 @@
 #include "physical_plan.h"
 #include "../table.h"
 #include "../common.h"
+
 #include <cassert>
 #include <map>
 
 namespace furious  {
-namespace data {
 
 class PhysicalHashJoin : public IPhysicalOperator {
 
@@ -91,8 +91,6 @@ private:
   std::vector<std::vector<IRowPtr>>     hash_table_;
   std::vector<std::shared_ptr<Row>>     joined_rows_;
 };
-
-} /* data */ 
 
 } /* physical_hash_join */ 
 #endif

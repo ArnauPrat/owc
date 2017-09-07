@@ -1,15 +1,13 @@
 
 
-#include <gtest/gtest.h>
-#include <data/physical_plan_generator.h>
-#include <data/execution_engine.h>
-#include <data/static_system.h>
+#include "../data/physical_plan_generator.h"
+#include "../data/execution_engine.h"
+#include "../data/static_system.h"
 #include "data_test.h"
 
-namespace furious
-{
-  namespace data
-  {
+#include <gtest/gtest.h>
+
+namespace furious {
 
     class PhysicalPlanGeneratorTest : public DataTest {
 
@@ -42,8 +40,6 @@ namespace furious
 
     }
     
-  } /* data */ 
-  
 } /* furious */ 
 
 int main(int argc, char *argv[])

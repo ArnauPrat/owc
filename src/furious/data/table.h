@@ -13,7 +13,6 @@
 #include <iterator>
 
 namespace furious {
-namespace data {
 class Table;
 class IRow;
 using IRowPtr = IRow*;
@@ -53,7 +52,7 @@ public:
   ////////////////////////////////////////////////
 
   EntityId    m_id;
-  bool_t      m_enabled;
+  bool        m_enabled;
 };
 
 using TablePtr = std::shared_ptr<Table>;
@@ -144,7 +143,6 @@ private:
   std::string m_name;
 
 };
-} /* data */ 
 
 } /* furious */ 
 

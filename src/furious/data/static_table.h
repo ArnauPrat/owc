@@ -13,7 +13,6 @@
 #include <cassert>
 
 namespace furious {
-namespace data {
 
 template<typename T>
   class StaticTable : public Table {
@@ -45,7 +44,7 @@ template<typename T>
         return data_;
       } 
 
-      bool_t is_valid() { return valid_; }
+      bool is_valid() { return valid_; }
 
       void set_valid() { valid_ = true; }
 
@@ -53,7 +52,7 @@ template<typename T>
 
     private:
       T data_;
-      bool_t valid_;
+      bool valid_;
     };
 
   public:
@@ -162,6 +161,5 @@ template<typename T>
     std::vector<uint32_t>         free_positions_;
     std::map<uint32_t, uint32_t>  id_index_;
   };
-} /* data */ 
 } /* furious */ 
 #endif

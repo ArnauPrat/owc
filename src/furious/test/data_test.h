@@ -1,16 +1,13 @@
 
 #include <gtest/gtest.h>
-#include <data/database.h>
+#include "../data/database.h"
 
-namespace furious
-{
-  namespace data
-  {
+namespace furious {
 
     struct ComponentA {
       uint32_t field1_;
-      double_t field2_;
-      ComponentA(uint32_t field1, double_t field2 ) : 
+      double field2_;
+      ComponentA(uint32_t field1, double field2 ) : 
         field1_(field1),
         field2_(field2) 
       {}
@@ -20,8 +17,8 @@ namespace furious
 
     struct ComponentB {
       uint32_t field1_;
-      double_t field2_;
-      ComponentB(uint32_t field1, double_t field2 ) : 
+      double field2_;
+      ComponentB(uint32_t field1, double field2 ) : 
         field1_(field1),
         field2_(field2) 
       {}
@@ -59,6 +56,5 @@ namespace furious
         StaticTable<ComponentB>::Ptr tableB_ = nullptr;
 
     };
-  } /* data */ 
   
 } /* furious */ 

@@ -1,10 +1,9 @@
 
 
 
-#include <data/logic/logic_map.h>
+#include "logic_map.h"
 
 namespace furious {
-namespace data {
 
 LogicMap::LogicMap( SystemId system, LogicPlanNodePtr table ) : 
   m_system(system), 
@@ -31,6 +30,4 @@ LogicPlanNodePtr LogicMap::child( uint32_t i ) const {
   return p_table;
 };
 
-
-} /* data */ 
 } /* furious */ 

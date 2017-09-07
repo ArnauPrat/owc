@@ -1,10 +1,10 @@
 
-#include <gtest/gtest.h>
-#include <data/static_system.h>
+#include "../data/static_system.h"
 #include "data_test.h"
 
+#include <gtest/gtest.h>
+
 namespace furious {
-namespace data {
 
 class SystemTest : public DataTest {
 };
@@ -35,8 +35,6 @@ TEST_F(SystemTest, SystemWorks) {
   }
   tableA_->clear();
 }
-
-} /* data */ 
 
 } /* furious */ 
 

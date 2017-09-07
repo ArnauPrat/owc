@@ -6,37 +6,33 @@
 #include "../common.h"
 #include "physical_plan.h"
 
-namespace furious
-{
-  namespace data
-  {
+namespace furious {
 
-    class PhysicalFilter : public IPhysicalOperator {
-      public:
-        PhysicalFilter( IPhysicalOperatorPtr input );
-        virtual ~PhysicalFilter() = default;
+class PhysicalFilter : public IPhysicalOperator {
+public:
+  PhysicalFilter( IPhysicalOperatorPtr input );
+  virtual ~PhysicalFilter() = default;
 
-        ////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////
 
-        IRow* next() override;
+  IRow* next() override;
 
-        void open() override;
+  void open() override;
 
-        void close() override;
+  void close() override;
 
-        virtual uint32_t num_children()  const override ;
+  virtual uint32_t num_children()  const override ;
 
-        virtual IPhysicalOperatorPtr  child(uint32_t i) const override;
+  virtual IPhysicalOperatorPtr  child(uint32_t i) const override;
 
-        virtual std::string str() const override;
+  virtual std::string str() const override;
 
-      private:
-        IPhysicalOperatorPtr input_;
-    };
+private:
+  IPhysicalOperatorPtr input_;
+};
 
-  } /* data */ 
-  
+
 } /* furious */ 
 #endif

@@ -1,5 +1,5 @@
 
-#include "client.h"
+#include "game_state.h"
 #include "owc.h"
 
 #include <OgreCommon.h>
@@ -12,8 +12,19 @@
 
 namespace owc {
 
+bool GameState::initialize() {
+  // Initializes tnasdk library
+  tnasdk::init_tnasdk(180*CMS_TO_INCHES, 120*CMS_TO_INCHES);
+  return true;
+}
+
+bool GameState::release() {
+  // Release resources and shutdown
+  tnasdk::release_tnasdk();
+  return true;
+}
   
-bool Client::frameStarted(const Ogre::FrameEvent& evt) {
+bool GameState::frameStarted(const Ogre::FrameEvent& evt) {
   SDL_Event event;
   while(SDL_PollEvent(&event)) {
     switch(event.type) {
@@ -36,7 +47,7 @@ bool Client::frameStarted(const Ogre::FrameEvent& evt) {
   return true;
 }
 
-bool Client::frameRenderingQueued(const Ogre::FrameEvent& evt) {
+bool GameState::frameRenderingQueued(const Ogre::FrameEvent& evt) {
   if(window->isClosed())
     return false;
 
@@ -45,7 +56,7 @@ bool Client::frameRenderingQueued(const Ogre::FrameEvent& evt) {
   return true;
 }
 
-void Client::onKeywordEvent( const SDL_Event& event ) {
+void GameState::onKeywordEvent( const SDL_Event& event ) {
   Ogre::LogManager::getSingleton().logMessage("KeyEvent");
   switch(event.type) {
   case SDL_KEYDOWN:
@@ -58,12 +69,12 @@ void Client::onKeywordEvent( const SDL_Event& event ) {
   }
 }
 
-void Client::onMouseEvent( const SDL_Event& event ) {
+void GameState::onMouseEvent( const SDL_Event& event ) {
   Ogre::LogManager::getSingleton().logMessage("MouseEvent");
 }
 
 // Adjust mouse clipping area
-void Client::windowResized(Ogre::RenderWindow* rw) {
+void GameState::windowResized(Ogre::RenderWindow* rw) {
   unsigned int width, height, depth;
   int left, top;
   rw->getMetrics(width, height, depth, left, top);
