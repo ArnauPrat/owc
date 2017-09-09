@@ -70,10 +70,10 @@ public:
 
 TEST_F(SystemTest, LogicPlan) {
 
-  DatabasePtr database = Database::get_instance();
-  auto tableC = database->create_table<ComponentC>();
+  Database* database = Database::get_instance();
+  database->create_table<ComponentC>();
 
-  ExecutionEnginePtr execution_engine = ExecutionEngine::get_instance();
+  ExecutionEngine* execution_engine = ExecutionEngine::get_instance();
   execution_engine->clear();
 
   execution_engine->register_system<TestSystemA>();
@@ -82,43 +82,43 @@ TEST_F(SystemTest, LogicPlan) {
   execution_engine->register_system<TestSystemABC>();
 
   
-  LogicPlanPtr logic_plan = execution_engine->build_logic_plan(); 
-  LogicPlanNodePtr rootA = logic_plan->m_roots[0];
+  LogicPlan logic_plan = execution_engine->build_logic_plan(); 
+  ILogicPlanNodeSPtr rootA = logic_plan.m_roots[0];
   ASSERT_STREQ(rootA->str().c_str(), "LogicMap(0)");
-  LogicPlanNodePtr filterA = rootA->child(0);
+  ILogicPlanNodeSPtr filterA = rootA->child(0);
   ASSERT_STREQ(filterA->str().c_str(), "LogicFilter()");
-  LogicPlanNodePtr scanA = filterA->child(0);
+  ILogicPlanNodeSPtr scanA = filterA->child(0);
   ASSERT_STREQ(scanA->str().c_str(), "LogicScan(ComponentA)");
 
-  LogicPlanNodePtr rootB = logic_plan->m_roots[1];
+  ILogicPlanNodeSPtr rootB = logic_plan.m_roots[1];
   ASSERT_STREQ(rootB->str().c_str(), "LogicMap(1)");
-  LogicPlanNodePtr filterB = rootB->child(0);
+  ILogicPlanNodeSPtr filterB = rootB->child(0);
   ASSERT_STREQ(filterB->str().c_str(), "LogicFilter()");
-  LogicPlanNodePtr scanB = filterB->child(0);
+  ILogicPlanNodeSPtr scanB = filterB->child(0);
   ASSERT_STREQ(scanB->str().c_str(), "LogicScan(ComponentB)");
 
-  LogicPlanNodePtr rootAB = logic_plan->m_roots[2];
+  ILogicPlanNodeSPtr rootAB = logic_plan.m_roots[2];
   ASSERT_STREQ(rootAB->str().c_str(), "LogicMap(2)");
-  LogicPlanNodePtr joinAB = rootAB->child(0);
+  ILogicPlanNodeSPtr joinAB = rootAB->child(0);
   ASSERT_STREQ(joinAB->str().c_str(), "LogicJoin()");
 
-  LogicPlanNodePtr filterAB_left = joinAB->child(0);
+  ILogicPlanNodeSPtr filterAB_left = joinAB->child(0);
   ASSERT_STREQ(filterAB_left->str().c_str(), "LogicFilter()");
-  LogicPlanNodePtr scanAB_left = filterAB_left->child(0);
+  ILogicPlanNodeSPtr scanAB_left = filterAB_left->child(0);
   ASSERT_STREQ(scanAB_left->str().c_str(), "LogicScan(ComponentA)");
 
-  LogicPlanNodePtr filterAB_right = joinAB->child(1);
+  ILogicPlanNodeSPtr filterAB_right = joinAB->child(1);
   ASSERT_STREQ(filterAB_right->str().c_str(), "LogicFilter()");
-  LogicPlanNodePtr scanAB_right = filterAB_right->child(0);
+  ILogicPlanNodeSPtr scanAB_right = filterAB_right->child(0);
   ASSERT_STREQ(scanAB_right->str().c_str(), "LogicScan(ComponentB)");
 
-  LogicPlanNodePtr rootABC = logic_plan->m_roots[3];
+  ILogicPlanNodeSPtr rootABC = logic_plan.m_roots[3];
   ASSERT_STREQ(rootABC->str().c_str(), "LogicMap(3)");
-  LogicPlanNodePtr joinAB_C = rootABC->child(0);
+  ILogicPlanNodeSPtr joinAB_C = rootABC->child(0);
   ASSERT_STREQ(joinAB_C->str().c_str(), "LogicJoin()");
-  LogicPlanNodePtr filterC = joinAB_C->child(1);
+  ILogicPlanNodeSPtr filterC = joinAB_C->child(1);
   ASSERT_STREQ(filterC->str().c_str(), "LogicFilter()");
-  LogicPlanNodePtr scanC = filterC->child(0);
+  ILogicPlanNodeSPtr scanC = filterC->child(0);
   ASSERT_STREQ(scanC->str().c_str(), "LogicScan(ComponentC)");
   joinAB = joinAB_C->child(0);
   ASSERT_STREQ(joinAB->str().c_str(), "LogicJoin()");
@@ -144,7 +144,7 @@ TEST_F(ExecutionEngineTest, ExecutionEngineWorks) {
     tableB_->insert(i,16,16.0);
   }
 
-  ExecutionEnginePtr execution_engine = ExecutionEngine::get_instance();
+  ExecutionEngine* execution_engine = ExecutionEngine::get_instance();
   execution_engine->clear();
 
   execution_engine->register_system<TestSystemA>();

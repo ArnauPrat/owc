@@ -8,17 +8,17 @@
 
 namespace furious {
 
-PhysicalScan::PhysicalScan(TablePtr table) :
-  table_ptr_(table),
-  iterator_(table_ptr_->begin()){}
+PhysicalScan::PhysicalScan(Table* table) :
+  p_table(table),
+  m_iterator(p_table->begin()){}
 
 ////////////////////////////////////////////////////
 ////////////////////////////////////////////////////
 ////////////////////////////////////////////////////
 
-IRowPtr PhysicalScan::next() {
-  IRowPtr ret = (*iterator_);
-  ++iterator_;
+BaseRow* PhysicalScan::next() {
+  BaseRow* ret = (*m_iterator);
+  ++m_iterator;
   return ret;
 }
 
@@ -33,14 +33,14 @@ uint32_t PhysicalScan::num_children()  const  {
   return 0;
 }
 
-IPhysicalOperatorPtr  PhysicalScan::child(uint32_t i ) const {
+IPhysicalOperatorSPtr  PhysicalScan::child(uint32_t i ) const {
   assert(false);
   return nullptr;
 }
 
 std::string PhysicalScan::str() const  {
   std::stringstream ss;
-  ss << "PhysicalScan(" << table_ptr_->table_name() << ")";
+  ss << "PhysicalScan(" << p_table->table_name() << ")";
   return ss.str();
 }
 

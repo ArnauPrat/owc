@@ -17,16 +17,16 @@ public:
   //////////////////////////////////////////////
   //////////////////////////////////////////////
 
-  virtual void  visit(LogicJoin& logic_join) override;
-  virtual void  visit(LogicMap& logic_map) override;
-  virtual void  visit(LogicScan& logic_scan) override;
-  virtual void  visit(LogicFilter& logic_filter) override;
+  virtual void  visit(LogicJoin* logic_join) override;
+  virtual void  visit(LogicMap* logic_map) override;
+  virtual void  visit(LogicScan* logic_scan) override;
+  virtual void  visit(LogicFilter* logic_filter) override;
 
-  IPhysicalOperatorPtr get_result(); 
+  IPhysicalOperatorSPtr get_result(); 
 
 private:
 
-  IPhysicalOperatorPtr p_result;
+  IPhysicalOperatorSPtr p_result;
 
 };
 } /* furious */ 

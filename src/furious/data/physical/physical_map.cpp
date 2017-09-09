@@ -6,49 +6,49 @@
 
 namespace furious {
 
-PhysicalMap::PhysicalMap( IPhysicalOperatorPtr input, SystemPtr system ) :
-  input_(input),
-  system_(system)
+PhysicalMap::PhysicalMap( IPhysicalOperatorSPtr input, System* system ) :
+  p_input(input),
+  p_system(system)
   {
 
   }
 
-IRowPtr PhysicalMap::next() {
-  IRowPtr next_row = input_->next();
+BaseRow* PhysicalMap::next() {
+  BaseRow* next_row = p_input->next();
   while(next_row != nullptr && !next_row->m_enabled) {
-    next_row = input_->next();
+    next_row = p_input->next();
   }
   if(next_row != nullptr) {
     std::vector<void*> components;
     for(uint32_t i = 0; i < next_row->num_columns(); ++i) {
       components.push_back(next_row->column(i));
     }
-    system_->apply(components);
+    p_system->apply(components);
   }
   return next_row;
 }
 
 void PhysicalMap::open() {
-  input_->open();
+  p_input->open();
 
 }
 
 void PhysicalMap::close() {
-  input_->close();
+  p_input->close();
 }
 
 uint32_t PhysicalMap::num_children()  const  {
   return 1;
 }
 
-IPhysicalOperatorPtr  PhysicalMap::child(uint32_t i ) const {
+IPhysicalOperatorSPtr  PhysicalMap::child(uint32_t i ) const {
   assert(i == 0);
-  return input_;
+  return p_input;
 }
 
 std::string PhysicalMap::str() const  {
   std::stringstream ss;
-  ss << "PhysicalMap(" << system_->m_id << ")";
+  ss << "PhysicalMap(" << p_system->m_id << ")";
   return ss.str();
 }
 

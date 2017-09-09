@@ -4,13 +4,13 @@
 
 namespace furious {
 
-LogicJoin::LogicJoin( LogicPlanNodePtr left, LogicPlanNodePtr right ) : 
+LogicJoin::LogicJoin( ILogicPlanNodeSPtr left, ILogicPlanNodeSPtr right ) : 
   p_left(left),
   p_right(right)
 {}
 
-void LogicJoin::accept( LogicPlanVisitor& visitor ) { 
-  visitor.visit(*this); 
+void LogicJoin::accept( LogicPlanVisitor* visitor ) { 
+  visitor->visit(this); 
 };
 
 std::string LogicJoin::str() const { 
@@ -23,7 +23,7 @@ uint32_t LogicJoin::num_children() const {
   return 2; 
 };
 
-LogicPlanNodePtr LogicJoin::child( uint32_t i ) const { 
+ILogicPlanNodeSPtr LogicJoin::child( uint32_t i ) const { 
   assert( i < 2 );
   if(i == 0) return p_left;
   return p_right;

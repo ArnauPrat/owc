@@ -12,7 +12,7 @@
 namespace furious {
 
 class IPhysicalOperator;
-using IPhysicalOperatorPtr = std::shared_ptr<IPhysicalOperator>;
+using IPhysicalOperatorSPtr = std::shared_ptr<IPhysicalOperator>;
 
 class IPhysicalOperator {
 public:
@@ -25,9 +25,9 @@ public:
 
   virtual void open() = 0;
   virtual void close() = 0;
-  virtual IRowPtr next() = 0;
+  virtual BaseRow* next() = 0;
   virtual uint32_t num_children() const = 0;
-  virtual IPhysicalOperatorPtr  child(uint32_t i) const = 0;
+  virtual IPhysicalOperatorSPtr  child(uint32_t i) const = 0;
   virtual std::string str() const = 0;
 };
 
@@ -40,12 +40,9 @@ auto MakeIPhysicalOperatorPtr(Args&&... args)
   return std::static_pointer_cast<IPhysicalOperator>(std::make_shared<T>(std::forward<Args>(args)...));
 }
 
-class PhysicalPlan;
-using PhysicalPlanPtr = std::shared_ptr<PhysicalPlan>;
-
 class PhysicalPlan {
 public:
-  std::vector<IPhysicalOperatorPtr> roots_;
+  std::vector<IPhysicalOperatorSPtr> m_roots;
 };
 
 } /* furious */ 

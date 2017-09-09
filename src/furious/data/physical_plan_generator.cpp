@@ -14,36 +14,36 @@
 
 namespace furious {
 
-void PhysicalPlanGenerator::visit(LogicJoin& logic_join) {
+void PhysicalPlanGenerator::visit(LogicJoin* logic_join) {
   PhysicalPlanGenerator gen;
-  logic_join.p_left->accept(gen);
-  IPhysicalOperatorPtr left = gen.get_result();
-  logic_join.p_right->accept(gen);
-  IPhysicalOperatorPtr right = gen.get_result();
-  p_result = IPhysicalOperatorPtr(new PhysicalHashJoin(left,right));
+  logic_join->p_left->accept(&gen);
+  IPhysicalOperatorSPtr left = gen.get_result();
+  logic_join->p_right->accept(&gen);
+  IPhysicalOperatorSPtr right = gen.get_result();
+  p_result = IPhysicalOperatorSPtr(new PhysicalHashJoin(left,right));
 }
 
-void PhysicalPlanGenerator::visit(LogicMap& logic_map) {
+void PhysicalPlanGenerator::visit(LogicMap* logic_map) {
   PhysicalPlanGenerator gen;
-  ExecutionEnginePtr execution_engine = ExecutionEngine::get_instance();
-  logic_map.p_table->accept(gen);
-  p_result = IPhysicalOperatorPtr(new PhysicalMap(gen.get_result(), execution_engine->get_system(logic_map.m_system)));
+  ExecutionEngine* execution_engine = ExecutionEngine::get_instance();
+  logic_map->p_table->accept(&gen);
+  p_result = IPhysicalOperatorSPtr(new PhysicalMap(gen.get_result(), execution_engine->get_system(logic_map->m_system)));
 }
 
-void PhysicalPlanGenerator::visit(LogicScan& logic_scan) {
+void PhysicalPlanGenerator::visit(LogicScan* logic_scan) {
   PhysicalPlanGenerator gen;
-  DatabasePtr database = Database::get_instance();
-  TablePtr table = database->find_table(logic_scan.m_table);
-  p_result = IPhysicalOperatorPtr( new PhysicalScan(table) );
+  Database* database = Database::get_instance();
+  Table* table = database->find_table(logic_scan->m_table);
+  p_result = IPhysicalOperatorSPtr( new PhysicalScan(table) );
 }
 
-void PhysicalPlanGenerator::visit(LogicFilter& logic_filter) {
+void PhysicalPlanGenerator::visit(LogicFilter* logic_filter) {
   PhysicalPlanGenerator gen;
-  logic_filter.p_table->accept(gen);
-  p_result = IPhysicalOperatorPtr( new PhysicalFilter(gen.get_result()));
+  logic_filter->p_table->accept(&gen);
+  p_result = IPhysicalOperatorSPtr( new PhysicalFilter(gen.get_result()));
 }
 
-IPhysicalOperatorPtr PhysicalPlanGenerator::get_result() {
+IPhysicalOperatorSPtr PhysicalPlanGenerator::get_result() {
   return p_result;
 }
 

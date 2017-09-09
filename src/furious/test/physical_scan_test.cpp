@@ -20,7 +20,7 @@ namespace furious {
       physical_scan.open();
       
       uint32_t current_id = 0;
-      IRowPtr row = physical_scan.next();
+      BaseRow* row = physical_scan.next();
       ASSERT_TRUE(row != nullptr);
       while(row != nullptr) {
         ComponentA* component = reinterpret_cast<ComponentA*>(row->column(0));

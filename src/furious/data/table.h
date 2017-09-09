@@ -13,15 +13,12 @@
 #include <iterator>
 
 namespace furious {
-class Table;
-class IRow;
-using IRowPtr = IRow*;
-class IRow {
+class BaseRow {
 
 public:
-  IRow(EntityId id) : m_id(id), 
+  BaseRow(EntityId id) : m_id(id), 
                       m_enabled(true) {}
-  virtual ~IRow() = default;
+  virtual ~BaseRow() = default;
 
   /**
    * @brief Gets a specific column of a row
@@ -55,24 +52,20 @@ public:
   bool        m_enabled;
 };
 
-using TablePtr = std::shared_ptr<Table>;
-
 
 class Table {
 
 public:
-  class BaseIterator;
-  using BaseIteratorPtr = std::shared_ptr<BaseIterator>;
-  class BaseIterator {
+  class IBaseIterator {
   public:
-    virtual IRowPtr next() = 0;
-    virtual BaseIteratorPtr clone() const = 0;
+    virtual BaseRow* next() = 0;
+    virtual std::unique_ptr<IBaseIterator> clone() const = 0;
   };
 
-  class iterator : public std::iterator<std::input_iterator_tag, IRow> {
+  class iterator : public std::iterator<std::input_iterator_tag, BaseRow> {
   public:
-    explicit iterator(BaseIteratorPtr iter) : 
-      iter_(iter), current_(iter_->next()) {}
+    explicit iterator(std::unique_ptr<IBaseIterator>&& iter) : 
+      iter_(std::move(iter)), current_(iter_->next()) {}
 
     iterator(iterator& other) {
       *this = other;
@@ -96,8 +89,8 @@ public:
     }
 
   private:
-    std::shared_ptr<BaseIterator> iter_;
-    IRowPtr                       current_;
+    std::unique_ptr<IBaseIterator> iter_;
+    BaseRow*                          current_;
   };
 
 public:
@@ -127,7 +120,7 @@ public:
   /**
    * Gets the row whose id is the given one
    */
-  virtual IRowPtr get_row_by_id(uint32_t id) = 0;
+  virtual BaseRow* get_row_by_id(uint32_t id) = 0;
 
   /**
    * Drops the row whose id is the given one

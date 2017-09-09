@@ -10,14 +10,14 @@ namespace furious {
 
 class PhysicalFilter : public IPhysicalOperator {
 public:
-  PhysicalFilter( IPhysicalOperatorPtr input );
+  PhysicalFilter( IPhysicalOperatorSPtr input );
   virtual ~PhysicalFilter() = default;
 
   ////////////////////////////////////////////////////
   ////////////////////////////////////////////////////
   ////////////////////////////////////////////////////
 
-  IRow* next() override;
+  BaseRow* next() override;
 
   void open() override;
 
@@ -25,12 +25,12 @@ public:
 
   virtual uint32_t num_children()  const override ;
 
-  virtual IPhysicalOperatorPtr  child(uint32_t i) const override;
+  virtual IPhysicalOperatorSPtr  child(uint32_t i) const override;
 
   virtual std::string str() const override;
 
 private:
-  IPhysicalOperatorPtr input_;
+  IPhysicalOperatorSPtr p_input;
 };
 
 

@@ -12,14 +12,14 @@ class PhysicalMap : public IPhysicalOperator {
 
 public:
 
-  PhysicalMap(IPhysicalOperatorPtr input, SystemPtr system); 
+  PhysicalMap(IPhysicalOperatorSPtr input, System* system); 
   virtual ~PhysicalMap() = default;
 
   ////////////////////////////////////////////////////
   ////////////////////////////////////////////////////
   ////////////////////////////////////////////////////
 
-  IRowPtr next() override;
+  BaseRow* next() override;
 
   void open() override;
 
@@ -27,13 +27,13 @@ public:
 
   virtual uint32_t num_children()  const override ;
 
-  virtual IPhysicalOperatorPtr  child(uint32_t i) const override;
+  virtual IPhysicalOperatorSPtr  child(uint32_t i) const override;
 
   virtual std::string str() const override;
 
 private:
-  IPhysicalOperatorPtr    input_;
-  SystemPtr              system_;
+  IPhysicalOperatorSPtr   p_input;
+  System*                 p_system;
 };
 
 } /* furious */ 

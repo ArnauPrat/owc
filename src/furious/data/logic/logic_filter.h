@@ -10,25 +10,25 @@
 
 namespace  furious {
 
-class LogicFilter : public LogicPlanNode {
+class LogicFilter : public ILogicPlanNode {
 
 public:
-  LogicFilter(LogicPlanNodePtr table);
+  LogicFilter(ILogicPlanNodeSPtr table);
   virtual ~LogicFilter() = default;
 
   //////////////////////////////////////////////
   //////////////////////////////////////////////
   //////////////////////////////////////////////
 
-  virtual void accept( LogicPlanVisitor& visitor ) override;
+  virtual void accept( LogicPlanVisitor* visitor ) override;
 
   virtual std::string str() const override;
 
   virtual uint32_t num_children() const override;
 
-  virtual LogicPlanNodePtr child( uint32_t i ) const override; 
+  virtual ILogicPlanNodeSPtr child( uint32_t i ) const override; 
 
-  const LogicPlanNodePtr p_table;
+  const ILogicPlanNodeSPtr p_table;
 
 };
 

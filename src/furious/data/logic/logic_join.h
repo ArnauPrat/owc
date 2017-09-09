@@ -12,10 +12,10 @@
 
 namespace  furious {
 
-class LogicJoin : public LogicPlanNode {
+class LogicJoin : public ILogicPlanNode {
 
 public:
-  LogicJoin( LogicPlanNodePtr left, LogicPlanNodePtr right );
+  LogicJoin( ILogicPlanNodeSPtr left, ILogicPlanNodeSPtr right );
 
   virtual ~LogicJoin() = default;
 
@@ -23,16 +23,16 @@ public:
   //////////////////////////////////////////////
   //////////////////////////////////////////////
 
-  virtual void accept( LogicPlanVisitor& visitor ) override;
+  virtual void accept( LogicPlanVisitor* visitor ) override;
 
   virtual std::string str() const override; 
 
   virtual uint32_t num_children() const override; 
 
-  virtual LogicPlanNodePtr child( uint32_t i ) const override; 
+  virtual ILogicPlanNodeSPtr child( uint32_t i ) const override; 
 
-  const LogicPlanNodePtr p_left;
-  const LogicPlanNodePtr p_right;
+  const ILogicPlanNodeSPtr p_left;
+  const ILogicPlanNodeSPtr p_right;
 
 };
 } /*  furious */ 

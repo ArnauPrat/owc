@@ -58,7 +58,7 @@ TEST(TableTest,TableWorks) {
   ASSERT_EQ(data.size(), 0);
   ASSERT_EQ(table.size(), 5000);
 
-  IRowPtr row = table.get_row_by_id(7500);
+  BaseRow* row = table.get_row_by_id(7500);
   ASSERT_EQ(row->m_id, 7500);
 }
 }

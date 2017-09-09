@@ -11,9 +11,6 @@
 
 namespace furious {
 
-class System;
-using SystemPtr = std::shared_ptr<System>;
-
 class System {
 public:
   System(const SystemId id) : m_id(id) {}

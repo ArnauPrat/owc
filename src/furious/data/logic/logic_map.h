@@ -12,26 +12,26 @@
 
 namespace furious {
 
-class LogicMap : public LogicPlanNode {
+class LogicMap : public ILogicPlanNode {
 
 public:
-  LogicMap( SystemId system, LogicPlanNodePtr table );
+  LogicMap( SystemId system, ILogicPlanNodeSPtr table );
   virtual ~LogicMap() = default;
 
   //////////////////////////////////////////////
   //////////////////////////////////////////////
   //////////////////////////////////////////////
 
-  virtual void accept( LogicPlanVisitor& visitor ) override; 
+  virtual void accept( LogicPlanVisitor* visitor ) override; 
 
   virtual std::string str() const override;
 
   virtual uint32_t num_children() const override;
 
-  virtual LogicPlanNodePtr child( uint32_t i ) const override; 
+  virtual ILogicPlanNodeSPtr child( uint32_t i ) const override; 
 
-  const SystemId  m_system;
-  const LogicPlanNodePtr p_table;
+  const SystemId            m_system;
+  const ILogicPlanNodeSPtr  p_table;
 
 };
 } /* furious */ 

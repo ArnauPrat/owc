@@ -19,12 +19,12 @@ namespace furious {
         tableB_->insert(i,i*4,i*3.0);
       }
 
-      IPhysicalOperatorPtr physical_scanA( new PhysicalScan(tableA_));
-      IPhysicalOperatorPtr physical_scanB( new PhysicalScan(tableB_));
-      IPhysicalOperatorPtr physical_hash_join( new PhysicalHashJoin(physical_scanA, physical_scanB) );
+      IPhysicalOperatorSPtr physical_scanA( new PhysicalScan(tableA_));
+      IPhysicalOperatorSPtr physical_scanB( new PhysicalScan(tableB_));
+      IPhysicalOperatorSPtr physical_hash_join( new PhysicalHashJoin(physical_scanA, physical_scanB) );
 
       physical_hash_join->open();
-      IRowPtr joined_row = physical_hash_join->next();
+      BaseRow* joined_row = physical_hash_join->next();
       EntityId entity_id = 0;
       ASSERT_NE(joined_row, nullptr);
       while(joined_row != nullptr) {
@@ -53,12 +53,12 @@ namespace furious {
         tableB_->insert(i,i*4,i*3.0);
       }
 
-      IPhysicalOperatorPtr physical_scanA( new PhysicalScan(tableA_));
-      IPhysicalOperatorPtr physical_scanB( new PhysicalScan(tableB_));
-      IPhysicalOperatorPtr physical_hash_join( new PhysicalHashJoin(physical_scanA, physical_scanB) );
+      IPhysicalOperatorSPtr physical_scanA( new PhysicalScan(tableA_));
+      IPhysicalOperatorSPtr physical_scanB( new PhysicalScan(tableB_));
+      IPhysicalOperatorSPtr physical_hash_join( new PhysicalHashJoin(physical_scanA, physical_scanB) );
 
       physical_hash_join->open();
-      IRowPtr joined_row = physical_hash_join->next();
+      BaseRow* joined_row = physical_hash_join->next();
       EntityId entity_id = 2500; 
       ASSERT_NE(joined_row, nullptr);
       while(joined_row != nullptr) {
@@ -88,12 +88,12 @@ namespace furious {
         tableB_->insert(i,i*4,i*3.0);
       }
 
-      IPhysicalOperatorPtr physical_scanA( new PhysicalScan(tableA_));
-      IPhysicalOperatorPtr physical_scanB( new PhysicalScan(tableB_));
-      IPhysicalOperatorPtr physical_hash_join( new PhysicalHashJoin(physical_scanA, physical_scanB) );
+      IPhysicalOperatorSPtr physical_scanA( new PhysicalScan(tableA_));
+      IPhysicalOperatorSPtr physical_scanB( new PhysicalScan(tableB_));
+      IPhysicalOperatorSPtr physical_hash_join( new PhysicalHashJoin(physical_scanA, physical_scanB) );
 
       physical_hash_join->open();
-      IRowPtr joined_row = physical_hash_join->next();
+      BaseRow* joined_row = physical_hash_join->next();
       ASSERT_EQ(joined_row, nullptr);
       physical_hash_join->close();
       tableA_->clear();
@@ -157,16 +157,16 @@ namespace furious {
         tableD_->insert(i,i*16,i*9.0);
       }
 
-      IPhysicalOperatorPtr physical_scanA( new PhysicalScan(tableA_));
-      IPhysicalOperatorPtr physical_scanB( new PhysicalScan(tableB_));
-      IPhysicalOperatorPtr physical_scanC( new PhysicalScan(tableC_));
-      IPhysicalOperatorPtr physical_scanD( new PhysicalScan(tableD_));
-      IPhysicalOperatorPtr physical_hash_join1( new PhysicalHashJoin(physical_scanA, physical_scanB) );
-      IPhysicalOperatorPtr physical_hash_join2( new PhysicalHashJoin(physical_hash_join1, physical_scanC) );
-      IPhysicalOperatorPtr physical_hash_join3( new PhysicalHashJoin(physical_hash_join2, physical_scanD) );
+      IPhysicalOperatorSPtr physical_scanA( new PhysicalScan(tableA_));
+      IPhysicalOperatorSPtr physical_scanB( new PhysicalScan(tableB_));
+      IPhysicalOperatorSPtr physical_scanC( new PhysicalScan(tableC_));
+      IPhysicalOperatorSPtr physical_scanD( new PhysicalScan(tableD_));
+      IPhysicalOperatorSPtr physical_hash_join1( new PhysicalHashJoin(physical_scanA, physical_scanB) );
+      IPhysicalOperatorSPtr physical_hash_join2( new PhysicalHashJoin(physical_hash_join1, physical_scanC) );
+      IPhysicalOperatorSPtr physical_hash_join3( new PhysicalHashJoin(physical_hash_join2, physical_scanD) );
 
       physical_hash_join3->open();
-      IRowPtr joined_row = physical_hash_join3->next();
+      BaseRow* joined_row = physical_hash_join3->next();
       EntityId entity_id = 0; 
       ASSERT_NE(joined_row, nullptr);
       while(joined_row != nullptr) {

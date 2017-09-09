@@ -12,49 +12,46 @@
 
 namespace furious {
 
-class LogicPlanNode;
-using LogicPlanNodePtr = std::shared_ptr<LogicPlanNode>;
+class ILogicPlanNode;
+using ILogicPlanNodeSPtr = std::shared_ptr<ILogicPlanNode>;
 
 /**
  * Helper template to reduce verbosity when using shared pointers
  */
 template <typename T, typename... Args>
-  auto MakeLogicPlanNodePtr(Args&&... args)  
+  auto MakeLogicPlanNodeSPtr(Args&&... args)  
   {
-    return std::static_pointer_cast<LogicPlanNode>(std::make_shared<T>(std::forward<Args>(args)...));
+    return std::static_pointer_cast<ILogicPlanNode>(std::make_shared<T>(std::forward<Args>(args)...));
   }
 
 /**
  * LogicPlanNode base class
  */
-class LogicPlanNode {
+class ILogicPlanNode {
 public:
-  LogicPlanNode() = default;
-  virtual ~LogicPlanNode(){}
+  ILogicPlanNode() = default;
+  virtual ~ILogicPlanNode(){}
 
   //////////////////////////////////////////////
   //////////////////////////////////////////////
   //////////////////////////////////////////////
 
-  virtual void accept( LogicPlanVisitor& visitor ) = 0;
+  virtual void accept( LogicPlanVisitor* visitor ) = 0;
 
   virtual std::string str() const = 0;
 
   virtual uint32_t num_children() const = 0;
 
-  virtual LogicPlanNodePtr child( uint32_t i ) const = 0;
+  virtual ILogicPlanNodeSPtr child( uint32_t i ) const = 0;
 
 };
-
-class LogicPlan;
-using LogicPlanPtr = std::shared_ptr<LogicPlan>;
 
 /**
  * Class representing a Logic execution plan
  */
 class LogicPlan {
 public:
-  std::vector<LogicPlanNodePtr> m_roots; // The root node of the logic plan
+  std::vector<ILogicPlanNodeSPtr> m_roots; // The root node of the logic plan
 };
 } /* furious */ 
 #endif

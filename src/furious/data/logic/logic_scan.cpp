@@ -7,8 +7,8 @@ LogicScan::LogicScan(const std::string& table) :
   m_table(table) {
   }
 
-void LogicScan::accept( LogicPlanVisitor& visitor ) { 
-  visitor.visit(*this);
+void LogicScan::accept( LogicPlanVisitor* visitor ) { 
+  visitor->visit(this);
 };
 
 std::string LogicScan::str() const { 
@@ -21,7 +21,7 @@ uint32_t LogicScan::num_children() const {
   return 0; 
 };
 
-LogicPlanNodePtr LogicScan::child( uint32_t i ) const { 
+ILogicPlanNodeSPtr LogicScan::child( uint32_t i ) const { 
   assert(false);
   return nullptr;
 };

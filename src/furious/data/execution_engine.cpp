@@ -16,67 +16,77 @@
 
 namespace furious {
 
-std::shared_ptr<ExecutionEngine> ExecutionEngine::get_instance() {
-  static ExecutionEnginePtr instance(new ExecutionEngine());
-  return instance;
+ExecutionEngine::~ExecutionEngine() {
+
+  for (auto& iter : m_systems) {
+    delete iter.second;
+  }
+  m_systems.clear();
+
+}
+
+
+ExecutionEngine* ExecutionEngine::get_instance() {
+  static ExecutionEngine instance;
+  return &instance;
 }
 
 void ExecutionEngine::run_systems() const {
   auto logic_plan = build_logic_plan();
-  auto physical_plan = build_physical_plan(logic_plan);
+  PhysicalPlan physical_plan = build_physical_plan(logic_plan);
   execute_physical_plan(physical_plan);
 }
 
-void ExecutionEngine::execute_physical_plan(PhysicalPlanPtr physical_plan ) const {
-  for(auto root : physical_plan->roots_) {
-    IRowPtr next_row = root->next();
+void ExecutionEngine::execute_physical_plan(const PhysicalPlan& physical_plan ) const {
+  for(auto root : physical_plan.m_roots) {
+    BaseRow* next_row = root->next();
     while(next_row != nullptr) {
       next_row = root->next();
     }
   }
 }
 
-SystemPtr ExecutionEngine::get_system(SystemId system) {
+System* ExecutionEngine::get_system(SystemId system) {
   return (*m_systems.find(system)).second;
 }
 
-LogicPlanPtr ExecutionEngine::build_logic_plan() const {
-  auto logic_plan = std::make_shared<LogicPlan>();
+LogicPlan ExecutionEngine::build_logic_plan() const {
+  LogicPlan logic_plan;
   for(auto system : m_systems ) {
     if(system.second->components().size() == 1) { // Case when join is not required
-      auto logic_scan = MakeLogicPlanNodePtr<LogicScan>(*system.second->components().begin());
-      auto logic_filter = MakeLogicPlanNodePtr<LogicFilter>(logic_scan);
-      auto logic_map = MakeLogicPlanNodePtr<LogicMap>(system.first,logic_filter);
-      logic_plan->m_roots.push_back(logic_map);
+      ILogicPlanNodeSPtr logic_scan = MakeLogicPlanNodeSPtr<LogicScan>(*system.second->components().begin());
+      ILogicPlanNodeSPtr logic_filter = MakeLogicPlanNodeSPtr<LogicFilter>(logic_scan);
+      ILogicPlanNodeSPtr logic_map = MakeLogicPlanNodeSPtr<LogicMap>(system.first,logic_filter);
+      logic_plan.m_roots.push_back(logic_map);
     } else { // Case when we have at least one join (2-component case)
       std::vector<std::string> components = system.second->components();
       std::string first_component = components[0];
       std::string second_component = components[1];
-      auto logic_scan_first = MakeLogicPlanNodePtr<LogicScan>(first_component);
-      auto logic_filter_first = MakeLogicPlanNodePtr<LogicFilter>(logic_scan_first);
-      auto logic_scan_second = MakeLogicPlanNodePtr<LogicScan>(second_component);
-      auto logic_filter_second = MakeLogicPlanNodePtr<LogicFilter>(logic_scan_second);
-      auto previous_join = MakeLogicPlanNodePtr<LogicJoin>(logic_filter_first, logic_filter_second);
+      ILogicPlanNodeSPtr logic_scan_first = MakeLogicPlanNodeSPtr<LogicScan>(first_component);
+      ILogicPlanNodeSPtr logic_filter_first = MakeLogicPlanNodeSPtr<LogicFilter>(logic_scan_first);
+      ILogicPlanNodeSPtr logic_scan_second = MakeLogicPlanNodeSPtr<LogicScan>(second_component);
+      ILogicPlanNodeSPtr logic_filter_second = MakeLogicPlanNodeSPtr<LogicFilter>(logic_scan_second);
+      ILogicPlanNodeSPtr previous_join = MakeLogicPlanNodeSPtr<LogicJoin>(logic_filter_first, logic_filter_second);
       for (size_t i = 2; i < components.size(); ++i ) {
         std::string next_component = components[i];
-        auto logic_scan_next = MakeLogicPlanNodePtr<LogicScan>(next_component);
-        auto logic_filter_next = MakeLogicPlanNodePtr<LogicFilter>(logic_scan_next);
-        auto next_join = MakeLogicPlanNodePtr<LogicJoin>(previous_join,logic_filter_next);
+        ILogicPlanNodeSPtr logic_scan_next = MakeLogicPlanNodeSPtr<LogicScan>(next_component);
+        ILogicPlanNodeSPtr logic_filter_next = MakeLogicPlanNodeSPtr<LogicFilter>(logic_scan_next);
+        ILogicPlanNodeSPtr next_join = MakeLogicPlanNodeSPtr<LogicJoin>(previous_join,logic_filter_next);
         previous_join = next_join;
       }
-      auto logic_map = MakeLogicPlanNodePtr<LogicMap>(system.first, previous_join);
-      logic_plan->m_roots.push_back(logic_map);
+      ILogicPlanNodeSPtr logic_map = MakeLogicPlanNodeSPtr<LogicMap>(system.first, previous_join);
+      logic_plan.m_roots.push_back(logic_map);
     }
   }
   return logic_plan;
 }
 
-PhysicalPlanPtr  ExecutionEngine::build_physical_plan(LogicPlanPtr logic_plan) const {
+PhysicalPlan  ExecutionEngine::build_physical_plan( const LogicPlan& logic_plan) const {
   PhysicalPlanGenerator gen;
-  PhysicalPlanPtr physical_plan(new PhysicalPlan());
-  for(LogicPlanNodePtr node : logic_plan->m_roots) {
-    node->accept(gen);
-    physical_plan->roots_.push_back(gen.get_result());
+  PhysicalPlan physical_plan;
+  for(ILogicPlanNodeSPtr node : logic_plan.m_roots) {
+    node->accept(&gen);
+    physical_plan.m_roots.push_back(gen.get_result());
   }
   return physical_plan;
 }

@@ -18,18 +18,15 @@
 
 namespace furious {
 
-using TableMap = std::map<std::string, TablePtr>;
-using TableMapPair = std::pair<std::string, TablePtr>;
-
-class Database;
-using DatabasePtr = std::shared_ptr<Database>;
+using TableMap = std::map<std::string, Table*>;
+using TableMapPair = std::pair<std::string, Table*>;
 
 class Database {
 public:
   Database( const Database& ) = delete;
   Database( Database&& ) = delete;
 
-  virtual ~Database() {} ;
+  virtual ~Database();
 
   Database& operator=( const Database& ) = delete;
   Database& operator=( Database&& ) = delete;
@@ -42,7 +39,7 @@ public:
    * Adds an existing table to the database
    */
   template <typename T>
-    typename StaticTable<T>::Ptr create_table();
+  StaticTable<T>* create_table();
 
   /**
    * Drops an existing table
@@ -54,19 +51,19 @@ public:
    * Gets the table from type 
    * */
   template <typename T>
-    typename StaticTable<T>::Ptr find_table();
+  StaticTable<T>* find_table();
 
   /**
    * Gets the table from name
    * */
-  TablePtr find_table(const std::string& table_name);
+  Table* find_table(const std::string& table_name);
 
   /**
    * Clears and removes all the tables from the database
    * */
   void clear();
 
-  static DatabasePtr get_instance();
+  static Database* get_instance();
 
 protected:
   Database() = default;
@@ -77,12 +74,12 @@ private:
 };
 
 template <typename T>
-typename StaticTable<T>::Ptr Database::create_table() {
+StaticTable<T>* Database::create_table() {
   assert(m_tables.find(type_name<T>()) == m_tables.end());
   if(m_tables.find(type_name<T>()) != m_tables.end()) {
     return nullptr;
   }
-  auto table = std::make_shared<StaticTable<T>>();
+  auto table =  new StaticTable<T>();
   m_tables.insert(TableMapPair(table->table_name(),table));
   return table; 
 }
@@ -91,14 +88,15 @@ template <typename T>
 void Database::drop_table() {
   auto table = m_tables.find(type_name<T>());
   assert(table != m_tables.end());
-  m_tables.erase(table->second->table_name());
+  delete table->second;
+  m_tables.erase(table);
 }
 
 template <typename T>
-typename StaticTable<T>::Ptr Database::find_table() {
+StaticTable<T>* Database::find_table() {
   auto table = m_tables.find(type_name<T>());
   if(table == m_tables.end()) return nullptr;
-  return std::dynamic_pointer_cast<StaticTable<T>>(table->second);
+  return static_cast<StaticTable<T>*>(table->second);
 }
 
 }

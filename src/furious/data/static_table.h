@@ -16,19 +16,19 @@ namespace furious {
 
 template<typename T>
   class StaticTable : public Table {
-    class Row : public IRow {
+    class Row : public BaseRow {
     public:
 
       template<typename...Fields>
-        Row ( EntityId id, Fields&&...x) : IRow(id), 
-                                           data_(std::forward<Fields>(x)...), 
+        Row ( EntityId id, Fields&&...x) : BaseRow(id), 
+                                           m_data(std::forward<Fields>(x)...), 
                                            valid_(true) {}
 
       virtual ~Row() = default;
 
       virtual void* column(uint32_t column) override {
         assert(column == 0);
-        return &data_;
+        return &m_data;
       }
 
       virtual uint32_t column_size( uint32_t column) const override {
@@ -41,7 +41,7 @@ template<typename T>
       }
 
       T& get_data() {
-        return data_;
+        return m_data;
       } 
 
       bool is_valid() { return valid_; }
@@ -51,29 +51,29 @@ template<typename T>
       void set_invalid() { valid_ = false; }
 
     private:
-      T data_;
+      T m_data;
       bool valid_;
     };
 
   public:
 
     using table_type = StaticTable;
-    using Ptr = std::shared_ptr<StaticTable<T>>;
 
-    class Iterator : public Table::BaseIterator {
+    class Iterator : public Table::IBaseIterator {
     public:
-      Iterator( typename std::vector<Row>::iterator begin, typename std::vector<Row>::iterator end ) :
+      Iterator( typename std::vector<Row>::iterator begin, 
+                typename std::vector<Row>::iterator end ) :
         begin_(begin), end_(end) {}
       virtual ~Iterator() = default;
 
-      virtual IRowPtr next() {
+      virtual BaseRow* next() {
 
         while(begin_ != end_ && !(*begin_).is_valid()) {
           ++begin_;
         };
 
         if(begin_ != end_) {
-          IRowPtr ret = &(*begin_);
+          BaseRow* ret = &(*begin_);
           ++begin_;
           return ret;
         }
@@ -81,8 +81,8 @@ template<typename T>
         return nullptr;
       };
 
-      virtual Table::BaseIteratorPtr clone() const {
-        return Table::BaseIteratorPtr(new Iterator(begin_, end_));
+      virtual std::unique_ptr<Table::IBaseIterator> clone() const {
+        return std::unique_ptr<Table::IBaseIterator>(new Iterator(begin_, end_));
       };
 
     private:
@@ -103,63 +103,63 @@ template<typename T>
 
     template<typename...Fields>
       void insert( uint32_t id, Fields &&...x ) {
-        auto pos = id_index_.find(id);
-        if(pos == id_index_.end()) {
-          if(free_positions_.size() > 0) {
-            uint32_t position = free_positions_.back();
-            free_positions_.pop_back();
+        auto pos = m_id_index.find(id);
+        if(pos == m_id_index.end()) {
+          if(m_free_positions.size() > 0) {
+            uint32_t position = m_free_positions.back();
+            m_free_positions.pop_back();
             Row row(id, std::forward<Fields>(x)...);
-            data_[position] = row;
-            id_index_[id] = position;
+            m_data[position] = row;
+            m_id_index[id] = position;
           } else {
-            data_.emplace_back(id, std::forward<Fields>(x)...);
-            id_index_[id] = data_.size() - 1;
+            m_data.emplace_back(id, std::forward<Fields>(x)...);
+            m_id_index[id] = m_data.size() - 1;
           }
         } else {
           Row row(id, std::forward<Fields>(x)...);
-          data_[pos->second] = row;
+          m_data[pos->second] = row;
         }
       }
 
-    IRowPtr get_row_by_id( uint32_t id ) override {
-      auto pos = id_index_.find(id);
-      assert(pos != id_index_.end());
-      return &data_[pos->second];
+    BaseRow* get_row_by_id( uint32_t id ) override {
+      auto pos = m_id_index.find(id);
+      assert(pos != m_id_index.end());
+      return &m_data[pos->second];
     }
 
     void drop_row_by_id( uint32_t id ) override {
-      auto pos = id_index_.find(id);
-      assert(pos != id_index_.end());
-      data_[pos->second].set_invalid();
-      free_positions_.push_back(pos->second);
-      id_index_.erase(id);
+      auto pos = m_id_index.find(id);
+      assert(pos != m_id_index.end());
+      m_data[pos->second].set_invalid();
+      m_free_positions.push_back(pos->second);
+      m_id_index.erase(id);
     }
 
 
     Table::iterator begin() {
-      return Table::iterator(Table::BaseIteratorPtr( new Iterator(std::begin(data_), std::end(data_))));
+      return Table::iterator( std::unique_ptr<IBaseIterator>(new Iterator(std::begin(m_data), std::end(m_data))));
     }
 
     Table::iterator end() {
-      return Table::iterator(Table::BaseIteratorPtr( new Iterator(std::end(data_), std::end(data_))));
+      return Table::iterator( std::unique_ptr<IBaseIterator>(new Iterator(std::end(m_data), std::end(m_data))));
     }
 
     uint32_t size() const override {
-      return data_.size() - free_positions_.size();
+      return m_data.size() - m_free_positions.size();
     }
 
     virtual void clear() override {
-      free_positions_.clear();
-      for(uint32_t i = 0; i < data_.size();++i) {
-        free_positions_.push_back(i);
+      m_free_positions.clear();
+      for(uint32_t i = 0; i < m_data.size();++i) {
+        m_free_positions.push_back(i);
       }
-      id_index_.clear();
+      m_id_index.clear();
     }
 
   private:
-    std::vector<Row>              data_;              // vector holding the table data
-    std::vector<uint32_t>         free_positions_;
-    std::map<uint32_t, uint32_t>  id_index_;
+    std::vector<Row>              m_data;              // vector holding the table data
+    std::vector<uint32_t>         m_free_positions;
+    std::map<uint32_t, uint32_t>  m_id_index;
   };
 } /* furious */ 
 #endif

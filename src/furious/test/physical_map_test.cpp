@@ -32,13 +32,13 @@ TEST_F(PhysicalMapTest, PhysicalMapWorks) {
     tableA_->insert(i,i*2,i*1.0);
   }
 
-  ExecutionEnginePtr engine = ExecutionEngine::get_instance(); 
-  SystemPtr system = SystemPtr(new TestSystem(0));
+  ExecutionEngine* engine = ExecutionEngine::get_instance(); 
+  engine->register_system<TestSystem>();
 
-  IPhysicalOperatorPtr physical_scanA( new PhysicalScan(tableA_));
-  IPhysicalOperatorPtr physical_map( new PhysicalMap(physical_scanA, system) );
+  IPhysicalOperatorSPtr physical_scanA( new PhysicalScan(tableA_));
+  IPhysicalOperatorSPtr physical_map( new PhysicalMap(physical_scanA, engine->get_system(0)) );
   physical_map->open();
-  IRowPtr row = physical_map->next();
+  BaseRow* row = physical_map->next();
   while(row != nullptr) {
     row = physical_map->next();
   }

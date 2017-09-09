@@ -14,17 +14,15 @@
 
 namespace furious {
 
-class ExecutionEngine;
-using ExecutionEnginePtr = std::shared_ptr<ExecutionEngine>;
 class ExecutionEngine {
-  using SystemMap = std::map<SystemId, SystemPtr>;
-  using SystemMapPair = std::pair<SystemId, SystemPtr>;
+  using SystemMap = std::map<SystemId, System*>;
+  using SystemMapPair = std::pair<SystemId, System*>;
 
 public:
   ExecutionEngine( const ExecutionEngine& ) = delete;
   ExecutionEngine( ExecutionEngine&& ) = delete;
 
-  virtual ~ExecutionEngine(){};
+  virtual ~ExecutionEngine();
 
   ExecutionEngine& operator=( const ExecutionEngine& ) = delete;
   ExecutionEngine& operator=( ExecutionEngine&& ) = delete;
@@ -47,26 +45,29 @@ public:
   /**
    * Gets the specified system
    **/
-  SystemPtr get_system(SystemId system);
+  System* get_system(SystemId system);
 
-
-  static std::shared_ptr<ExecutionEngine> get_instance();
+  /**
+   * @brief Gets the pointer to the instance of the ExecutionEngine singleton
+   *
+   * @return Returns the pointer to the instance to the ExecutionEngine singleton
+   */
+  static ExecutionEngine* get_instance();
 
   /*
    * Build the logic plan for the current registered systems
    */
-  LogicPlanPtr build_logic_plan() const ;
+  LogicPlan build_logic_plan() const ;
 
   /**
    * Builds a physical plan out of a logic plan
    */
-  PhysicalPlanPtr  build_physical_plan(LogicPlanPtr logic_plan) const;
-
+  PhysicalPlan  build_physical_plan( const LogicPlan& logic_plan) const;
 
   /**
    * Executes the given physical plan
    */
-  void execute_physical_plan(PhysicalPlanPtr physical_plan ) const;
+  void execute_physical_plan( const PhysicalPlan& physical_plan ) const;
 
   /**
    * Clears the registered systems 
@@ -75,19 +76,15 @@ public:
 
 private:
 
-  /*
-   * Constructor
-   * */
-  ExecutionEngine() : p_database(Database::get_instance()) {}
+  ExecutionEngine() = default;
 
   SystemId                  m_next_id = 0; /** The next id to assign to a sysstem **/
   SystemMap                 m_systems;     /** Holds the list of registered systems **/
-  DatabasePtr               p_database;    /** Pointer to the database **/
 };
 
 template <typename T, typename...Args>
 SystemId ExecutionEngine::register_system(Args&&...x) {
-  auto sp = std::static_pointer_cast<System>(std::make_shared<T>(m_next_id,std::forward<Args>(x)...));
+  System* sp = static_cast<System*>(new T(m_next_id,std::forward<Args>(x)...));
   m_systems.insert(SystemMapPair(m_next_id,sp));
   return m_next_id++;
 }

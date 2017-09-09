@@ -10,7 +10,7 @@
 #include <cassert>
 
 namespace furious {
-class LogicScan : public LogicPlanNode {
+class LogicScan : public ILogicPlanNode {
 
 public:
   LogicScan(const std::string& table);
@@ -20,13 +20,13 @@ public:
   //////////////////////////////////////////////
   //////////////////////////////////////////////
 
-  virtual void accept( LogicPlanVisitor& visitor ) override;
+  virtual void accept( LogicPlanVisitor* visitor ) override;
 
   virtual std::string str() const override; 
 
   virtual uint32_t num_children() const override; 
 
-  virtual LogicPlanNodePtr child( uint32_t i ) const override;
+  virtual ILogicPlanNodeSPtr child( uint32_t i ) const override;
 
   const std::string m_table;
 };

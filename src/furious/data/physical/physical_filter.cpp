@@ -5,36 +5,36 @@
 
 namespace furious {
 
-PhysicalFilter::PhysicalFilter( IPhysicalOperatorPtr input ) :
-  input_(input)
+PhysicalFilter::PhysicalFilter( IPhysicalOperatorSPtr input ) :
+  p_input(input)
 {
 
 }
 
-IRowPtr PhysicalFilter::next() {
-  IRowPtr next_row = input_->next();
+BaseRow* PhysicalFilter::next() {
+  BaseRow* next_row = p_input->next();
   while(next_row != nullptr && !next_row->m_enabled) {
-    next_row = input_->next();
+    next_row = p_input->next();
   }
   return next_row;
 }
 
 void PhysicalFilter::open() {
-  input_->open();
+  p_input->open();
 
 }
 
 void PhysicalFilter::close() {
-  input_->close();
+  p_input->close();
 }
 
 uint32_t PhysicalFilter::num_children()  const  {
   return 1;
 }
 
-IPhysicalOperatorPtr  PhysicalFilter::child(uint32_t i ) const {
+IPhysicalOperatorSPtr  PhysicalFilter::child(uint32_t i ) const {
   assert(i == 0);
-  return input_;
+  return p_input;
 }
 
 std::string PhysicalFilter::str() const  {

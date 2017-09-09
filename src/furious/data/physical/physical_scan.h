@@ -13,14 +13,14 @@ class PhysicalScan : public IPhysicalOperator {
 
 public:
 
-  PhysicalScan(TablePtr table); 
+  PhysicalScan(Table* table); 
   virtual ~PhysicalScan() = default;
 
   ////////////////////////////////////////////////////
   ////////////////////////////////////////////////////
   ////////////////////////////////////////////////////
 
-  IRowPtr next() override;
+  BaseRow* next() override;
 
   void open() override;
 
@@ -28,13 +28,13 @@ public:
 
   virtual uint32_t num_children()  const override ;
 
-  virtual IPhysicalOperatorPtr  child(uint32_t i) const override;
+  virtual IPhysicalOperatorSPtr  child(uint32_t i) const override;
 
   virtual std::string str() const override;
 
 private:
-  TablePtr            table_ptr_;
-  Table::iterator     iterator_;
+  Table*              p_table;
+  Table::iterator     m_iterator;
 };
 
 } /* furious */ 

@@ -15,10 +15,10 @@ public:
   LogicPlanVisitor() = default;
   virtual ~LogicPlanVisitor() = default;
 
-  virtual void visit(LogicJoin& logic_join) = 0;
-  virtual void visit(LogicMap& logic_map) = 0;
-  virtual void visit(LogicScan& logic_scan) = 0;
-  virtual void visit(LogicFilter& logic_filter) = 0;
+  virtual void visit(LogicJoin* logic_join) = 0;
+  virtual void visit(LogicMap* logic_map) = 0;
+  virtual void visit(LogicScan* logic_scan) = 0;
+  virtual void visit(LogicFilter* logic_filter) = 0;
 };
 } /* furious */ 
 #endif
