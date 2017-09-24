@@ -35,7 +35,7 @@ public:
  * Helper template to reduce verbosity when using shared pointers
  */
 template <typename T, typename... Args>
-auto MakeIPhysicalOperatorPtr(Args&&... args)  
+IPhysicalOperatorSPtr MakeIPhysicalOperatorPtr(Args&&... args)  
 {
   return std::static_pointer_cast<IPhysicalOperator>(std::make_shared<T>(std::forward<Args>(args)...));
 }

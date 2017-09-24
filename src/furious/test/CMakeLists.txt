@@ -26,6 +26,7 @@ macro(create_test NAME )
       )
 endmacro(create_test)
 
+create_test ("memory_test")
 create_test ("database_test")
 create_test ("table_test")
 create_test ("physical_scan_test")

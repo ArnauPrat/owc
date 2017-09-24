@@ -19,12 +19,13 @@ set(FURIOUS_OUTPUT_DIR "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/furious")
 include_directories(./)
 
 add_subdirectory(./common/)
+add_subdirectory(./memory/)
 add_subdirectory(./data/)
 
 add_library(furious SHARED
   furious.h
   )  
-target_link_libraries(furious common data)
+target_link_libraries(furious common memory data)
 
 set_target_properties(furious 
   PROPERTIES

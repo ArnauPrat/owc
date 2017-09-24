@@ -12,7 +12,6 @@
 #include <OgreWindowEventUtilities.h>
 
 #include <Compositor/OgreCompositorManager2.h>
-#include <furious/furious.h>
 
 union SDL_Event;
 
@@ -37,8 +36,6 @@ protected:
 
     virtual void onKeywordEvent( const SDL_Event& event );
     virtual void onMouseEvent( const SDL_Event& event );
-
-private:
 
 };
 

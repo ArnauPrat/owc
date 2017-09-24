@@ -8,6 +8,8 @@
 #include <OgreLogManager.h>
 
 #include <tnasdk/tnasdk.h>
+#include <furious/furious.h>
+
 #include <SDL2/SDL.h>
 
 namespace owc {

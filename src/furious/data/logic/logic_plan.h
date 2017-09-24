@@ -19,7 +19,7 @@ using ILogicPlanNodeSPtr = std::shared_ptr<ILogicPlanNode>;
  * Helper template to reduce verbosity when using shared pointers
  */
 template <typename T, typename... Args>
-  auto MakeLogicPlanNodeSPtr(Args&&... args)  
+  ILogicPlanNodeSPtr MakeLogicPlanNodeSPtr(Args&&... args)  
   {
     return std::static_pointer_cast<ILogicPlanNode>(std::make_shared<T>(std::forward<Args>(args)...));
   }
