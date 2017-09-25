@@ -32,6 +32,7 @@ add_library(data STATIC
   static_table.h
   system.h
   table.h
+  table.cpp 
 )
 
 set_target_properties( data 

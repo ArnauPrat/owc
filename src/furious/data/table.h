@@ -5,136 +5,50 @@
 #define _FURIOUS_TABLE_H_ 
 
 #include "common.h"
-#include <map>
-#include <memory>
-#include <type_traits>
-#include <typeindex>
+#include "common/btree.h"
 #include <vector>
-#include <iterator>
+#include <string>
+#include <set>
 
 namespace furious {
-class BaseRow {
-
-public:
-  BaseRow(EntityId id) : m_id(id), 
-                      m_enabled(true) {}
-  virtual ~BaseRow() = default;
-
-  /**
-   * @brief Gets a specific column of a row
-   *
-   * @param column The column index to get
-   *
-   * @return A void pointer to the struct hold in the column
-   */
-  virtual void* column(uint32_t column) = 0; 
-
-  /**
-   * @brief Gets the size of a column 
-   *
-   * @param column The index of the column to get the size of 
-   *
-   * @return The size of the column
-   */
-  virtual uint32_t column_size( uint32_t column) const = 0;
 
 
-  /**
-   * @brief Gets the number of columns of this row
-   **/
-  virtual uint32_t num_columns() const = 0;
+/**
+ * @brief The number of elements per block. The current number, 16 is not
+ * arbitrarily chosen. Assuming a cahce line of 64 bytes long, 16 4byte elements
+ * can be stored in a line.
+ */
+constexpr size_t BLOCK_SIZE = 16;
 
-  ////////////////////////////////////////////////
-  ////////////////////////////////////////////////
-  ////////////////////////////////////////////////
-
-  EntityId    m_id;
-  bool        m_enabled;
+/**
+ * @brief Represents a block of data in a table
+ */
+struct TBlock {
+  uint8_t*          p_data;                           // The pointer to the block data
+  uint32_t          m_start;                          // The id of the first element in the block
+  uint8_t           m_exists[(BLOCK_SIZE + 7) >> 3];  // A vector of bits used to test whether an element is in the block or not
 };
 
 
 class Table {
 
 public:
-  class IBaseIterator {
-  public:
-    virtual BaseRow* next() = 0;
-    virtual std::unique_ptr<IBaseIterator> clone() const = 0;
-  };
-
-  class iterator : public std::iterator<std::input_iterator_tag, BaseRow> {
-  public:
-    explicit iterator(std::unique_ptr<IBaseIterator>&& iter) : 
-      iter_(std::move(iter)), current_(iter_->next()) {}
-
-    iterator(iterator& other) {
-      *this = other;
-    }
-
-    iterator(iterator&& other) {
-      *this = other;
-    }
-
-    iterator& operator++() {current_ = iter_->next(); return *this;}
-    iterator  operator++(int) {iterator retval = *this; ++(*this); return retval;}
-    bool      operator==(iterator other) const {return current_ == other.current_;}
-    bool      operator!=(iterator other) const {return !(*this == other);}
-    pointer   operator*() const { return current_;  }
-    pointer   operator->() const { return current_; }
-
-    iterator& operator=(iterator& other) {
-      iter_ = other.iter_->clone();
-      current_ = other.current_;
-      return *this;
-    }
-
-  private:
-    std::unique_ptr<IBaseIterator> iter_;
-    BaseRow*                          current_;
-  };
-
-public:
-  Table(const std::string& name) : m_name(name) {}
+  Table(const std::string& name, size_t esize){}
   virtual ~Table() {}
 
-  /**
-   * Gets the size of the table
-   */
-  virtual uint32_t size() const = 0; 
+  uint32_t size(); 
 
-  /**
-   * Gets an iterator to the begin of the table
-   */
-  virtual iterator begin() = 0;
+  void clear();
 
-  /**
-   * Gets an iterator to the end of the table
-   */
-  virtual iterator end() = 0;
+  void* get_element(uint32_t id);
 
-  /**
-   * Clear the table
-   */
-  virtual void clear() = 0;
+  void drop_element(uint32_t id);
 
-  /**
-   * Gets the row whose id is the given one
-   */
-  virtual BaseRow* get_row_by_id(uint32_t id) = 0;
-
-  /**
-   * Drops the row whose id is the given one
-   */
-  virtual void drop_row_by_id(uint32_t id) = 0;
-
-  /**
-   * Gets the name of the table
-   */
   std::string table_name() { return m_name; };
 
 private:
-  std::string m_name;
-
+  std::string                           m_name;   // The name of the table
+  size_t                                m_esize;  // The size of each element in bytes
 };
 
 } /* furious */ 

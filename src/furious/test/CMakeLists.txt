@@ -11,13 +11,13 @@ find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})
 include_directories(${FURIOUS_INCLUDE_DIR})
 
-macro(create_test NAME )
+macro(create_test NAME)
   add_executable(${NAME}
     ${NAME}.cpp
     data_test.h
    )
 
-  target_link_libraries(${NAME} ${GTEST_LIBRARIES} furious)
+  target_link_libraries(${NAME} ${GTEST_LIBRARIES}) 
   add_test(${NAME} ${FURIOUS_OUTPUT_DIR}/test/${NAME})
 
     set_target_properties( ${NAME} 
