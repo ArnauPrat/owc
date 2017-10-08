@@ -11,29 +11,31 @@ find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})
 include_directories(${FURIOUS_INCLUDE_DIR})
 
-macro(create_test NAME)
+function(create_test NAME DEPENDENCIES)
+  MESSAGE(STATUS "Added test ${NAME} which depends on ${DEPENDENCIES}")
   add_executable(${NAME}
     ${NAME}.cpp
     data_test.h
-   )
+    )
 
-  target_link_libraries(${NAME} ${GTEST_LIBRARIES}) 
+  target_link_libraries(${NAME} ${GTEST_LIBRARIES} ${DEPENDENCIES}) 
   add_test(${NAME} ${FURIOUS_OUTPUT_DIR}/test/${NAME})
 
-    set_target_properties( ${NAME} 
-      PROPERTIES
-      RUNTIME_OUTPUT_DIRECTORY ${FURIOUS_OUTPUT_DIR}/test
-      )
-endmacro(create_test)
+  set_target_properties( ${NAME} 
+    PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${FURIOUS_OUTPUT_DIR}/test
+    )
+endfunction(create_test)
 
-create_test ("memory_test")
-create_test ("database_test")
-create_test ("table_test")
-create_test ("physical_scan_test")
-create_test ("system_test")
-create_test ("physical_filter_test")
-create_test ("physical_hash_join_test")
-create_test ("physical_map_test")
-create_test ("execution_engine_test")
-create_test ("physical_plan_generator_test")
+create_test ("btree_test" common)
+#create_test ("memory_test")
+#create_test ("database_test")
+#create_test ("table_test")
+#create_test ("physical_scan_test")
+#create_test ("system_test")
+#create_test ("physical_filter_test")
+#create_test ("physical_hash_join_test")
+#create_test ("physical_map_test")
+#create_test ("execution_engine_test")
+#create_test ("physical_plan_generator_test")
 
