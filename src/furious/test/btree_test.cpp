@@ -1,13 +1,15 @@
 
 #include <gtest/gtest.h>
+#include "../common/btree.h"
 #include "../common/common.h"
 #include "../common/impl/btree_impl.h"
+#include <iostream>
 
 namespace furious {
 
 constexpr uint8_t MAX_KEY = 255;
 struct TestValue {
-  uint8_t val;
+  uint8_t m_val;
 };
 
 TEST(BTreeTest, node_size) {
@@ -183,6 +185,137 @@ TEST(BTreeTest, btree_split_leaf) {
   btree_destroy_node(sibling);
   btree_destroy_node(node);
 
+}
+
+TEST(BTreeTest, btree_get) {
+ 
+  BTNode* node = btree_create_internal();
+
+  for (uint8_t i = 0; i < BTREE_MAX_ARITY; ++i) {
+    BTNode* leaf = btree_create_leaf();
+    node->m_internal.m_children[i] = leaf;
+    for (uint8_t j = 0; j < BTREE_MIN_ARITY; ++j) {
+      uint8_t key = i*BTREE_MIN_ARITY+j;
+      leaf->m_leaf.m_leafs[j] = new TestValue{key};
+      leaf->m_leaf.m_keys[j] = key; 
+      leaf->m_leaf.m_nleafs++; 
+    }
+    node->m_internal.m_nchildren++;
+    if( i >= 1 ) {
+      node->m_internal.m_keys[i-1] = leaf->m_leaf.m_keys[0];
+    }
+  }
+
+  for( uint8_t i = 0; i < BTREE_MAX_ARITY; ++i ) {
+    for ( uint8_t j = 0; j < BTREE_MIN_ARITY; ++j) {
+      uint8_t key = i*BTREE_MIN_ARITY+j;
+      TestValue* value = static_cast<TestValue*>(btree_get(node, (i*BTREE_MIN_ARITY+j)));
+      ASSERT_NE(value, nullptr);
+      ASSERT_EQ(value->m_val, key);
+    }
+  }
+
+  for (uint8_t i = 0; i < BTREE_MAX_ARITY; ++i) {
+    BTNode* leaf = node->m_internal.m_children[i];
+    for (uint8_t j = 0; j < BTREE_MIN_ARITY; ++j) {
+      delete static_cast<TestValue*>(leaf->m_leaf.m_leafs[j]);
+    }
+    btree_destroy_node(leaf);
+  }
+
+  delete node;
+}
+
+TEST(BTreeTest, btree_shift_insert_internal) {
+
+  BTNode* node = btree_create_internal();
+  BTNode* child = btree_create_internal();
+  node->m_internal.m_children[0] = child;
+  node->m_internal.m_nchildren++;
+
+  BTNode* child2 = btree_create_internal();
+  btree_shift_insert_internal(node, 1, child2, 10);
+  ASSERT_EQ(node->m_internal.m_nchildren, 2);
+  ASSERT_EQ(node->m_internal.m_children[0], child);
+  ASSERT_EQ(node->m_internal.m_children[1], child2);
+  ASSERT_EQ(node->m_internal.m_keys[0], 10);
+
+  BTNode* child3 = btree_create_internal();
+  btree_shift_insert_internal(node, 1, child3, 5);
+  ASSERT_EQ(node->m_internal.m_nchildren, 3);
+  ASSERT_EQ(node->m_internal.m_children[0], child);
+  ASSERT_EQ(node->m_internal.m_children[1], child3);
+  ASSERT_EQ(node->m_internal.m_children[2], child2);
+  ASSERT_EQ(node->m_internal.m_keys[0], 5);
+  ASSERT_EQ(node->m_internal.m_keys[1], 10);
+
+  btree_destroy_node(child);
+  btree_destroy_node(child2);
+  btree_destroy_node(child3);
+  btree_destroy_node(node);
+  
+}
+
+TEST(BTreeTest, btree_shift_insert_leaf) {
+
+  BTNode* node = btree_create_leaf();
+  TestValue* child = new TestValue{0};
+  node->m_leaf.m_leafs[0] = child;
+  node->m_leaf.m_keys[0] = 0;
+  node->m_leaf.m_nleafs++;
+
+  TestValue* child2 = new TestValue{10};
+  btree_shift_insert_leaf(node, 1, child2, 10);
+  ASSERT_NE(node->m_leaf.m_leafs[0], nullptr);
+  ASSERT_NE(node->m_leaf.m_leafs[1], nullptr);
+  ASSERT_EQ(node->m_leaf.m_keys[0], 0);
+  ASSERT_EQ(node->m_leaf.m_keys[1], 10);
+  ASSERT_EQ(static_cast<TestValue*>(node->m_leaf.m_leafs[0])->m_val, 0 );
+  ASSERT_EQ(static_cast<TestValue*>(node->m_leaf.m_leafs[1])->m_val, 10 );
+
+  TestValue* child3 = new TestValue{5};
+  btree_shift_insert_leaf(node, 1, child3, 5);
+
+  ASSERT_NE(node->m_leaf.m_leafs[0], nullptr);
+  ASSERT_NE(node->m_leaf.m_leafs[1], nullptr);
+  ASSERT_NE(node->m_leaf.m_leafs[1], nullptr);
+  ASSERT_EQ(node->m_leaf.m_keys[0], 0);
+  ASSERT_EQ(node->m_leaf.m_keys[1], 5);
+  ASSERT_EQ(node->m_leaf.m_keys[2], 10);
+  ASSERT_EQ(static_cast<TestValue*>(node->m_leaf.m_leafs[0])->m_val, 0 );
+  ASSERT_EQ(static_cast<TestValue*>(node->m_leaf.m_leafs[1])->m_val, 5 );
+  ASSERT_EQ(static_cast<TestValue*>(node->m_leaf.m_leafs[2])->m_val, 10 );
+
+  delete child;
+  delete child2;
+  delete child3;
+  btree_destroy_node(node);
+  
+}
+
+TEST(BTreeTest, btree_insert) {
+
+  BTNode* node = btree_create_internal();
+  TestValue* element = new TestValue{0};
+  btree_insert(node, 0, element );
+  ASSERT_NE(node->m_internal.m_children[0], nullptr);
+  ASSERT_EQ(node->m_internal.m_children[0]->m_leaf.m_leafs[0], element);
+  ASSERT_EQ(node->m_internal.m_children[0]->m_leaf.m_keys[0], 0);
+
+  TestValue* element2 = new TestValue{1};
+  btree_insert(node, 1, element2 );
+  ASSERT_EQ(node->m_internal.m_children[0]->m_leaf.m_leafs[1], element2);
+  ASSERT_EQ(node->m_internal.m_children[0]->m_leaf.m_keys[1], 1);
+
+  TestValue* element3 = new TestValue{2};
+  btree_insert(node, 2, element3 );
+  ASSERT_EQ(node->m_internal.m_children[0]->m_leaf.m_leafs[2], element3);
+  ASSERT_EQ(node->m_internal.m_children[0]->m_leaf.m_keys[2], 2);
+
+  delete element;
+  delete element2;
+  btree_destroy_node(node);
+  
 }
 
 } /* furious */ 

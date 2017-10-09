@@ -156,7 +156,7 @@ void btree_insert(BTNode* node, uint8_t key, void* element) {
 
   } else { 
     uint8_t pos = btree_next_leaf(node, key);
-    btree_shift_insert_leaf(node, pos+1, element, key );
+    btree_shift_insert_leaf(node, pos, element, key );
   }
 }
 
