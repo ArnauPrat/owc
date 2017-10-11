@@ -2,6 +2,7 @@
 #include "btree_impl.h"
 #include <string.h>
 #include <cassert>
+#include <iostream>
 
 namespace furious {
 
@@ -26,6 +27,14 @@ BTNode* btree_create_leaf() {
 }
 
 void btree_destroy_node(BTNode* node) {
+  if (node->m_type == BTNodeType::E_INTERNAL) {
+    for (uint8_t i = 0; i < BTREE_MAX_ARITY; ++i) {
+      if (node->m_internal.m_children[i] != nullptr) {
+        btree_destroy_node(node->m_internal.m_children[i]);
+        node->m_internal.m_children[i] = nullptr;
+      }
+    }
+  } 
   delete node;
 }
 
@@ -116,6 +125,29 @@ void btree_shift_insert_leaf(BTNode* node, uint8_t idx, void* element, uint8_t k
   node->m_leaf.m_nleafs++;
 }
 
+BTNode* btree_split_child_full(BTNode* node, uint8_t child_idx, uint8_t key) {
+
+  BTNode* child = node->m_internal.m_children[child_idx];
+  if(child->m_type == BTNodeType::E_INTERNAL && child->m_internal.m_nchildren == BTREE_MAX_ARITY) {
+    uint8_t sibling_key;
+    BTNode* sibling = btree_split_internal(child, &sibling_key);
+    btree_shift_insert_internal(node, child_idx+1, sibling, sibling_key );
+    if(key >= sibling_key) {
+      child = sibling;
+    }
+  } else if( child->m_type == BTNodeType::E_LEAF && child->m_leaf.m_nleafs == BTREE_MIN_ARITY ){
+    uint8_t sibling_key;
+    BTNode* sibling = btree_split_leaf(child, &sibling_key);
+    btree_shift_insert_internal(node, child_idx+1, sibling, sibling_key );
+    sibling->m_leaf.m_next = child->m_leaf.m_next;
+    child->m_leaf.m_next = sibling;
+    if(key >= sibling_key) {
+      child = sibling;
+    }
+  }
+  return child;
+}
+
 
 void btree_insert(BTNode* node, uint8_t key, void* element) {
   if(node->m_type == BTNodeType::E_INTERNAL) {
@@ -132,26 +164,10 @@ void btree_insert(BTNode* node, uint8_t key, void* element) {
       if(child_idx > 0) {
         node->m_internal.m_keys[child_idx-1] = key;
       }
+      node->m_internal.m_nchildren++;
     }
 
-    if(child->m_type == BTNodeType::E_INTERNAL && child->m_internal.m_nchildren == BTREE_MAX_ARITY) {
-      uint8_t sibling_key;
-      BTNode* sibling = btree_split_internal(child, &sibling_key);
-      btree_shift_insert_internal(node, child_idx+1, sibling, sibling_key );
-      if(key >= sibling_key) {
-        child = sibling;
-      }
-    } else if( child->m_type == BTNodeType::E_LEAF && child->m_leaf.m_nleafs == BTREE_MIN_ARITY ){
-      uint8_t sibling_key;
-      BTNode* sibling = btree_split_leaf(child, &sibling_key);
-      btree_shift_insert_internal(node, child_idx+1, sibling, sibling_key );
-      sibling->m_leaf.m_next = child->m_leaf.m_next;
-      child->m_leaf.m_next = sibling;
-      if(key >= sibling_key) {
-        child = sibling;
-      }
-    }
-
+    child = btree_split_child_full(node, child_idx, key);
     btree_insert(child, key, element);
 
   } else { 
@@ -187,7 +203,9 @@ void btree_insert_root(BTNode** node, uint8_t key, void* element) {
     if(child_idx > 0) {
       root->m_internal.m_keys[child_idx-1] = key;
     }
+    root->m_internal.m_nchildren++;
   }
+  child = btree_split_child_full(root, child_idx, key);
   btree_insert(child, key, element);
 }
 

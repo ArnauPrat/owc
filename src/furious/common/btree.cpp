@@ -18,19 +18,19 @@ BTree::~BTree() {
   }
 }
 
-void BTree::insert(uint32_t key, void* element) {
+void BTree::insert(uint8_t key, void* element) {
   btree_insert_root(&p_root, key, element);
 }
 
-void* BTree::remove(uint32_t key) {
+void* BTree::remove(uint8_t key) {
   return btree_remove(p_root, key);
 }
 
-void* BTree::get(uint32_t key){
+void* BTree::get(uint8_t key){
   return btree_get(p_root, key);
 }
 
-bool BTree::exists(uint32_t key){
+bool BTree::exists(uint8_t key){
   return get(key) != nullptr;
 }
 

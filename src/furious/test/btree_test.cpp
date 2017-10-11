@@ -57,11 +57,7 @@ TEST(BTreeTest, btree_next_internal) {
     ASSERT_EQ(btree_next_internal(node,i*10), i);
   }
 
-  for (uint8_t i = 0; i < BTREE_MAX_ARITY; ++i) {
-    btree_destroy_node(node->m_internal.m_children[i] = btree_create_leaf());
-  }
   btree_destroy_node(node);
-
 }
 
 TEST(BTreeTest, btree_next_leaf) {
@@ -122,14 +118,6 @@ TEST(BTreeTest, btree_split_internal) {
 
   for (uint8_t i = RIGHT; i < BTREE_MAX_ARITY; ++i) {
     ASSERT_EQ(sibling->m_internal.m_children[i], nullptr);
-  }
-
-  for (uint8_t i = 0; i < LEFT; ++i) {
-    btree_destroy_node(node->m_internal.m_children[i]);
-  }
-
-  for (uint8_t i = 0; i < RIGHT; ++i) {
-    btree_destroy_node(sibling->m_internal.m_children[i]);
   }
 
   btree_destroy_node(sibling);
@@ -220,7 +208,6 @@ TEST(BTreeTest, btree_get) {
     for (uint8_t j = 0; j < BTREE_MIN_ARITY; ++j) {
       delete static_cast<TestValue*>(leaf->m_leaf.m_leafs[j]);
     }
-    btree_destroy_node(leaf);
   }
 
   delete node;
@@ -249,9 +236,6 @@ TEST(BTreeTest, btree_shift_insert_internal) {
   ASSERT_EQ(node->m_internal.m_keys[0], 5);
   ASSERT_EQ(node->m_internal.m_keys[1], 10);
 
-  btree_destroy_node(child);
-  btree_destroy_node(child2);
-  btree_destroy_node(child3);
   btree_destroy_node(node);
   
 }
@@ -314,8 +298,28 @@ TEST(BTreeTest, btree_insert) {
 
   delete element;
   delete element2;
+  delete element3;
   btree_destroy_node(node);
   
+}
+
+TEST(BTreeTest, BTree) {
+  BTree btree;
+
+  uint32_t BTREE_MAX_KEY=255;
+
+  TestValue* values[BTREE_MAX_KEY];
+
+  for (uint32_t i = 0; i <= BTREE_MAX_KEY; ++i) {
+    values[i] = new TestValue{static_cast<uint8_t>(i)};
+    btree.insert(static_cast<uint8_t>(i), values[i]);
+  }
+
+  for (uint32_t i = 0; i <= BTREE_MAX_KEY; ++i) {
+    TestValue* value = static_cast<TestValue*>(btree.get(i));
+    ASSERT_EQ(value, values[i]);
+  }
+
 }
 
 } /* furious */ 
