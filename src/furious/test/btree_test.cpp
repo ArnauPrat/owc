@@ -97,28 +97,35 @@ TEST(BTreeTest, btree_split_internal) {
   uint8_t sibling_key;
   BTNode* sibling = btree_split_internal(node, &sibling_key);
 
-  uint8_t LEFT = (BTREE_MAX_ARITY+2-1)/2;
-  uint8_t RIGHT = (BTREE_MAX_ARITY/2);
+  ASSERT_NE(node->m_internal.m_nchildren, 0);
+  ASSERT_NE(sibling->m_internal.m_nchildren, 0);
 
-  ASSERT_EQ(node->m_internal.m_nchildren, LEFT );
-  ASSERT_EQ(sibling->m_internal.m_nchildren, RIGHT);
-  ASSERT_EQ(sibling_key, (LEFT)*10);
-
-  for (uint8_t i = 0; i < LEFT - 1 ; ++i) {
-    ASSERT_EQ(node->m_internal.m_keys[i], (i+1)*10);
+  uint32_t non_null = 0;
+  for( uint8_t i = 0; i < BTREE_MAX_ARITY; ++i ) {
+    if(node->m_internal.m_children[i] != nullptr) {
+      non_null++;
+    }
   }
 
-  for (uint8_t i = LEFT; i < BTREE_MAX_ARITY ; ++i) {
-    ASSERT_EQ(node->m_internal.m_children[i], nullptr);
+  for( uint8_t i = 0; i < BTREE_MAX_ARITY; ++i ) {
+    if(sibling->m_internal.m_children[i] != nullptr) {
+      non_null++;
+    }
   }
 
-  for (uint8_t i = 0; i < RIGHT - 1 ; ++i) {
-    ASSERT_EQ(sibling->m_internal.m_keys[i], (LEFT+i+1)*10);
+  ASSERT_EQ(non_null, BTREE_MAX_ARITY);
+  ASSERT_EQ(non_null, node->m_internal.m_nchildren + sibling->m_internal.m_nchildren);
+  uint8_t max_key = 0;
+  for (uint8_t i = 1; i < BTREE_MAX_ARITY -1 && node->m_internal.m_children[i+1] != nullptr; ++i) {
+    ASSERT_TRUE(node->m_internal.m_keys[i] > node->m_internal.m_keys[i-1]);
+    max_key = node->m_internal.m_keys[i];
   }
 
-  for (uint8_t i = RIGHT; i < BTREE_MAX_ARITY; ++i) {
-    ASSERT_EQ(sibling->m_internal.m_children[i], nullptr);
+  for (uint8_t i = 1; i < BTREE_MAX_ARITY -1 && sibling->m_internal.m_children[i+1] != nullptr; ++i) {
+    ASSERT_TRUE(sibling->m_internal.m_keys[i] > sibling->m_internal.m_keys[i-1]);
+    ASSERT_TRUE(sibling->m_internal.m_keys[i] > max_key);
   }
+
 
   btree_destroy_node(sibling);
   btree_destroy_node(node);
@@ -138,36 +145,45 @@ TEST(BTreeTest, btree_split_leaf) {
   uint8_t sibling_key;
   BTNode* sibling = btree_split_leaf(node, &sibling_key);
 
+  ASSERT_NE(node->m_leaf.m_nleafs, 0);
+  ASSERT_NE(sibling->m_leaf.m_nleafs, 0);
 
-  uint8_t LEFT = (BTREE_MIN_ARITY+2-1)/2;
-  uint8_t RIGHT= BTREE_MIN_ARITY - LEFT;
-
-  ASSERT_EQ(node->m_leaf.m_nleafs, LEFT);
-  ASSERT_EQ(sibling->m_leaf.m_nleafs, RIGHT);
-  ASSERT_EQ(sibling_key, LEFT);
-
-  for (uint8_t i = 0; i < LEFT; ++i) {
-    ASSERT_EQ(node->m_leaf.m_keys[i], i);
+  uint32_t non_null = 0;
+  for( uint8_t i = 0; i < BTREE_MIN_ARITY; ++i ) {
+    if(node->m_leaf.m_leafs[i] != nullptr) {
+      non_null++;
+    }
   }
 
-  for (uint8_t i = LEFT; i < BTREE_MIN_ARITY ; ++i) {
-    ASSERT_EQ(node->m_leaf.m_leafs[i], nullptr);
+  for( uint8_t i = 0; i < BTREE_MIN_ARITY; ++i ) {
+    if(sibling->m_leaf.m_leafs[i] != nullptr) {
+      non_null++;
+    }
   }
 
-  for (uint8_t i = 0; i < RIGHT ; ++i) {
-    ASSERT_EQ(sibling->m_leaf.m_keys[i], (LEFT+i));
+  ASSERT_EQ(non_null, BTREE_MIN_ARITY);
+  ASSERT_EQ(non_null, node->m_leaf.m_nleafs + sibling->m_leaf.m_nleafs);
+  uint8_t max_key = 0;
+  for (uint8_t i = 1; i < BTREE_MIN_ARITY && node->m_leaf.m_leafs[i] != nullptr; ++i) {
+    ASSERT_TRUE(node->m_leaf.m_keys[i] > node->m_leaf.m_keys[i-1]);
+    max_key = node->m_leaf.m_keys[i];
   }
 
-  for (uint8_t i = RIGHT; i < BTREE_MIN_ARITY; ++i) {
-    ASSERT_EQ(sibling->m_leaf.m_leafs[i], nullptr);
+  for (uint8_t i = 1; i < BTREE_MIN_ARITY && sibling->m_leaf.m_leafs[i] != nullptr; ++i) {
+    ASSERT_TRUE(sibling->m_leaf.m_keys[i] > sibling->m_leaf.m_keys[i-1]);
+    ASSERT_TRUE(sibling->m_leaf.m_keys[i] > max_key);
   }
 
-  for (uint8_t i = 0; i < LEFT; ++i) {
-    delete static_cast<TestValue*>(node->m_leaf.m_leafs[i]);
+  for (uint8_t i = 0; i < BTREE_MIN_ARITY; ++i) {
+    if (node->m_leaf.m_leafs[i] != nullptr) {
+      delete static_cast<TestValue*>(node->m_leaf.m_leafs[i]);
+    }
   }
 
-  for (uint8_t i = 0; i < RIGHT; ++i) {
-    delete static_cast<TestValue*>(sibling->m_leaf.m_leafs[i]);
+  for (uint8_t i = 0; i < BTREE_MIN_ARITY; ++i) {
+    if (sibling->m_leaf.m_leafs[i] != nullptr) {
+      delete static_cast<TestValue*>(sibling->m_leaf.m_leafs[i]);
+    }
   }
 
   btree_destroy_node(sibling);
