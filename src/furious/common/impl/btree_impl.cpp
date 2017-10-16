@@ -215,6 +215,7 @@ void btree_remove_shift_internal(BTNode* node, uint8_t idx) {
   for (uint8_t i = idx; i < BTREE_MAX_ARITY-1; ++i) { 
     node->m_internal.m_children[i] = node->m_internal.m_children[i+1];
   }
+  node->m_internal.m_children[node->m_internal.m_nchildren - 1] = nullptr;
 
   uint8_t start = idx==0 ? 0 : idx - 1;
   for (uint8_t i = start; i < BTREE_MAX_ARITY-2; ++i) {
@@ -230,22 +231,25 @@ void btree_remove_shift_leaf(BTNode* node, uint8_t idx) {
     node->m_leaf.m_leafs[i] = node->m_leaf.m_leafs[i+1];
     node->m_leaf.m_keys[i] = node->m_leaf.m_keys[i+1];
   }
+  node->m_leaf.m_leafs[node->m_leaf.m_nleafs - 1] = nullptr;
   node->m_leaf.m_nleafs--;
 }
 
 void btree_merge_internal(BTNode* node, uint8_t idx1, uint8_t idx2) {
-  assert(idx1 == idx2+1);
+  assert(idx2 == idx1+1);
   BTNode* child1 = node->m_internal.m_children[idx1];
   BTNode* child2 = node->m_internal.m_children[idx2];
-  assert(child1->m_internal.m_nchildren + child2->m_internal.m_nchildren <= BTREE_MAX_ARITY);
+  uint8_t num_elements1 = child1->m_internal.m_nchildren;
+  uint8_t num_elements2 = child2->m_internal.m_nchildren;
+  assert(num_elements1 + num_elements2 <= BTREE_MAX_ARITY);
   for (uint8_t i = 0; i < child2->m_internal.m_nchildren; ++i) {
-    child1->m_internal.m_children[child2->m_internal.m_nchildren+i] = child2->m_internal.m_children[i];
+    child1->m_internal.m_children[child1->m_internal.m_nchildren] = child2->m_internal.m_children[i];
     child1->m_internal.m_nchildren++;
     child2->m_internal.m_children[i] = nullptr;
   }
   if(child2->m_internal.m_nchildren > 1) {
-    uint8_t num_keys1 = child1->m_internal.m_nchildren-1;
-    uint8_t num_keys2 = child2->m_internal.m_nchildren-1;
+    uint8_t num_keys1 = num_elements1-1;
+    uint8_t num_keys2 = num_elements2-1;
     child1->m_internal.m_keys[num_keys1] = node->m_internal.m_keys[idx2-1];
     for (uint8_t i = 0; i < num_keys2; ++i) {
       child1->m_internal.m_keys[num_keys1 + i + 1] = child2->m_internal.m_keys[i];
@@ -255,12 +259,12 @@ void btree_merge_internal(BTNode* node, uint8_t idx1, uint8_t idx2) {
 }
 
 void btree_merge_leaf(BTNode* node, uint8_t idx1, uint8_t idx2) {
-  assert(idx1 == idx2+1);
+  assert(idx2 == idx1+1);
   BTNode* child1 = node->m_internal.m_children[idx1];
   BTNode* child2 = node->m_internal.m_children[idx2];
   for (uint8_t i = 0; i < child2->m_leaf.m_nleafs; ++i) {
-    child1->m_leaf.m_leafs[child2->m_leaf.m_nleafs+i] = child2->m_leaf.m_leafs[i];
-    child1->m_leaf.m_keys[child2->m_leaf.m_nleafs+i] = child2->m_leaf.m_keys[i];
+    child1->m_leaf.m_leafs[child1->m_leaf.m_nleafs] = child2->m_leaf.m_leafs[i];
+    child1->m_leaf.m_keys[child1->m_leaf.m_nleafs] = child2->m_leaf.m_keys[i];
     child1->m_leaf.m_nleafs++;
     child2->m_leaf.m_leafs[i] = nullptr;
   }

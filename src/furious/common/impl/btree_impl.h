@@ -143,6 +143,30 @@ void btree_shift_insert_internal(BTNode* node, uint8_t idx, BTNode* child, uint8
  */
 void btree_shift_insert_leaf(BTNode* node, uint8_t idx, void* element, uint8_t key );
 
+
+/**
+ * @brief Inserts an element to the given node. This method assumes that there
+ * is free space in the node for inserting the given element
+ *
+ * @param node A pointer to the node to insert the element to
+ * @param key The key of the element to insert
+ * @param element The element to insert
+ */
+void btree_insert(BTNode* node, uint8_t key, void* element);
+
+/**
+ * @brief Inserts a given element to the given node. This method assumes that a
+ * pointer to the variable pointing to an nternal node is given. If there is not
+ * space to such internal node, the given pointer to pointer will be override
+ * with a new value pointing to a new internal node. Effectively, this method is
+ * growing the tree from the upper side
+ *
+ * @param node A pointer to a pointer to an internal node
+ * @param key The key of the element to add
+ * @param element A pointer to the element to add
+ */
+void btree_insert_root(BTNode** node, uint8_t key, void* element);
+
 /**
  * @brief Removes the element at position idx and shifts the rest of elements to
  * left
@@ -152,7 +176,6 @@ void btree_shift_insert_leaf(BTNode* node, uint8_t idx, void* element, uint8_t k
  *
  */
 void btree_remove_shift_internal(BTNode* node, uint8_t idx);
-
 
 /**
  * @brief Removes the element at position idx and shifts the rest of elements to
@@ -181,29 +204,6 @@ void btree_merge_internal(BTNode* node, uint8_t idx1, uint8_t idx2);
  * @param idx2 The index of the second node to merge
  */
 void btree_merge_internal(BTNode* node, uint8_t idx1, uint8_t idx2);
-
-/**
- * @brief Inserts an element to the given node. This method assumes that there
- * is free space in the node for inserting the given element
- *
- * @param node A pointer to the node to insert the element to
- * @param key The key of the element to insert
- * @param element The element to insert
- */
-void btree_insert(BTNode* node, uint8_t key, void* element);
-
-/**
- * @brief Inserts a given element to the given node. This method assumes that a
- * pointer to the variable pointing to an nternal node is given. If there is not
- * space to such internal node, the given pointer to pointer will be override
- * with a new value pointing to a new internal node. Effectively, this method is
- * growing the tree from the upper side
- *
- * @param node A pointer to a pointer to an internal node
- * @param key The key of the element to add
- * @param element A pointer to the element to add
- */
-void btree_insert_root(BTNode** node, uint8_t key, void* element);
 
 /**
  * @brief Removes an element with the given key

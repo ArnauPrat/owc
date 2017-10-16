@@ -319,6 +319,61 @@ TEST(BTreeTest, btree_insert) {
   
 }
 
+TEST(BTreeTest, btree_remove_shift_internal) {
+
+  BTNode* node = btree_create_internal();
+  for (uint8_t i = 0; i < BTREE_MAX_ARITY; ++i) {
+    node->m_internal.m_children[i] = btree_create_internal();
+    node->m_internal.m_nchildren++;
+  }
+
+  for (uint8_t i = 0; i < BTREE_MAX_ARITY-1; ++i) {
+    node->m_internal.m_keys[i] = (i+1)*10;
+  }
+
+  btree_remove_shift_internal(node, 0);
+  ASSERT_EQ(node->m_internal.m_nchildren, BTREE_MAX_ARITY-1);
+
+  for (uint8_t i = 0; i < BTREE_MAX_ARITY-1; ++i) {
+    ASSERT_NE(node->m_internal.m_children[i], nullptr);
+  }
+  ASSERT_EQ(node->m_internal.m_children[BTREE_MAX_ARITY-1], nullptr);
+
+  for (uint8_t i = 0; i < BTREE_MAX_ARITY-2; ++i) {
+    ASSERT_EQ(node->m_internal.m_keys[i], (i+2)*10);
+  }
+
+  btree_destroy_node(node);
+
+}
+
+TEST(BTreeTest, btree_remove_shift_leaf) {
+
+  BTNode* node = btree_create_leaf();
+  for (uint8_t i = 0; i < BTREE_MIN_ARITY; ++i) {
+    node->m_leaf.m_leafs[i] = new TestValue{i};
+    node->m_leaf.m_keys[i] = i*10;
+    node->m_leaf.m_nleafs++;
+  }
+
+  delete static_cast<TestValue*>(node->m_leaf.m_leafs[0]);
+  btree_remove_shift_leaf(node, 0);
+  ASSERT_EQ(node->m_leaf.m_nleafs, BTREE_MIN_ARITY-1);
+
+  for (uint8_t i = 0; i < BTREE_MIN_ARITY-1; ++i) {
+    ASSERT_NE(node->m_leaf.m_leafs[i], nullptr);
+    ASSERT_EQ(node->m_leaf.m_keys[i], (i+1)*10);
+  }
+  ASSERT_EQ(node->m_leaf.m_leafs[BTREE_MIN_ARITY-1], nullptr);
+
+  for (uint8_t i = 0; i < BTREE_MIN_ARITY-1; ++i) {
+    delete static_cast<TestValue*>(node->m_leaf.m_leafs[i]);
+  }
+
+  btree_destroy_node(node);
+
+}
+
 TEST(BTreeTest, BTree) {
   BTree btree;
 
@@ -335,6 +390,14 @@ TEST(BTreeTest, BTree) {
     TestValue* value = static_cast<TestValue*>(btree.get(i));
     ASSERT_EQ(value, values[i]);
   }
+
+  for (uint32_t i = 0; i <= BTREE_MAX_KEY; ++i) {
+    TestValue* value = static_cast<TestValue*>(btree.remove(i));
+    ASSERT_EQ(value, values[i]);
+    ASSERT_EQ(value->m_val, static_cast<uint8_t>(i));
+    //delete value;
+  }
+
 
 }
 
