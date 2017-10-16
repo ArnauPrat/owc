@@ -23,7 +23,7 @@ void BTree::insert(uint8_t key, void* element) {
 }
 
 void* BTree::remove(uint8_t key) {
-  return btree_remove(p_root, key);
+  return btree_remove(&p_root, key);
 }
 
 void* BTree::get(uint8_t key){

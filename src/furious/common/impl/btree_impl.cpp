@@ -125,6 +125,7 @@ void btree_shift_insert_leaf(BTNode* node, uint8_t idx, void* element, uint8_t k
   node->m_leaf.m_nleafs++;
 }
 
+
 BTNode* btree_split_child_full(BTNode* node, uint8_t child_idx, uint8_t key) {
 
   BTNode* child = node->m_internal.m_children[child_idx];
@@ -209,9 +210,124 @@ void btree_insert_root(BTNode** node, uint8_t key, void* element) {
   btree_insert(child, key, element);
 }
 
+void btree_remove_shift_internal(BTNode* node, uint8_t idx) {
+  BTNode* old = node->m_internal.m_children[idx];
+  for (uint8_t i = idx; i < BTREE_MAX_ARITY-1; ++i) { 
+    node->m_internal.m_children[i] = node->m_internal.m_children[i+1];
+  }
 
-void* btree_remove(BTNode* node, uint8_t key) {
+  uint8_t start = idx==0 ? 0 : idx - 1;
+  for (uint8_t i = start; i < BTREE_MAX_ARITY-2; ++i) {
+    node->m_internal.m_keys[i] = node->m_internal.m_keys[i+1];
+  }
+
+  node->m_internal.m_nchildren--;
+  btree_destroy_node(old);
+}
+
+void btree_remove_shift_leaf(BTNode* node, uint8_t idx) {
+  for (uint8_t i = idx; i < BTREE_MIN_ARITY-1; ++i) { 
+    node->m_leaf.m_leafs[i] = node->m_leaf.m_leafs[i+1];
+    node->m_leaf.m_keys[i] = node->m_leaf.m_keys[i+1];
+  }
+  node->m_leaf.m_nleafs--;
+}
+
+void btree_merge_internal(BTNode* node, uint8_t idx1, uint8_t idx2) {
+  assert(idx1 == idx2+1);
+  BTNode* child1 = node->m_internal.m_children[idx1];
+  BTNode* child2 = node->m_internal.m_children[idx2];
+  assert(child1->m_internal.m_nchildren + child2->m_internal.m_nchildren <= BTREE_MAX_ARITY);
+  for (uint8_t i = 0; i < child2->m_internal.m_nchildren; ++i) {
+    child1->m_internal.m_children[child2->m_internal.m_nchildren+i] = child2->m_internal.m_children[i];
+    child1->m_internal.m_nchildren++;
+    child2->m_internal.m_children[i] = nullptr;
+  }
+  if(child2->m_internal.m_nchildren > 1) {
+    uint8_t num_keys1 = child1->m_internal.m_nchildren-1;
+    uint8_t num_keys2 = child2->m_internal.m_nchildren-1;
+    child1->m_internal.m_keys[num_keys1] = node->m_internal.m_keys[idx2-1];
+    for (uint8_t i = 0; i < num_keys2; ++i) {
+      child1->m_internal.m_keys[num_keys1 + i + 1] = child2->m_internal.m_keys[i];
+    }
+  }
+  btree_remove_shift_internal(node, idx2);
+}
+
+void btree_merge_leaf(BTNode* node, uint8_t idx1, uint8_t idx2) {
+  assert(idx1 == idx2+1);
+  BTNode* child1 = node->m_internal.m_children[idx1];
+  BTNode* child2 = node->m_internal.m_children[idx2];
+  for (uint8_t i = 0; i < child2->m_leaf.m_nleafs; ++i) {
+    child1->m_leaf.m_leafs[child2->m_leaf.m_nleafs+i] = child2->m_leaf.m_leafs[i];
+    child1->m_leaf.m_keys[child2->m_leaf.m_nleafs+i] = child2->m_leaf.m_keys[i];
+    child1->m_leaf.m_nleafs++;
+    child2->m_leaf.m_leafs[i] = nullptr;
+  }
+  child1->m_leaf.m_next = child2->m_leaf.m_next;
+  btree_remove_shift_internal(node, idx2);
+}
+
+void* btree_remove(BTNode* node, uint8_t key, bool* min_changed, uint8_t* new_min) {
+  *min_changed = false;
+  if(node->m_type == BTNodeType::E_INTERNAL) {
+    uint8_t child_idx = btree_next_internal(node, key);
+    BTNode* child = node->m_internal.m_children[child_idx];
+    void* removed = btree_remove(child, key, min_changed, new_min);
+    if(child_idx > 0 && *min_changed) {
+      node->m_internal.m_keys[child_idx - 1] = *new_min;
+      *min_changed = false;
+    }
+    if((child->m_type == BTNodeType::E_INTERNAL && child->m_internal.m_nchildren == 0)
+       || (child->m_type == BTNodeType::E_LEAF && child->m_leaf.m_nleafs == 0) ) {
+      if(child_idx == 0) {
+        *new_min = node->m_internal.m_keys[0];
+        *min_changed = true;
+      }
+      btree_remove_shift_internal(node, child_idx);
+    } 
+    if(child_idx < BTREE_MAX_ARITY - 1 && node->m_internal.m_children[child_idx+1] != nullptr) {
+      BTNode* child1 = node->m_internal.m_children[child_idx];
+      BTNode* child2 = node->m_internal.m_children[child_idx+1];
+      if(child1->m_type == BTNodeType::E_INTERNAL) {
+        if(child1->m_internal.m_nchildren + child2->m_internal.m_nchildren <= BTREE_MAX_ARITY) {
+          btree_merge_internal(node, child_idx, child_idx+1);
+        }
+      } else {
+        if(child1->m_leaf.m_nleafs + child2->m_leaf.m_nleafs <= BTREE_MIN_ARITY) {
+          btree_merge_leaf(node, child_idx, child_idx+1);
+        }
+      }
+    }
+    return removed;
+  } else { //LEAF
+    uint8_t child_idx = btree_next_leaf(node, key);
+    if(node->m_leaf.m_leafs[child_idx] == nullptr || node->m_leaf.m_keys[child_idx] != key) {
+      return nullptr;
+    }
+    void* value = node->m_leaf.m_leafs[child_idx];
+    btree_remove_shift_leaf(node, child_idx);
+    if(child_idx == 0) {
+      *min_changed = true;
+      *new_min = node->m_leaf.m_keys[child_idx];
+    }
+    return value;
+  }
   return nullptr;
+}
+
+void* btree_remove(BTNode** node, uint8_t key) {
+  bool min_changed;
+  uint8_t new_min;
+  BTNode* root = *node;
+  void* value = btree_remove(root, key, &min_changed, &new_min);
+  if(root->m_internal.m_nchildren == 1 && root->m_internal.m_children[0]->m_type == BTNodeType::E_INTERNAL) {
+    *node = root->m_internal.m_children[0];
+    root->m_internal.m_nchildren=0;
+    root->m_internal.m_children[0]=nullptr;
+    btree_destroy_node(root);
+  }
+  return value;
 }
 
 } /* furious */ 

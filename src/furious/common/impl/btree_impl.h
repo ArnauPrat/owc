@@ -144,6 +144,45 @@ void btree_shift_insert_internal(BTNode* node, uint8_t idx, BTNode* child, uint8
 void btree_shift_insert_leaf(BTNode* node, uint8_t idx, void* element, uint8_t key );
 
 /**
+ * @brief Removes the element at position idx and shifts the rest of elements to
+ * left
+ *
+ * @param node The internal node to remove the element from
+ * @param idx The position of the element to remove
+ *
+ */
+void btree_remove_shift_internal(BTNode* node, uint8_t idx);
+
+
+/**
+ * @brief Removes the element at position idx and shifts the rest of elements to
+ * left
+ *
+ * @param node The leaf node to remove the element from
+ * @param idx The position of the element to remove
+ *
+ */
+void btree_remove_shift_leaf(BTNode* node, uint8_t idx);
+
+/**
+ * @brief Merges the two internal nodes found at the provided position
+ *
+ * @param node The parent node where the nodes to merge belong to
+ * @param idx1 The index of the first node to merge
+ * @param idx2 the index of the second node to merge
+ */
+void btree_merge_internal(BTNode* node, uint8_t idx1, uint8_t idx2);
+
+/**
+ * @brief Merges the two leaf nodes found at the provided positions
+ *
+ * @param node The parent node where the leaf nodes to merge belong to
+ * @param idx1 The index of the first node to merge
+ * @param idx2 The index of the second node to merge
+ */
+void btree_merge_internal(BTNode* node, uint8_t idx1, uint8_t idx2);
+
+/**
  * @brief Inserts an element to the given node. This method assumes that there
  * is free space in the node for inserting the given element
  *
@@ -171,10 +210,26 @@ void btree_insert_root(BTNode** node, uint8_t key, void* element);
  *
  * @param node A pointer to the node to remove the element from
  * @param key The key of the element to remove
+ * @param changed_min Pointer to boolean storing whether the minimum changed or
+ * not 
+ * @param new_key Pointer to store the new minum value of that node 
  *
  * @return Returns a pointer to the removed element
  */
-void* btree_remove(BTNode* node, uint8_t key);
+void* btree_remove(BTNode* node, uint8_t key, bool* min_changed, uint8_t* new_min);
+
+/**
+ * @brief Removes the element with the given key
+ *
+ * @param node A pointer to a pointer to the internal root node of the btree. If
+ * the remove operation makes it possible to reduce the tree height, the
+ * internal node pointer by node is replaced.
+ * @param key The key of the element to remove
+ *
+ * @return Returns a pointer to the removed element. Returns nullptr if the
+ * element was not found.
+ */
+void* btree_remove(BTNode** node, uint8_t key);
   
 } /* btree_impl */ 
 
