@@ -6,6 +6,7 @@
 
 namespace furious {
 
+int32_t btree_num_allocations = 0;
 
 BTNode* btree_create_internal() {
   BTNode* node = new BTNode();
@@ -13,6 +14,7 @@ BTNode* btree_create_internal() {
   memset(&node->m_internal.m_children[0],0,sizeof(BTNode*)*BTREE_MAX_ARITY);
   memset(&node->m_internal.m_keys[0],0,sizeof(uint8_t)*(BTREE_MAX_ARITY-1));
   node->m_internal.m_nchildren = 0;
+  btree_num_allocations++;
   return node;
 }
 
@@ -23,6 +25,7 @@ BTNode* btree_create_leaf() {
   memset(&node->m_leaf.m_keys[0],0,sizeof(uint8_t)*BTREE_MIN_ARITY);
   node->m_leaf.m_next = 0;
   node->m_leaf.m_nleafs = 0;
+  btree_num_allocations++;
   return node;
 }
 
@@ -35,6 +38,7 @@ void btree_destroy_node(BTNode* node) {
       }
     }
   } 
+  btree_num_allocations--;
   delete node;
 }
 

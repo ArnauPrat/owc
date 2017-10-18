@@ -7,6 +7,8 @@
 
 namespace furious {
 
+extern int32_t btree_num_allocations;
+
 constexpr uint8_t MAX_KEY = 255;
 struct TestValue {
   uint8_t m_val;
@@ -226,7 +228,7 @@ TEST(BTreeTest, btree_get) {
     }
   }
 
-  delete node;
+  btree_destroy_node(node);
 }
 
 TEST(BTreeTest, btree_shift_insert_internal) {
@@ -375,7 +377,7 @@ TEST(BTreeTest, btree_remove_shift_leaf) {
 }
 
 TEST(BTreeTest, BTree) {
-  BTree btree;
+  BTree* btree = new BTree();
 
   uint32_t BTREE_MAX_KEY=255;
 
@@ -383,22 +385,24 @@ TEST(BTreeTest, BTree) {
 
   for (uint32_t i = 0; i <= BTREE_MAX_KEY; ++i) {
     values[i] = new TestValue{static_cast<uint8_t>(i)};
-    btree.insert(static_cast<uint8_t>(i), values[i]);
+    btree->insert(static_cast<uint8_t>(i), values[i]);
   }
 
   for (uint32_t i = 0; i <= BTREE_MAX_KEY; ++i) {
-    TestValue* value = static_cast<TestValue*>(btree.get(i));
+    TestValue* value = static_cast<TestValue*>(btree->get(i));
     ASSERT_EQ(value, values[i]);
   }
 
   for (uint32_t i = 0; i <= BTREE_MAX_KEY; ++i) {
-    TestValue* value = static_cast<TestValue*>(btree.remove(i));
+    TestValue* value = static_cast<TestValue*>(btree->remove(i));
     ASSERT_EQ(value, values[i]);
     ASSERT_EQ(value->m_val, static_cast<uint8_t>(i));
-    //delete value;
+    delete value;
   }
 
+  delete btree;
 
+  ASSERT_EQ(btree_num_allocations, 0);
 }
 
 } /* furious */ 
