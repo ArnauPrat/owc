@@ -393,12 +393,22 @@ TEST(BTreeTest, BTree) {
     ASSERT_EQ(value, values[i]);
   }
 
+  BTree::Iterator iterator = btree->iterator();
+  uint32_t val = 0;
+  while (iterator.has_next()) {
+    TestValue* value = static_cast<TestValue*>(iterator.next());
+    ASSERT_EQ(value->m_val, val);
+    ASSERT_EQ(value, values[val]);
+    val++;
+  }
+
   for (uint32_t i = 0; i <= BTREE_MAX_KEY; ++i) {
     TestValue* value = static_cast<TestValue*>(btree->remove(i));
     ASSERT_EQ(value, values[i]);
     ASSERT_EQ(value->m_val, static_cast<uint8_t>(i));
     delete value;
   }
+
 
   delete btree;
 

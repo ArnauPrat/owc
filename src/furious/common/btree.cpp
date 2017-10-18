@@ -5,6 +5,22 @@
 #include <cassert>
 
 namespace furious {
+
+BTree::Iterator::Iterator(BTIterator* iterator) : m_iterator(iterator) {
+}
+
+BTree::Iterator::~Iterator() {
+  delete m_iterator;
+}
+
+bool BTree::Iterator::has_next() {
+  return m_iterator->has_next();
+}
+
+void* BTree::Iterator::next() {
+  return m_iterator->next();
+}
+
 BTree::BTree() : p_root(btree_create_internal()),
                  m_size(0)
 {
@@ -32,6 +48,10 @@ void* BTree::get(uint8_t key){
 
 bool BTree::exists(uint8_t key){
   return get(key) != nullptr;
+}
+
+BTree::Iterator BTree::iterator() {
+  return Iterator{new BTIterator{p_root}};
 }
 
 } /* furious */ 

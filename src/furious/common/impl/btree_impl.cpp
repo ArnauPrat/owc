@@ -6,6 +6,40 @@
 
 namespace furious {
 
+BTIterator::BTIterator(BTNode* root) : m_root{root}, m_leaf{nullptr}, m_index{0} {
+  m_leaf = root;
+  while(m_leaf != nullptr && m_leaf->m_type == BTNodeType::E_INTERNAL) {
+    m_leaf = m_leaf->m_internal.m_children[0];
+  }
+}
+
+bool BTIterator::has_next() {
+  if(m_leaf == nullptr) {
+    return false;
+  }
+  if (m_index < m_leaf->m_leaf.m_nleafs) {
+    return true;
+  } 
+  BTNode* sibling = m_leaf->m_leaf.m_next;
+  if(sibling == nullptr) {
+    return false;
+  }
+  return sibling->m_leaf.m_nleafs > 0;
+}
+
+void* BTIterator::next() {
+  if(m_leaf == nullptr || m_leaf->m_leaf.m_nleafs == 0) {
+    return nullptr;
+  }
+  void * value = m_leaf->m_leaf.m_leafs[m_index];
+  m_index+=1;
+  if(m_index >= m_leaf->m_leaf.m_nleafs) {
+    m_index = 0;
+    m_leaf = m_leaf->m_leaf.m_next;
+  }
+  return value;
+}
+
 int32_t btree_num_allocations = 0;
 
 BTNode* btree_create_internal() {

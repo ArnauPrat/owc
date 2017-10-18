@@ -8,8 +8,22 @@
 namespace furious {
 
 struct BTNode;
+class BTIterator;
+
 
 class BTree {
+
+public:
+  class Iterator {
+  public:
+    Iterator(BTIterator* iterator);
+    virtual ~Iterator();
+    bool has_next();
+    void* next();
+  private:
+    BTIterator* m_iterator;
+  };
+
 public: 
   BTree();
   BTree(const BTree&) = delete;
@@ -70,6 +84,13 @@ public:
    * @return Returns the size of the btree
    */
   size_t size();
+
+  /**
+   * @brief Gets an iterator to the btree
+   *
+   * @return Returns an iterator to the btree
+   */
+  Iterator iterator();
 
 private:
    BTNode*    p_root;

@@ -45,6 +45,32 @@ struct BTNode {
 
 };
 
+class BTIterator {
+public:
+  BTIterator(BTNode* root);
+  virtual ~BTIterator() = default;
+
+
+  /**
+   * @brief Tests whether there are more elements or not in the btree
+   *
+   * @return Returns true if there are more elements in the iterator
+   */
+  bool has_next();
+
+  /**
+   * @brief Gets the next element in the btree
+   *
+   * @return Returns the next elemnet in the btree
+   */
+  void* next();
+
+private:
+  BTNode* m_root;
+  BTNode* m_leaf;
+  uint8_t m_index;
+};
+
 /**
  * @brief Creates a new instance of an internal node 
  *
