@@ -1,5 +1,4 @@
 
-#include "../data/static_table.h"
 #include "../memory/memory.h"
 
 #include <gtest/gtest.h>

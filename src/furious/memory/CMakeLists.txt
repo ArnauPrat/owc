@@ -9,7 +9,6 @@ add_library(memory STATIC
   numa_alloc.cpp
 )
 
-
 set_target_properties( memory   
  PROPERTIES
  LIBRARY_OUTPUT_DIRECTORY ${FURIOUS_OUTPUT_DIR}
