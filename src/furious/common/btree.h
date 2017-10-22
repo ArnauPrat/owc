@@ -11,15 +11,20 @@ struct BTNode;
 class BTIterator;
 
 
+template<typename T>
 class BTree {
 
 public:
   class Iterator {
   public:
-    Iterator(BTIterator* iterator);
+    Iterator(BTNode* root);
     virtual ~Iterator();
     bool has_next();
-    void* next();
+    T* next();
+
+    Iterator(const Iterator& it) = delete;
+    void operator=(const Iterator& it) = delete;
+    
   private:
     BTIterator* m_iterator;
   };
@@ -47,7 +52,7 @@ public:
    *
    * @return Returns a pointer to the replaced element. nullptr otherwise.
    */
-  void insert(uint8_t key, void* element);
+  void insert(uint8_t key, T* element);
   
 
   /**
@@ -57,7 +62,7 @@ public:
    *
    * @return Returns a pointer to the removed element
    */
-  void* remove(uint8_t key);
+  T* remove(uint8_t key);
 
   /**
    * @brief Gets the element with the given key
@@ -67,7 +72,7 @@ public:
    * @return Returns a pointer to the element with the given key. nullptr if it
    * does not exist
    */
-  void* get(uint8_t key);
+  T* get(uint8_t key);
 
   /**
    * @brief Checks if an element exists
@@ -90,12 +95,15 @@ public:
    *
    * @return Returns an iterator to the btree
    */
-  Iterator iterator();
+  Iterator* iterator();
 
 private:
    BTNode*    p_root;
    size_t     m_size;
 };
+
   
 } /* furious */ 
+
+#include "btree.tpp"
 #endif /* ifndef  _FURIOUS_BTREE_H_ */

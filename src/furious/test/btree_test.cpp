@@ -377,7 +377,7 @@ TEST(BTreeTest, btree_remove_shift_leaf) {
 }
 
 TEST(BTreeTest, BTree) {
-  BTree* btree = new BTree();
+  BTree<TestValue>* btree = new BTree<TestValue>();
 
   uint32_t BTREE_MAX_KEY=255;
 
@@ -389,27 +389,60 @@ TEST(BTreeTest, BTree) {
   }
 
   for (uint32_t i = 0; i <= BTREE_MAX_KEY; ++i) {
-    TestValue* value = static_cast<TestValue*>(btree->get(i));
+    TestValue* value = btree->get(i);
     ASSERT_EQ(value, values[i]);
   }
 
-  BTree::Iterator iterator = btree->iterator();
+  BTree<TestValue>::Iterator* iterator = btree->iterator();
   uint32_t val = 0;
-  while (iterator.has_next()) {
-    TestValue* value = static_cast<TestValue*>(iterator.next());
+  while (iterator->has_next()) {
+    TestValue* value = iterator->next();
     ASSERT_EQ(value->m_val, val);
     ASSERT_EQ(value, values[val]);
     val++;
   }
 
   for (uint32_t i = 0; i <= BTREE_MAX_KEY; ++i) {
-    TestValue* value = static_cast<TestValue*>(btree->remove(i));
+    TestValue* value = btree->remove(i);
     ASSERT_EQ(value, values[i]);
     ASSERT_EQ(value->m_val, static_cast<uint8_t>(i));
     delete value;
   }
 
+  ASSERT_EQ(btree->size(), 0);
 
+  // EVEN ELEMENTS
+  for (uint32_t i = 0; i <= BTREE_MAX_KEY; i+=2) {
+    values[i] = new TestValue{static_cast<uint8_t>(i)};
+    btree->insert(static_cast<uint8_t>(i), values[i]);
+  }
+
+  for (uint32_t i = 0; i <= BTREE_MAX_KEY; i+=2) {
+    TestValue* value = static_cast<TestValue*>(btree->get(i));
+    ASSERT_EQ(value, values[i]);
+  }
+
+
+  delete iterator;
+
+  iterator = btree->iterator();
+  val = 0;
+  while (iterator->has_next()) {
+    TestValue* value = static_cast<TestValue*>(iterator->next());
+    ASSERT_EQ(value->m_val, val);
+    ASSERT_EQ(value, values[val]);
+    val+=2;
+  }
+
+  for (uint32_t i = 0; i <= BTREE_MAX_KEY; i+=2) {
+    TestValue* value = btree->remove(i);
+    ASSERT_EQ(value, values[i]);
+    ASSERT_EQ(value->m_val, static_cast<uint8_t>(i));
+    delete value;
+  }
+
+  ASSERT_EQ(btree->size(), 0);
+  delete iterator;
   delete btree;
 
   ASSERT_EQ(btree_num_allocations, 0);

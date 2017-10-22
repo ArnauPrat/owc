@@ -5,7 +5,6 @@ include_directories(${FURIOUS_INCLUDE_DIR})
 add_library(common STATIC
   platform.cpp
   btree.h
-  btree.cpp
   impl/btree_impl.h
   impl/btree_impl.cpp
 )
