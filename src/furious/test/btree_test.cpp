@@ -1,8 +1,8 @@
 
 #include <gtest/gtest.h>
-#include "../common/btree.h"
+#include "../data/btree.h"
+#include "../data/impl/btree_impl.h"
 #include "../common/common.h"
-#include "../common/impl/btree_impl.h"
 #include <iostream>
 
 namespace furious {

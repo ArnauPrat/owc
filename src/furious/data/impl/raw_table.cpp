@@ -1,7 +1,8 @@
 
 
-#include "table.h"
+#include "raw_table.h"
 #include "memory/memory.h"
+//#include <stdio.h>
 
 namespace furious {
 
@@ -15,7 +16,7 @@ uint8_t bitmap_masks[8] = {0x01,
                            0x80
 };
 
-Table::Table( const std::string& name, 
+RawTable::RawTable( const std::string& name, 
               size_t esize ) :
   m_name(name),
   m_esize(esize),
@@ -24,7 +25,7 @@ Table::Table( const std::string& name,
     p_btree = new BTree<TBlock>();
   }
 
-Table::~Table() {
+RawTable::~RawTable() {
   if(p_btree != nullptr) {
     auto iterator = p_btree->iterator();
     while(iterator->has_next()) {
@@ -37,15 +38,15 @@ Table::~Table() {
   }
 }
 
-uint32_t Table::size() {
+uint32_t RawTable::size() {
   return m_num_elements;
 }
 
-void Table::clear() {
+void RawTable::clear() {
 
 }
 
-void* Table::get_element(uint32_t id) {
+void* RawTable::get_element(uint32_t id) {
   assert(id < TABLE_BLOCK_SIZE*256);
   uint8_t block_id = id / TABLE_BLOCK_SIZE;
   TBlock* block = p_btree->get(block_id);
@@ -61,7 +62,7 @@ void* Table::get_element(uint32_t id) {
   return nullptr;
 }
 
-void  Table::insert_element(uint32_t id, void* element) {
+void  RawTable::insert_element(uint32_t id, void* element) {
   assert(id < TABLE_BLOCK_SIZE*256);
   uint8_t block_id = id / TABLE_BLOCK_SIZE;
   TBlock* block = p_btree->get(block_id);
@@ -73,16 +74,19 @@ void  Table::insert_element(uint32_t id, void* element) {
     p_btree->insert(block_id, block);
   }
   uint32_t offset = id - block->m_start;
-  uint32_t bitmap_offset = offset / sizeof(uint8_t);
-  uint32_t mask_index = offset % sizeof(uint8_t);
+  uint32_t bitmap_offset = offset / (sizeof(uint8_t)*8);
+  uint32_t mask_index = offset % (sizeof(uint8_t)*8);
   if((block->m_exists[bitmap_offset] & bitmap_masks[mask_index]) == 0x00) {
     m_num_elements++;
   }
   block->m_exists[bitmap_offset] = block->m_exists[bitmap_offset] | bitmap_masks[mask_index];
+
+
+  //printf("id: %d block_id: %d block->m_start: %d offset: %d bitmap_offset: %d mask_index: %d\n", id, block_id, block->m_start, offset, bitmap_offset, mask_index);
   memcpy(&block->p_data[offset], element, m_esize);
 }
 
-void  Table::drop_element(uint32_t id) {
+void  RawTable::drop_element(uint32_t id) {
   assert(id < TABLE_BLOCK_SIZE*256);
   uint8_t block_id = id / TABLE_BLOCK_SIZE;
   TBlock* block = p_btree->get(block_id);

@@ -2,7 +2,7 @@
 
 #ifndef _FURIOUS_BTREE_H_
 #define _FURIOUS_BTREE_H_ value
-#include "types.h"
+#include "../common/types.h"
 #include <stdlib.h>
 
 namespace furious {
@@ -105,5 +105,5 @@ private:
   
 } /* furious */ 
 
-#include "btree.tpp"
+#include "btree.inl"
 #endif /* ifndef  _FURIOUS_BTREE_H_ */

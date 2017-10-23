@@ -21,6 +21,7 @@ include_directories(./)
 add_subdirectory(./common/)
 add_subdirectory(./memory/)
 add_subdirectory(./data/)
+add_subdirectory(./runtime/)
 
 add_library(furious SHARED
   furious.h
