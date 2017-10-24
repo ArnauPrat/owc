@@ -10,9 +10,8 @@ add_library(data STATIC
   database.h
   impl/btree_impl.cpp
   impl/btree_impl.h
-  impl/raw_table.h
-  impl/raw_table.cpp
   table.h
+  table.cpp
 )
 
 target_link_libraries(data common memory)

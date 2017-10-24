@@ -22,6 +22,13 @@ BTree<T>::~BTree() {
 }
 
 template<typename T>
+void BTree<T>::clear() {
+  btree_destroy_node(p_root);
+  p_root = btree_create_internal();
+  m_size = 0;
+}
+
+template<typename T>
 void BTree<T>::insert(uint8_t key, T* element) {
   m_size++;
   btree_insert_root(&p_root, key, static_cast<void*>(element));

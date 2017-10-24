@@ -20,24 +20,33 @@ struct Component {
 
 TEST(TableTest,TableWorks) {
 
-  Table<Component> table;
-  uint32_t num_elements = 10000;
+  Table* table = new Table(Component::name(), sizeof(Component));
+  uint32_t num_elements = TABLE_BLOCK_SIZE*10;
   for(uint32_t i = 0; i < num_elements; ++i) {
-    table.insert_element(i,i,i);
+    Component component{i,static_cast<double>(i)};
+    table->insert_element(i,&component);
   }
 
-  ASSERT_EQ(table.size(), num_elements);
+  ASSERT_EQ(table->size(), num_elements);
 
-  //uint32_t i = 0;
-  //for(auto iter = table.begin(); iter != table.end(); ++iter) {
-  //  ASSERT_EQ(static_cast<Component*>(iter->column(0))->field1_,i);
-  //  ASSERT_EQ(static_cast<Component*>(iter->column(0))->field2_,i);
-  //  ++i;
-  //}
+  Table::Iterator* iterator = table->iterator();
+  uint32_t i = 0;
+  while (iterator->has_next()) {
+    TBlock* block = iterator->next();
+    ASSERT_EQ(block->m_size, 512);
+    for (uint32_t j = 0; j < TABLE_BLOCK_SIZE && j < block->m_size; ++j, ++i) {
+        Component* component = static_cast<Component*>(get_element(block, i));
+        if(component != nullptr) {
+          ASSERT_EQ(component->field1_, i);
+          ASSERT_EQ(component->field2_, static_cast<double>(i));
+        }
+    }
+  }
+  delete iterator;
+  ASSERT_EQ(i, num_elements);
 
-  //ASSERT_EQ(table.size(),10000);
-  //table.clear();
-  //ASSERT_EQ(table.size(),0);
+  table->clear();
+  ASSERT_EQ(table->size(),0);
 
   //std::set<uint32_t> data;
 
@@ -63,6 +72,8 @@ TEST(TableTest,TableWorks) {
 
   //BaseRow* row = table.get_row_by_id(7500);
   //ASSERT_EQ(row->m_id, 7500);
+  
+  delete table;
 }
 }
 

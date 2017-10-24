@@ -1,69 +1,144 @@
-#ifndef _FURIOUS_STATIC_TABLE_H_
-#define _FURIOUS_STATIC_TABLE_H_
 
-#include "../common/types.h"
-#include "reflection.h"
-#include "impl/raw_table.h"
+#ifndef _FURIOUS_TABLE_IMPL_H_
+#define _FURIOUS_TABLE_IMPL_H_ 
 
+#include "common.h"
+#include "btree.h"
 #include <vector>
-#include <utility>
-#include <iterator>
-
-#include <cassert>
+#include <string>
+#include <set>
 
 namespace furious {
 
-template<typename T>
-  class Table {
+
+/**
+ * @brief The number of elements per block. The current number, 16 is not
+ * arbitrarily chosen. Assuming a cahce line of 64 bytes long, 16 4byte elements
+ * can be stored in a line.
+ */
+constexpr size_t TABLE_BLOCK_SIZE = 512;
+constexpr size_t TABLE_BLOCK_BITMAP_SIZE=(TABLE_BLOCK_SIZE + 7) >> 3;
+
+/**
+ * @brief Represents a block of data in a table
+ */
+struct TBlock {
+  uint8_t*          p_data;                           // The pointer to the block data
+  uint32_t          m_start;                          // The id of the first element in the block
+  size_t            m_size;
+  uint32_t          m_esize;
+  uint8_t           m_exists[TABLE_BLOCK_BITMAP_SIZE];  // A vector of bits used to test whether an element is in the block or not
+};
+
+/**
+ * @brief Tests if a block contains element with the given id
+ *
+ * @param block The block to check the element
+ * @param id The id of the element to check
+ *
+ * @return Returns true if the block contains such element
+ */
+bool has_element(const TBlock* block, uint32_t id);
+
+
+/**
+ * @brief Gets the element of a block
+ *
+ * @param block The block to get the element from
+ *
+ * @return Returns a pointer to the element. Returns nullptr if the element does
+ * not exist in the block
+ */
+void* get_element(const TBlock* block, uint32_t id);
+
+class Table {
+
+public:
+  class Iterator {
   public:
+    Iterator(BTree<TBlock>* btree);
+    virtual ~Iterator();
 
-    Table();
-    virtual ~Table();
-    Table( const Table & ) = delete;
-    Table& operator=( const Table &) = delete;
-    Table( Table && ) = delete;
-    Table& operator=(Table &&) = delete;
+    /**
+     * @brief Checks whether there is a another block in the table.
+     *
+     * @return Returns true if there is another block in the table.
+     */
+    bool has_next() const;
 
-    //////////////////////////////////////////////
-    //////////////////////////////////////////////
-    //////////////////////////////////////////////
-
-
-    T* get_element( uint32_t id ); 
-
-    void drop_element( uint32_t id ); 
-
-    template<typename...Fields>
-      void insert_element( uint32_t id, Fields &&...x ); 
-
-    size_t size(); 
-
-    std::string table_name();
-
+    /**
+     * @brief Gets the next block in the table
+     *
+     * @return Returns the next block in the table. Returns nullptr if it does
+     * not exist
+     */
+    TBlock* next();
+    
   private:
-    RawTable*              p_table;              // vector holding the table data
+    BTree<TBlock>::Iterator* p_iterator;
   };
 
-//template<typename...Fields>
-//  void insert_element( uint32_t id, Fields &&...x ) {
-//    auto pos = m_id_index.find(id);
-//    if(pos == m_id_index.end()) {
-//      if(m_free_positions.size() > 0) {
-//        uint32_t position = m_free_positions.back();
-//        m_free_positions.pop_back();
-//        Row row(id, std::forward<Fields>(x)...);
-//        m_data[position] = row;
-//        m_id_index[id] = position;
-//      } else {
-//        m_data.emplace_back(id, std::forward<Fields>(x)...);
-//        m_id_index[id] = m_data.size() - 1;
-//      }
-//    } else {
-//      Row row(id, std::forward<Fields>(x)...);
-//      m_data[pos->second] = row;
-//    }
-//  }
-} 
 
-#include "table.inl"
+public:
+  Table(const std::string& name, size_t esize);
+  virtual ~Table();
+
+  /**
+   * @brief Clears the table
+   */
+  void clear();
+
+  /**
+   * @brief Gets the element with the given id
+   *
+   * @param id The id of the element to get
+   *
+   * @return Returns a pointer to the element. Returns nullptr if the element
+   * does not exist in the table
+   */
+  void* get_element(uint32_t id) const ;
+
+  /**
+   * @brief Copies the contents of the pointed element and inserts it to the
+   * table with the given id
+   *
+   * @param id The id of the element
+   * @param element A pointer to the element to copy
+   */
+  void  insert_element(uint32_t id, void* element);
+
+  /**
+   * @brief Drops the element with the given id
+   *
+   * @param id
+   */
+  void  drop_element(uint32_t id);
+
+  /**
+   * @brief Gets an iterator of the table
+   *
+   * @return Returns an iterator of the table.
+   */
+  Iterator* iterator();
+
+  /**
+   * @brief Gets the name of the table
+   *
+   * @return Returns the name of the able
+   */
+  std::string table_name() const;
+
+  size_t size() const;
+
+private:
+  std::string              m_name;   // The name of the table
+  size_t                   m_esize;  // The size of each element in bytes
+  BTree<TBlock>*           p_btree;  // A BTree storing the blocks of the table          
+  size_t                   m_num_elements;
+};
+
+
+} /* furious */ 
+
 #endif
+

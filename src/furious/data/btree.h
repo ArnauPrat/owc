@@ -97,6 +97,11 @@ public:
    */
   Iterator* iterator();
 
+  /**
+   * @brief Clears the btree
+   */
+  void clear();
+
 private:
    BTNode*    p_root;
    size_t     m_size;
