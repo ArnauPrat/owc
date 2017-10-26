@@ -25,9 +25,9 @@ constexpr size_t TABLE_BLOCK_BITMAP_SIZE=(TABLE_BLOCK_SIZE + 7) >> 3;
 struct TBlock {
   uint8_t*          p_data;                           // The pointer to the block data
   uint32_t          m_start;                          // The id of the first element in the block
-  size_t            m_size;
-  uint32_t          m_esize;
-  uint8_t           m_exists[TABLE_BLOCK_BITMAP_SIZE];  // A vector of bits used to test whether an element is in the block or not
+  size_t            m_num_elements;                   // The number of elements in the block 
+  uint32_t          m_esize;                          // The size of the elements contained in the block
+  uint8_t           m_exists[TABLE_BLOCK_BITMAP_SIZE];// A vector of bits used to test whether an element is in the block or not
 };
 
 /**

@@ -54,7 +54,7 @@ TEST(TableTest,TableWorks) {
   i = 0;
   while (iterator->has_next()) {
     TBlock* block = iterator->next();
-    ASSERT_EQ(block->m_size, TABLE_BLOCK_SIZE/2);
+    ASSERT_EQ(block->m_num_elements, TABLE_BLOCK_SIZE/2);
     for (uint32_t j = 0; j < TABLE_BLOCK_SIZE; ++j, ++i) {
         Component* component = static_cast<Component*>(get_element(block, i));
         if(component != nullptr) {
