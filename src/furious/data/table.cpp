@@ -28,8 +28,8 @@ void* get_element(const TBlock* block, uint32_t id) {
     return nullptr;
   }
   uint32_t offset = id - block->m_start;
-  uint32_t bitmap_offset = offset / sizeof(uint8_t);
-  uint32_t mask_index = offset % sizeof(uint8_t);
+  uint32_t bitmap_offset = offset / (sizeof(uint8_t)*8);
+  uint32_t mask_index = offset % (sizeof(uint8_t)*8);
   if((block->m_exists[bitmap_offset] & bitmap_masks[mask_index]) != 0x00) {
     return &block->p_data[offset*block->m_esize];
   }
@@ -125,7 +125,6 @@ void  Table::insert_element(uint32_t id, void* element) {
     block->m_size++;
   }
   block->m_exists[bitmap_offset] = block->m_exists[bitmap_offset] | bitmap_masks[mask_index];
-  //printf("id: %d block_id: %d block->m_start: %d offset: %d bitmap_offset: %d mask_index: %d\n", id, block_id, block->m_start, offset, bitmap_offset, mask_index);
   memcpy(&block->p_data[offset*m_esize], element, m_esize);
 }
 
@@ -137,8 +136,8 @@ void  Table::drop_element(uint32_t id) {
     return;
   }
   uint32_t offset = id - block->m_start;
-  uint32_t bitmap_offset = offset / sizeof(uint8_t);
-  uint32_t mask_index = offset % sizeof(uint8_t);
+  uint32_t bitmap_offset = offset / (sizeof(uint8_t)*8);
+  uint32_t mask_index = offset % (sizeof(uint8_t)*8);
   if((block->m_exists[bitmap_offset] & bitmap_masks[mask_index]) != 0x00) {
     m_num_elements--;
     block->m_size--;

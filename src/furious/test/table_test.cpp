@@ -33,8 +33,8 @@ TEST(TableTest,TableWorks) {
   uint32_t i = 0;
   while (iterator->has_next()) {
     TBlock* block = iterator->next();
-    ASSERT_EQ(block->m_size, 512);
-    for (uint32_t j = 0; j < TABLE_BLOCK_SIZE && j < block->m_size; ++j, ++i) {
+    //ASSERT_EQ(block->m_size, 512);
+    for (uint32_t j = 0; j < TABLE_BLOCK_SIZE; ++j, ++i) {
         Component* component = static_cast<Component*>(get_element(block, i));
         if(component != nullptr) {
           ASSERT_EQ(component->field1_, i);
@@ -43,36 +43,32 @@ TEST(TableTest,TableWorks) {
     }
   }
   delete iterator;
-  ASSERT_EQ(i, num_elements);
+  ASSERT_EQ(table->size(), num_elements);
+
+  for(uint32_t i = 0; i < num_elements; i+=2) {
+    table->drop_element(i);
+  }
+  ASSERT_EQ(table->size(), num_elements/2);
+
+  iterator = table->iterator();
+  i = 0;
+  while (iterator->has_next()) {
+    TBlock* block = iterator->next();
+    ASSERT_EQ(block->m_size, TABLE_BLOCK_SIZE/2);
+    for (uint32_t j = 0; j < TABLE_BLOCK_SIZE; ++j, ++i) {
+        Component* component = static_cast<Component*>(get_element(block, i));
+        if(component != nullptr) {
+          ASSERT_EQ(component->field1_, i);
+          ASSERT_EQ(component->field2_, static_cast<double>(i));
+        }
+    }
+  }
+  delete iterator;
+
 
   table->clear();
   ASSERT_EQ(table->size(),0);
 
-  //std::set<uint32_t> data;
-
-  //for(uint32_t i = 0; i < 10000; ++i) {
-  //  table.insert(i,i,i);
-  //  data.insert(i);
-  //}
-
-  //ASSERT_EQ(table.size(),10000);
-
-  //for(uint32_t i = 0; i < 5000; ++i) {
-  //  table.drop_row_by_id(i);
-  //  data.erase(i);
-  //}
-  //ASSERT_EQ(table.size(),5000);
-
-  //for(auto iter = table.begin(); iter != table.end(); ++iter) {
-  //  data.erase(iter->m_id);
-  //}
-
-  //ASSERT_EQ(data.size(), 0);
-  //ASSERT_EQ(table.size(), 5000);
-
-  //BaseRow* row = table.get_row_by_id(7500);
-  //ASSERT_EQ(row->m_id, 7500);
-  
   delete table;
 }
 }
