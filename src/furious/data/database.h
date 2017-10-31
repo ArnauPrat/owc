@@ -71,33 +71,9 @@ private:
   TableMap          m_tables;      /** Holds a map between component types and their tables **/
 };
 
-template <typename T>
-Table* Database::create_table() {
-  assert(m_tables.find(type_name<T>()) == m_tables.end());
-  if(m_tables.find(type_name<T>()) != m_tables.end()) {
-    return nullptr;
-  }
-  auto table =  new Table(T::name(), sizeof(T));
-  m_tables.insert(TableMapPair(table->table_name(),table));
-  return table; 
 }
 
-template <typename T>
-void Database::drop_table() {
-  auto table = m_tables.find(type_name<T>());
-  assert(table != m_tables.end());
-  delete table->second;
-  m_tables.erase(table);
-}
-
-template <typename T>
-Table* Database::find_table() {
-  auto table = m_tables.find(type_name<T>());
-  if(table == m_tables.end()) return nullptr;
-  return static_cast<Table*>(table->second);
-}
-
-}
+#include "database.inl"
 
 #endif
 

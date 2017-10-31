@@ -3,8 +3,8 @@
 #define _FURIOUS_STATIC_SYSTEM_H_ 
 
 #include "system.h"
-#include "table.h"
-#include "reflection.h"
+#include "../data/table.h"
+#include "../data/reflection.h"
 
 #include <typeinfo>
 #include <vector>
@@ -27,21 +27,23 @@ template <std::size_t... Is>
 template <size_t N>
   using indices_list = build_indices<N>;
 
-template<typename...Components>
+template<typename T, typename...Components>
   class StaticSystem : public System {
   public:
 
-    StaticSystem(SystemId id) : System{id},
-      m_types{type_name<Components>()...}  {
+    template<typename...Args>
+    StaticSystem(Args&&...args) : System{0},
+      m_types{type_name<Components>()...},
+      m_system_object(args...){
       }
 
     ////////////////////////////////////////////////
     ////////////////////////////////////////////////
     ////////////////////////////////////////////////
 
-    void apply( const std::vector<void*>& components ) override;
+    void apply_block( const std::vector<void*>& component_blocks ) override;
 
-    virtual void run( Components&...c ) = 0; 
+    void apply( const std::vector<void*>& components ) override;
 
     std::vector<std::string> components() const override;
 
@@ -52,32 +54,20 @@ template<typename...Components>
   private:
 
     template<std::size_t...Indices>
-      void apply( const std::vector<void*> components, indices<Indices...> );
+      void apply_block( const std::vector<void*>& components, indices<Indices...> );
+
+    template<std::size_t...Indices>
+      void apply( const std::vector<void*>& components, indices<Indices...> );
 
     ////////////////////////////////////////////////
     ////////////////////////////////////////////////
     ////////////////////////////////////////////////
 
     const std::vector<std::string> m_types;
+    T                              m_system_object;
   };
 
-
-template<typename...Components>
-void StaticSystem<Components...>::apply( const std::vector<void*>& components ) {
-  apply(components,indices_list<sizeof...(Components)>());
-}
-
-template<typename...Components>
-std::vector<std::string> StaticSystem<Components...>::components() const {
-  return m_types;
-}
-
-template<typename...Components>
-template<std::size_t...Indices>
-void StaticSystem<Components...>::apply( const std::vector<void*> components, 
-                                         indices<Indices...> ) {
-  run(*(static_cast<Components*>(components[Indices]))...);
-}
-
 } /* furious */ 
+
+#include "static_system.inl"
 #endif

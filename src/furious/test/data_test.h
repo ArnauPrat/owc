@@ -52,8 +52,8 @@ protected:
   }
 
   Database* database_ = nullptr;
-  StaticTable<ComponentA>* tableA_ = nullptr;
-  StaticTable<ComponentB>* tableB_ = nullptr;
+  Table* tableA_ = nullptr;
+  Table* tableB_ = nullptr;
 
 };
 

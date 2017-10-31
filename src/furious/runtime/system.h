@@ -3,11 +3,12 @@
 #ifndef _FURIOus_SYSTEM_H
 #define _FURIOus_SYSTEM_H value
 
-#include "common.h"
-#include "table.h"
+#include "../data/table.h"
 
 #include <vector>
 #include <memory>
+
+using SystemId = uint32_t;
 
 namespace furious {
 
@@ -19,8 +20,10 @@ public:
   /**
    * @brief Applies the system over the set of components
    *
-   * @param components The set of components to apply the system on
+   * @param components The set of blocks with the components 
    */
+  virtual void apply_block( const std::vector<void*>& components_blocks ) = 0;
+
   virtual void apply( const std::vector<void*>& components ) = 0;
 
   
