@@ -14,7 +14,8 @@ namespace furious {
 
 class System {
 public:
-  System(const SystemId id) : m_id(id) {}
+
+  System(const SystemId id);
   virtual ~System() = default;
 
   /**

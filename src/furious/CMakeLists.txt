@@ -10,7 +10,7 @@ endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}  -O0 -g -pg ")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2 -DNDEBUG ")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -g -pg -DNDEBUG ")
 
 set(FURIOUS_DEFAULT_DEFINES " ")
 set(FURIOUS_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
@@ -26,7 +26,8 @@ add_subdirectory(./runtime/)
 add_library(furious SHARED
   furious.h
   )  
-target_link_libraries(furious common memory data)
+
+target_link_libraries(furious common memory data runtime)
 
 set_target_properties(furious 
   PROPERTIES
@@ -34,6 +35,20 @@ set_target_properties(furious
   LIBRARY_OUTPUT_DIRECTORY ${FURIOUS_OUTPUT_DIR}
   ARCHIVE_OUTPUT_DIRECTORY ${FURIOUS_OUTPUT_DIR}
 )
+
+
+add_executable( furious_test 
+  furious_test.cpp
+  )
+target_link_libraries( furious_test furious )
+
+set_target_properties(furious_test
+  PROPERTIES
+  RUNTIME_OUTPUT_DIRECTORY ${FURIOUS_OUTPUT_DIR}
+  LIBRARY_OUTPUT_DIRECTORY ${FURIOUS_OUTPUT_DIR}
+  ARCHIVE_OUTPUT_DIRECTORY ${FURIOUS_OUTPUT_DIR}
+)
+
 
 add_subdirectory(./test/)
 

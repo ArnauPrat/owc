@@ -27,6 +27,7 @@ add_library(runtime STATIC
   #physical_plan_generator.cpp
   static_system.h
   static_system.inl
+  system.cpp
   system.h
 )
 

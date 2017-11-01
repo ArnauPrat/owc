@@ -33,7 +33,8 @@ template<typename T, typename...Components>
 
     template<typename...Args>
     StaticSystem(Args&&...args) : System{0},
-      m_types{type_name<Components>()...},
+      //m_types{type_name<Components>()...},
+      m_types{typeid(Components).name()...},
       m_system_object(args...){
       }
 
@@ -41,10 +42,26 @@ template<typename T, typename...Components>
     ////////////////////////////////////////////////
     ////////////////////////////////////////////////
 
+    /**
+     * @brief Applies the system to a set of aligned component blocks
+     *
+     * @param component_blocks Pointers to the component blocks to apply the
+     * system to
+     */
     void apply_block( const std::vector<void*>& component_blocks ) override;
 
+    /**
+     * @brief Applies the system to a set of components of an entity
+     *
+     * @param components Pointers to the components of the entity 
+     */
     void apply( const std::vector<void*>& components ) override;
 
+    /**
+     * @brief Gets the name of the components of this system
+     *
+     * @return Returns a vector with the names of the components of this system
+     */
     std::vector<std::string> components() const override;
 
     ////////////////////////////////////////////////
@@ -58,6 +75,8 @@ template<typename T, typename...Components>
 
     template<std::size_t...Indices>
       void apply( const std::vector<void*>& components, indices<Indices...> );
+
+    void apply_block(__restrict__ Components*...components);
 
     ////////////////////////////////////////////////
     ////////////////////////////////////////////////
