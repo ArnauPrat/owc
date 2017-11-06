@@ -56,7 +56,7 @@ class Table {
 public:
   class Iterator {
   public:
-    Iterator(BTree<TBlock>* btree);
+    Iterator(std::vector<BTree<TBlock>*>* btrees);
     virtual ~Iterator();
 
     /**
@@ -75,7 +75,12 @@ public:
     TBlock* next();
     
   private:
-    BTree<TBlock>::Iterator* p_iterator;
+    bool advance_iterator() const;
+
+    mutable uint32_t                      m_next_btree;
+    mutable std::vector<BTree<TBlock>*>*  p_btrees;
+    mutable BTree<TBlock>::Iterator*      p_iterator;
+
   };
 
 
@@ -131,10 +136,14 @@ public:
   size_t size() const;
 
 private:
-  std::string              m_name;   // The name of the table
-  size_t                   m_esize;  // The size of each element in bytes
-  BTree<TBlock>*           p_btree;  // A BTree storing the blocks of the table          
-  size_t                   m_num_elements;
+
+  BTree<TBlock>* get_btree(uint32_t id) const;
+
+
+  std::string                 m_name;   // The name of the table
+  size_t                      m_esize;  // The size of each element in bytes
+  mutable std::vector<BTree<TBlock>*> m_btrees;
+  size_t                      m_num_elements;
 };
 
 

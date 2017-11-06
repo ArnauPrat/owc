@@ -2,7 +2,7 @@
 
 #include "table.h"
 #include "memory/memory.h"
-//#include <stdio.h>
+#include <cmath>
 
 namespace furious {
 
@@ -36,42 +36,69 @@ void* get_element(const TBlock* block, uint32_t id) {
   return nullptr;
 }
 
-Table::Iterator::Iterator(BTree<TBlock>* p_btree) : 
-  p_iterator(p_btree->iterator())
+Table::Iterator::Iterator(std::vector<BTree<TBlock>*>* btrees) : 
+  m_next_btree(0),
+  p_btrees(btrees),
+  p_iterator((*p_btrees)[m_next_btree]->iterator())
 {
+  m_next_btree++;
 }
 
 Table::Iterator::~Iterator() {
   delete p_iterator;
 }
 
-bool Table::Iterator::has_next() const {
-  return p_iterator->has_next();
+bool Table::Iterator::advance_iterator() const {
+  while(m_next_btree < p_btrees->size()) {
+    BTree<TBlock>* btree = (*p_btrees)[m_next_btree];
+    if(btree != nullptr) {
+      delete p_iterator;
+      p_iterator = btree->iterator();
+      return true;
+    } 
+    m_next_btree++;
+  }
+  return false;
+}
+
+bool Table::Iterator::has_next() const { 
+  if(!p_iterator->has_next()) {
+    if(advance_iterator()) {
+      return p_iterator->has_next();
+    }
+    return false;
+  }
+  return true;
 }
 
 TBlock* Table::Iterator::next() {
-  return p_iterator->next();
+  TBlock* next = p_iterator->next();
+  if(next == nullptr) {
+    advance_iterator();
+    return p_iterator->next();
+  }
+  return next;
 }
 
 Table::Table( const std::string& name, 
               size_t esize ) :
   m_name(name),
   m_esize(esize),
-  p_btree(nullptr), 
   m_num_elements(0) {
-    p_btree = new BTree<TBlock>();
+    m_btrees.push_back(new BTree<TBlock>());
   }
 
 Table::~Table() {
-  if(p_btree != nullptr) {
-    auto iterator = p_btree->iterator();
-    while(iterator->has_next()) {
-      TBlock* block = iterator->next();
-      numa_free(block->p_data);
-      delete block;
+  for (auto btree : m_btrees) {
+    if(btree != nullptr) {
+      auto iterator = btree->iterator();
+      while(iterator->has_next()) {
+        TBlock* block = iterator->next();
+        numa_free(block->p_data);
+        delete block;
+      }
+      delete btree;
     }
-    delete p_btree;
-    p_btree = nullptr;
   }
 }
 
@@ -80,18 +107,35 @@ size_t Table::size() const {
 }
 
 void Table::clear() {
-  BTree<TBlock>::Iterator * iterator = p_btree->iterator();
-  while(iterator->has_next()) {
-    delete iterator->next();
+  for (auto btree : m_btrees) {
+    if(btree != nullptr) {
+      BTree<TBlock>::Iterator * iterator = btree->iterator();
+      while(iterator->has_next()) {
+        delete iterator->next();
+      }
+      btree->clear();
+    }
   }
-  p_btree->clear();
   m_num_elements = 0;
 }
 
+BTree<TBlock>* Table::get_btree(uint32_t id) const {
+  uint32_t btree_bits = sizeof(uint8_t)*8;
+  uint32_t block_bits = std::log2(TABLE_BLOCK_SIZE);
+  uint32_t btree_index = id >> (btree_bits + block_bits);
+  if(btree_index >= m_btrees.size()) {
+    m_btrees.resize(btree_index+1, nullptr);
+  }
+  if(m_btrees[btree_index] == nullptr) {
+    m_btrees[btree_index] = new BTree<TBlock>();
+  }
+  return m_btrees[btree_index];
+}
+
 void* Table::get_element(uint32_t id) const {
-  assert(id < TABLE_BLOCK_SIZE*256);
+  BTree<TBlock>* btree = get_btree(id);
   uint8_t block_id = id / TABLE_BLOCK_SIZE;
-  TBlock* block = p_btree->get(block_id);
+  TBlock* block = btree->get(block_id);
   if (block == nullptr) {
     return nullptr;
   }
@@ -105,9 +149,9 @@ void* Table::get_element(uint32_t id) const {
 }
 
 void  Table::insert_element(uint32_t id, void* element) {
-  assert(id < TABLE_BLOCK_SIZE*256);
+  BTree<TBlock>* btree = get_btree(id);
   uint8_t block_id = id / TABLE_BLOCK_SIZE;
-  TBlock* block = p_btree->get(block_id);
+  TBlock* block = btree->get(block_id);
   if (block == nullptr) {
     block = new TBlock();
     block->p_data = static_cast<uint8_t*>(numa_alloc(0, m_esize*TABLE_BLOCK_SIZE ));
@@ -115,7 +159,7 @@ void  Table::insert_element(uint32_t id, void* element) {
     block->m_num_elements = 0;
     block->m_esize = m_esize;
     memset(&block->m_exists[0], '\0', TABLE_BLOCK_BITMAP_SIZE);
-    p_btree->insert(block_id, block);
+    btree->insert(block_id, block);
   }
   uint32_t offset = id - block->m_start;
   uint32_t bitmap_offset = offset / (sizeof(uint8_t)*8);
@@ -129,9 +173,9 @@ void  Table::insert_element(uint32_t id, void* element) {
 }
 
 void  Table::drop_element(uint32_t id) {
-  assert(id < TABLE_BLOCK_SIZE*256);
+  BTree<TBlock>* btree = get_btree(id);
   uint8_t block_id = id / TABLE_BLOCK_SIZE;
-  TBlock* block = p_btree->get(block_id);
+  TBlock* block = btree->get(block_id);
   if (block == nullptr) {
     return;
   }
@@ -147,7 +191,7 @@ void  Table::drop_element(uint32_t id) {
 }
 
 Table::Iterator* Table::iterator() {
-  return new Iterator{p_btree};
+  return new Iterator{&m_btrees};
 }
 
 std::string Table::table_name() const {
