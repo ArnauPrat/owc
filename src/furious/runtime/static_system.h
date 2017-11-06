@@ -76,7 +76,7 @@ template<typename T, typename...Components>
     template<std::size_t...Indices>
       void apply( const std::vector<void*>& components, indices<Indices...> );
 
-    void apply_block(__restrict__ Components*...components);
+    void apply_block(Components* __restrict__ ...components);
 
     ////////////////////////////////////////////////
     ////////////////////////////////////////////////

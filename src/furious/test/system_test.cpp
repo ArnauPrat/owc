@@ -15,9 +15,9 @@ public:
   TestSystem(uint32_t val) : m_val{val} {}
   virtual ~TestSystem() = default;
 
-  void run(ComponentA& component) {
-    component.field1_ *= m_val;
-    component.field2_ *= m_val;
+  void run(ComponentA* component) {
+    component->field1_ *= m_val;
+    component->field2_ *= m_val;
   }
 
   uint32_t m_val;
