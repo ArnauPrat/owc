@@ -21,7 +21,7 @@ struct Component {
 TEST(TableTest,TableWorks) {
 
   Table* table = new Table(Component::name(), sizeof(Component));
-  uint32_t num_elements = TABLE_BLOCK_SIZE*10;
+  uint32_t num_elements = TABLE_BLOCK_SIZE*2048;
   for(uint32_t i = 0; i < num_elements; ++i) {
     Component component{i,static_cast<double>(i)};
     table->insert_element(i,&component);
@@ -69,7 +69,6 @@ TEST(TableTest,TableWorks) {
   }
   delete iterator;
   ASSERT_EQ(counter, num_elements/2);
-
 
   table->clear();
   ASSERT_EQ(table->size(),0);

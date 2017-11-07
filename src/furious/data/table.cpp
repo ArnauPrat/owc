@@ -23,7 +23,7 @@ bool has_element(const TBlock* block, uint32_t id) {
 
 void* get_element(const TBlock* block, uint32_t id) {
   assert(id < TABLE_BLOCK_SIZE*256);
-  uint8_t block_id = id / TABLE_BLOCK_SIZE;
+  uint32_t block_id = id / TABLE_BLOCK_SIZE;
   if (block->m_start != block_id * TABLE_BLOCK_SIZE) {
     return nullptr;
   }
@@ -49,15 +49,16 @@ Table::Iterator::~Iterator() {
 }
 
 bool Table::Iterator::advance_iterator() const {
-  while(m_next_btree < p_btrees->size()) {
-    BTree<TBlock>* btree = (*p_btrees)[m_next_btree];
-    if(btree != nullptr) {
-      delete p_iterator;
-      p_iterator = btree->iterator();
-      return true;
-    } 
+  while(m_next_btree < p_btrees->size() && (*p_btrees)[m_next_btree] == nullptr) {
     m_next_btree++;
   }
+
+  if(m_next_btree < p_btrees->size()) {
+    delete p_iterator;
+    p_iterator = (*p_btrees)[m_next_btree]->iterator();
+    m_next_btree++;
+    return true;
+  } 
   return false;
 }
 
