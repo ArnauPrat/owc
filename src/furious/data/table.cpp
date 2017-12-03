@@ -1,7 +1,6 @@
 
 
 #include "table.h"
-#include "memory/memory.h"
 #include <cmath>
 
 namespace furious {
@@ -81,8 +80,14 @@ TBlock* Table::Iterator::next() {
   return next;
 }
 
-Table::Table( const std::string& name, 
-              size_t esize ) :
+Table::Table(std::string& name, size_t esize) :
+  m_name(name),
+  m_esize(esize),
+  m_num_elements(0) {
+    m_btrees.push_back(new BTree<TBlock>());
+  }
+
+Table::Table(std::string&& name, size_t esize) :
   m_name(name),
   m_esize(esize),
   m_num_elements(0) {
@@ -149,7 +154,7 @@ void* Table::get_element(uint32_t id) const {
   return nullptr;
 }
 
-void  Table::insert_element(uint32_t id, void* element) {
+/*void  Table::insert_element(uint32_t id, void* element) {
   BTree<TBlock>* btree = get_btree(id);
   uint8_t block_id = id / TABLE_BLOCK_SIZE;
   TBlock* block = btree->get(block_id);
@@ -171,7 +176,7 @@ void  Table::insert_element(uint32_t id, void* element) {
   }
   block->m_exists[bitmap_offset] = block->m_exists[bitmap_offset] | bitmap_masks[mask_index];
   memcpy(&block->p_data[offset*m_esize], element, m_esize);
-}
+}*/
 
 void  Table::drop_element(uint32_t id) {
   BTree<TBlock>* btree = get_btree(id);

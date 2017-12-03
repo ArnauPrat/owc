@@ -10,7 +10,7 @@ namespace furious {
 
 template <typename T>
   std::string type_name() {
-    return T::name();
+    return typeid(T).name();
   }  
 } /* furious */ 
 

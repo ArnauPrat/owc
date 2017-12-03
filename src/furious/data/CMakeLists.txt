@@ -3,17 +3,20 @@ add_definitions(${FURIOUS_DEFAULT_DEFINES})
 include_directories(${FURIOUS_INCLUDE_DIR})
 
 add_library(data STATIC
-  data.h
   btree.h
   btree.inl
   common.h
-  database.inl
+  data.h
   database.cpp
   database.h
+  database.inl
+  entity.cpp
+  entity.h
   impl/btree_impl.cpp
   impl/btree_impl.h
-  table.h
   table.cpp
+  table.inl 
+  table.h
 )
 
 target_link_libraries(data common memory)

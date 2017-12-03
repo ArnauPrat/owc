@@ -31,13 +31,14 @@ TEST_F(SystemTest, SystemWorks) {
     tableA_->insert_element(i,&component);
   }
 
-  StaticSystem<TestSystem, ComponentA> test_system(5);
+
+  auto test_system = create_static_system<TestSystem>(5);
 
   Table::Iterator* it = tableA_->iterator();
   while(it->has_next()) {
     TBlock* next_block = it->next();
     std::vector<void*> blocks{next_block->p_data};
-    test_system.apply_block(blocks);
+    test_system->apply_block(blocks);
   }
   delete it;
 

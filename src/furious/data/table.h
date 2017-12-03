@@ -85,7 +85,9 @@ public:
 
 
 public:
-  Table(const std::string& name, size_t esize);
+
+  Table(std::string& name, size_t esize);
+  Table(std::string&& name, size_t esize);
   virtual ~Table();
 
   /**
@@ -111,6 +113,17 @@ public:
    * @param element A pointer to the element to copy
    */
   void  insert_element(uint32_t id, void* element);
+
+  /**
+   * @brief Cre 
+   *
+   * @tparam TComponent
+   * @tparam typename...Args
+   * @param id
+   * @param ...args
+   */
+  template<typename TComponent, typename...Args>
+  void  insert_element(uint32_t id, Args&&...args);
 
   /**
    * @brief Drops the element with the given id
@@ -146,8 +159,9 @@ private:
   size_t                      m_num_elements;
 };
 
-
 } /* furious */ 
+
+#include "table.inl"
 
 #endif
 

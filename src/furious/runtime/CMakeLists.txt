@@ -27,8 +27,10 @@ add_library(runtime STATIC
   #physical_plan_generator.cpp
   static_system.h
   static_system.inl
-  system.cpp
   system.h
+  workload.h
+  workload.cpp
+  workload.inl
 )
 
 set_target_properties(runtime 

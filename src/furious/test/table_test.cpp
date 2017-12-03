@@ -1,4 +1,5 @@
 
+#include "../common/common.h"
 #include "../data/table.h"
 
 #include <gtest/gtest.h>
@@ -20,11 +21,10 @@ struct Component {
 
 TEST(TableTest,TableWorks) {
 
-  Table* table = new Table(Component::name(), sizeof(Component));
+  Table* table = new Table(type_name<Component>(), sizeof(Component));
   uint32_t num_elements = TABLE_BLOCK_SIZE*2048;
   for(uint32_t i = 0; i < num_elements; ++i) {
-    Component component{i,static_cast<double>(i)};
-    table->insert_element(i,&component);
+    table->insert_element<Component>(i,i,static_cast<double>(i));
   }
 
   ASSERT_EQ(table->size(), num_elements);

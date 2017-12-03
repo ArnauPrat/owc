@@ -15,8 +15,6 @@
 namespace furious {
 
 class ExecutionEngine {
-  using SystemMap = std::map<SystemId, System*>;
-  using SystemMapPair = std::pair<SystemId, System*>;
 
 public:
   ExecutionEngine( const ExecutionEngine& ) = delete;

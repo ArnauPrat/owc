@@ -15,16 +15,21 @@ namespace furious {
 class System {
 public:
 
-  System(const SystemId id);
+  System() = default;
   virtual ~System() = default;
 
   /**
-   * @brief Applies the system over the set of components
+   * @brief Applies the system over the set of blocks of components
    *
    * @param components The set of blocks with the components 
    */
   virtual void apply_block( const std::vector<void*>& components_blocks ) = 0;
 
+  /**
+   * @brief Applies the system over a set of components
+   *
+   * @param components The components to apply the system to 
+   */
   virtual void apply( const std::vector<void*>& components ) = 0;
 
   
@@ -34,11 +39,6 @@ public:
    * @return A vector with the names of the components this system is for
    */
   virtual std::vector<std::string> components() const = 0;
-
-  /**
-   * @brief The id of the system.
-   */
-  const SystemId m_id;
 
 };
 

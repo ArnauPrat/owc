@@ -5,7 +5,7 @@
 
 #include "table.h"
 #include "common.h"
-#include "reflection.h"
+#include "../common/reflection.h"
 
 #include <map>
 #include <memory>
@@ -19,7 +19,7 @@ namespace furious {
 using TableMap = std::map<std::string, Table*>;
 using TableMapPair = std::pair<std::string, Table*>;
 
-class Database {
+class Database final {
 public:
   Database( const Database& ) = delete;
   Database( Database&& ) = delete;

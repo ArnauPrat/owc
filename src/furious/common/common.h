@@ -4,5 +4,6 @@
 
 #include "types.h"
 #include "platform.h"
+#include "reflection.h"
 
 #endif

@@ -6,7 +6,7 @@ Table* Database::create_table() {
   if(m_tables.find(type_name<T>()) != m_tables.end()) {
     return nullptr;
   }
-  auto table =  new Table(T::name(), sizeof(T));
+  auto table =  new Table(type_name<T>(), sizeof(T));
   m_tables.insert(TableMapPair(table->table_name(),table));
   return table; 
 }

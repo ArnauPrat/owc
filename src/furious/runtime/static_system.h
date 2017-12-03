@@ -4,7 +4,7 @@
 
 #include "system.h"
 #include "../data/table.h"
-#include "../data/reflection.h"
+#include "../common/reflection.h"
 
 #include <typeinfo>
 #include <vector>
@@ -28,15 +28,12 @@ template <size_t N>
   using indices_list = build_indices<N>;
 
 template<typename T, typename...Components>
-  class StaticSystem : public System {
+  class StaticSystem final : public System {
   public:
 
-    template<typename...Args>
-    StaticSystem(Args&&...args) : System{0},
-      //m_types{type_name<Components>()...},
-      m_types{typeid(Components).name()...},
-      m_system_object(args...){
-      }
+    StaticSystem(T* system_object); 
+
+    ~StaticSystem();
 
     ////////////////////////////////////////////////
     ////////////////////////////////////////////////
@@ -83,7 +80,7 @@ template<typename T, typename...Components>
     ////////////////////////////////////////////////
 
     const std::vector<std::string> m_types;
-    T                              m_system_object;
+    T*                             m_system_object;
   };
 
 } /* furious */ 
