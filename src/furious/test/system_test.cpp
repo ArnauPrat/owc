@@ -1,12 +1,17 @@
 
 #include "../runtime/static_system.h"
-#include "data_test.h"
+#include "../furious.h"
 
 #include <gtest/gtest.h>
 
 namespace furious {
 
-class SystemTest : public DataTest {
+struct ComponentA {
+  uint32_t m_field;
+};
+
+struct ComponentB {
+  uint32_t m_field;
 };
 
 
@@ -15,46 +20,58 @@ public:
   TestSystem(uint32_t val) : m_val{val} {}
   virtual ~TestSystem() = default;
 
-  void run(ComponentA* component) {
-    component->field1_ *= m_val;
-    component->field2_ *= m_val;
+  void run(ComponentA* componentA, const ComponentB* componentB ) {
+    componentA->m_field = componentB->m_field*m_val;
   }
 
   uint32_t m_val;
 };
 
-TEST_F(SystemTest, SystemWorks) {
+TEST(SystemTest, SystemWorks) {
+ 
+  init();
+  add_component<ComponentA>();
+  add_component<ComponentB>();
+  Database* database = Database::get_instance();
+  Table* tableA = database->find_table<ComponentA>();
+  Table* tableB = database->find_table<ComponentB>();
 
   uint32_t num_elements = TABLE_BLOCK_SIZE * 10;
   for(uint32_t i = 0; i < num_elements; ++i) {
-    ComponentA component{i*2,i*1.0};
-    tableA_->insert_element(i,&component);
+    tableA->insert_element<ComponentA>(i, i);
+    tableB->insert_element<ComponentB>(i, i*2);
   }
-
 
   auto test_system = create_static_system<TestSystem>(5);
 
-  Table::Iterator* it = tableA_->iterator();
-  while(it->has_next()) {
-    TBlock* next_block = it->next();
-    std::vector<void*> blocks{next_block->p_data};
+  // Checking if we correctly extract the const modifier from the types. 
+  ASSERT_EQ(test_system->components()[0].m_access_type, ComAccessType::E_WRITE );
+  ASSERT_EQ(test_system->components()[1].m_access_type, ComAccessType::E_READ );
+
+  Table::Iterator* itA = tableA->iterator();
+  Table::Iterator* itB = tableB->iterator();
+  while(itA->has_next() && itB->has_next()) {
+    TBlock* next_blockA = itA->next();
+    TBlock* next_blockB = itB->next();
+    std::vector<void*> blocks{next_blockA->p_data, next_blockB->p_data};
     test_system->apply_block(blocks);
   }
-  delete it;
+  delete itA;
+  delete itB;
 
   uint32_t counter = 0;
-  it = tableA_->iterator();
-  while(it->has_next()) {
-    TBlock* next_block = it->next();
+  itA = tableA->iterator();
+  while(itA->has_next()) {
+    TBlock* next_block = itA->next();
     ComponentA* data = reinterpret_cast<ComponentA*>(next_block->p_data);
     for(uint32_t i = 0; i < TABLE_BLOCK_SIZE; ++i, ++counter) {
       ComponentA* component = &data[i];
-      ASSERT_EQ(component->field1_, 5*counter*2);
-      ASSERT_EQ(component->field2_, 5*counter*1.0);
+      ASSERT_EQ(component->m_field, counter*2*5);
     }
   }
-  delete it;
-  tableA_->clear();
+  delete itA;
+
+  release();
 }
 
 } /* furious */ 

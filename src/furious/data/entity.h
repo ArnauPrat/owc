@@ -12,6 +12,8 @@ class Entity final {
 private:
 
   Entity( entity_id_t id  );
+
+public: 
   virtual ~Entity() = default;
 
   ////////////////////////////////////////////////
@@ -43,6 +45,8 @@ public:
 private:
 
   entity_id_t m_id;
+
+  static entity_id_t m_next_id;
   
 };
   

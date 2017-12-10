@@ -52,6 +52,20 @@ void add_system(TArgs&&...);
  */
 template<typename TSystem>
 void remove_system();
+
+/**
+ * @brief Creates an entity
+ *
+ * @return A newly created entity
+ */
+Entity create_entity();
+
+/**
+ * @brief Removes the given entity
+ *
+ * @param entiy The entity to remove. 
+ */
+void remove_entity(Entity entiy);
   
 } /* furious */ 
 

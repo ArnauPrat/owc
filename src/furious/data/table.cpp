@@ -154,7 +154,7 @@ void* Table::get_element(uint32_t id) const {
   return nullptr;
 }
 
-/*void  Table::insert_element(uint32_t id, void* element) {
+void* Table::alloc_element(uint32_t id) {
   BTree<TBlock>* btree = get_btree(id);
   uint8_t block_id = id / TABLE_BLOCK_SIZE;
   TBlock* block = btree->get(block_id);
@@ -175,8 +175,8 @@ void* Table::get_element(uint32_t id) const {
     block->m_num_elements++;
   }
   block->m_exists[bitmap_offset] = block->m_exists[bitmap_offset] | bitmap_masks[mask_index];
-  memcpy(&block->p_data[offset*m_esize], element, m_esize);
-}*/
+  return &block->p_data[offset*m_esize];
+}
 
 void  Table::drop_element(uint32_t id) {
   BTree<TBlock>* btree = get_btree(id);

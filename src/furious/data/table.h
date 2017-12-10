@@ -106,15 +106,6 @@ public:
   void* get_element(uint32_t id) const ;
 
   /**
-   * @brief Copies the contents of the pointed element and inserts it to the
-   * table with the given id
-   *
-   * @param id The id of the element
-   * @param element A pointer to the element to copy
-   */
-  void  insert_element(uint32_t id, void* element);
-
-  /**
    * @brief Cre 
    *
    * @tparam TComponent
@@ -151,6 +142,18 @@ public:
 private:
 
   BTree<TBlock>* get_btree(uint32_t id) const;
+
+  /**
+   * @brief This is a helper function that reserves the space of an element and
+   * returns a pointer to the reserved position. The element is marked as if it
+   * was inserted. This method is aimed to be called from insert_element, which
+   * is a templated function. 
+   *
+   * @param id
+   *
+   * @return 
+   */
+  void* alloc_element(uint32_t id);
 
 
   std::string                 m_name;   // The name of the table

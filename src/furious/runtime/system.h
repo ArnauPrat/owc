@@ -12,6 +12,16 @@ using SystemId = uint32_t;
 
 namespace furious {
 
+enum class ComAccessType : uint8_t {
+  E_READ,
+  E_WRITE
+};
+
+struct SysComDescriptor {
+  std::string   m_name;
+  ComAccessType m_access_type;
+};
+
 class System {
 public:
 
@@ -38,7 +48,7 @@ public:
    *
    * @return A vector with the names of the components this system is for
    */
-  virtual std::vector<std::string> components() const = 0;
+  virtual std::vector<SysComDescriptor> components() const = 0;
 
 };
 

@@ -19,5 +19,13 @@ void release() {
   workload = nullptr;
 }
 
+Entity create_entity() {
+ return Entity::create_entity();
+}
+
+void remove_entity(Entity entity) {
+  Entity::remove_entity(entity);
+}
+
 } /* furious */ 
 

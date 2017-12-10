@@ -27,6 +27,7 @@ template <std::size_t... Is>
 template <size_t N>
   using indices_list = build_indices<N>;
 
+
 template<typename T, typename...Components>
   class StaticSystem final : public System {
   public:
@@ -59,7 +60,7 @@ template<typename T, typename...Components>
      *
      * @return Returns a vector with the names of the components of this system
      */
-    std::vector<std::string> components() const override;
+    std::vector<SysComDescriptor> components() const override;
 
     ////////////////////////////////////////////////
     ////////////////////////////////////////////////
@@ -79,8 +80,8 @@ template<typename T, typename...Components>
     ////////////////////////////////////////////////
     ////////////////////////////////////////////////
 
-    const std::vector<std::string> m_types;
-    T*                             m_system_object;
+    const std::vector<SysComDescriptor> m_types;
+    T*                                  m_system_object;
   };
 
 } /* furious */ 

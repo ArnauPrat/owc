@@ -52,11 +52,6 @@ public:
   Table* find_table();
 
   /**
-   * Gets the table from name
-   * */
-  Table* find_table(const std::string& table_name);
-
-  /**
    * Clears and removes all the tables from the database
    * */
   void clear();
