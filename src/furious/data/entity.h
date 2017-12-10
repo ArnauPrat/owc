@@ -25,8 +25,14 @@ public:
   template<typename TComponent, typename...Args>
   void add_component(Args&&...args);
 
-  template<typename TComponent, typename...Args>
+  template<typename TComponent>
   void remove_component();
+
+
+  template<typename TComponent> 
+    TComponent* get_component();
+  
+
 
   /**
    * @brief Creates an entity 

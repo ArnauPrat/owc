@@ -178,7 +178,7 @@ void* Table::alloc_element(uint32_t id) {
   return &block->p_data[offset*m_esize];
 }
 
-void  Table::drop_element(uint32_t id) {
+void  Table::remove_element(uint32_t id) {
   BTree<TBlock>* btree = get_btree(id);
   uint8_t block_id = id / TABLE_BLOCK_SIZE;
   TBlock* block = btree->get(block_id);

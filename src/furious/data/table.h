@@ -121,7 +121,7 @@ public:
    *
    * @param id
    */
-  void  drop_element(uint32_t id);
+  void  remove_element(uint32_t id);
 
   /**
    * @brief Gets an iterator of the table
