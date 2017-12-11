@@ -16,21 +16,46 @@ uint8_t bitmap_masks[8] = {0x01,
                            0x80
 };
 
+/**
+ * @brief Given an id, it returns the block this id belongs to
+ *
+ * @param id The id to get the block id for
+ *
+ * @return  The block_id of the block this id belongs to
+ */
+static uint8_t get_block_id(uint32_t id) {
+  uint32_t btree_key_bits = sizeof(uint8_t)*8;
+  uint32_t block_size_bits = std::log2(TABLE_BLOCK_SIZE);
+  uint32_t mask = (0xffffffff) >> (sizeof(uint32_t)*8 - (btree_key_bits)) << block_size_bits;
+  return static_cast<uint8_t>(mask & id);
+}
+
+/**
+ * @brief Given an id, returns the offset within a block this id belongs to 
+ *
+ * @param id The block_offset of the id.  
+ *
+ * @return Returns the offset in the block where this id belongs to.
+ */
+static uint32_t get_block_offset(uint32_t id) {
+  uint32_t block_size_bits = std::log2(TABLE_BLOCK_SIZE);
+  uint32_t mask = (0xffffffff) >> (sizeof(uint32_t)*8 - block_size_bits);
+  return (mask & id);
+}
+
 bool has_element(const TBlock* block, uint32_t id) {
   return get_element(block, id) != nullptr;
 }
 
 void* get_element(const TBlock* block, uint32_t id) {
-  assert(id < TABLE_BLOCK_SIZE*256);
-  uint32_t block_id = id / TABLE_BLOCK_SIZE;
-  if (block->m_start != block_id * TABLE_BLOCK_SIZE) {
-    return nullptr;
-  }
-  uint32_t offset = id - block->m_start;
-  uint32_t bitmap_offset = offset / (sizeof(uint8_t)*8);
-  uint32_t mask_index = offset % (sizeof(uint8_t)*8);
+  uint32_t block_id = get_block_id(id);
+  assert(block->m_start == block_id * TABLE_BLOCK_SIZE);
+
+  uint32_t block_offset = get_block_offset(id);
+  uint32_t bitmap_offset = block_offset / (sizeof(uint8_t)*8);
+  uint32_t mask_index = block_offset % (sizeof(uint8_t)*8);
   if((block->m_exists[bitmap_offset] & bitmap_masks[mask_index]) != 0x00) {
-    return &block->p_data[offset*block->m_esize];
+    return &block->p_data[block_offset*block->m_esize];
   }
   return nullptr;
 }
@@ -99,14 +124,9 @@ Table::Table(std::string&& name, size_t esize, void (*destructor)(void* ptr)) :
   }
 
 Table::~Table() {
+  clear();
   for (auto btree : m_btrees) {
     if(btree != nullptr) {
-      auto iterator = btree->iterator();
-      while(iterator->has_next()) {
-        TBlock* block = iterator->next();
-        numa_free(block->p_data);
-        delete block;
-      }
       delete btree;
     }
   }
@@ -119,9 +139,18 @@ size_t Table::size() const {
 void Table::clear() {
   for (auto btree : m_btrees) {
     if(btree != nullptr) {
-      BTree<TBlock>::Iterator * iterator = btree->iterator();
+      auto iterator = btree->iterator();
       while(iterator->has_next()) {
-        delete iterator->next();
+        TBlock* block = iterator->next();
+        for(uint32_t i = 0; i < TABLE_BLOCK_SIZE; ++i) {
+          uint32_t id = i + block->m_start;
+          void * ptr = ::furious::get_element(block, id);
+          if(ptr != nullptr) {
+            m_destructor(ptr);
+          }
+        }
+        numa_free(block->p_data);
+        delete block;
       }
       btree->clear();
     }
@@ -129,32 +158,6 @@ void Table::clear() {
   m_num_elements = 0;
 }
 
-/**
- * @brief Given an id, it returns the block this id belongs to
- *
- * @param id The id to get the block id for
- *
- * @return  The block_id of the block this id belongs to
- */
-static uint8_t get_block_id(uint32_t id) {
-  uint32_t btree_key_bits = sizeof(uint8_t)*8;
-  uint32_t block_size_bits = std::log2(TABLE_BLOCK_SIZE);
-  uint32_t mask = (0xffffffff) >> (sizeof(uint32_t)*8 - (btree_key_bits)) << block_size_bits;
-  return static_cast<uint8_t>(mask & id);
-}
-
-/**
- * @brief Given an id, returns the offset within a block this id belongs to 
- *
- * @param id The block_offset of the id.  
- *
- * @return Returns the offset in the block where this id belongs to.
- */
-static uint32_t get_block_offset(uint32_t id) {
-  uint32_t block_size_bits = std::log2(TABLE_BLOCK_SIZE);
-  uint32_t mask = (0xffffffff) >> (sizeof(uint32_t)*8 - block_size_bits);
-  return (mask & id);
-}
 
 BTree<TBlock>* Table::get_btree(uint32_t id) const {
   uint32_t btree_bits = sizeof(uint8_t)*8;
