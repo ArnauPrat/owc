@@ -30,8 +30,8 @@ public:
 TEST(SystemTest, SystemWorks) {
  
   init();
-  add_component<ComponentA>();
-  add_component<ComponentB>();
+  register_component<ComponentA>();
+  register_component<ComponentB>();
   Database* database = Database::get_instance();
   Table* tableA = database->find_table<ComponentA>();
   Table* tableB = database->find_table<ComponentB>();

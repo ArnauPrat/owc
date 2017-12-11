@@ -1,4 +1,9 @@
 namespace furious {
+
+template<typename T>
+  void destructor(void *ptr) {
+    static_cast<T*>(ptr)->~T();
+  }
   
 template <typename T>
 Table* Database::create_table() {
@@ -6,7 +11,7 @@ Table* Database::create_table() {
   if(m_tables.find(type_name<T>()) != m_tables.end()) {
     return nullptr;
   }
-  auto table =  new Table(type_name<T>(), sizeof(T));
+  auto table =  new Table(type_name<T>(), sizeof(T), &destructor<T>);
   m_tables.insert(TableMapPair(table->table_name(),table));
   return table; 
 }

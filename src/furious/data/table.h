@@ -86,8 +86,8 @@ public:
 
 public:
 
-  Table(std::string& name, size_t esize);
-  Table(std::string&& name, size_t esize);
+  Table(std::string& name, size_t esize, void (*destructor)(void* ptr));
+  Table(std::string&& name, size_t esize, void (*destructor)(void* ptr));
   virtual ~Table();
 
   /**
@@ -144,7 +144,7 @@ private:
   BTree<TBlock>* get_btree(uint32_t id) const;
 
   /**
-   * @brief This is a helper function that reserves the space of an element and
+   * @brief This is a helper function that virtually allocates the space of an element and
    * returns a pointer to the reserved position. The element is marked as if it
    * was inserted. This method is aimed to be called from insert_element, which
    * is a templated function. 
@@ -155,11 +155,24 @@ private:
    */
   void* alloc_element(uint32_t id);
 
+  /**
+   * @brief This is a helper function that virtually deallocates the space of an element and
+   * returns a pointer to the position where it was deallocated. The element is marked as if it
+   * was removed. This method is aimed to be called from remove_element, which
+   * is a templated function. 
+   *
+   * @param id
+   *
+   * @return 
+   */
+  void* dealloc_element(uint32_t id);
 
-  std::string                 m_name;   // The name of the table
-  size_t                      m_esize;  // The size of each element in bytes
+
+  std::string                         m_name;   // The name of the table
+  size_t                              m_esize;  // The size of each element in bytes
   mutable std::vector<BTree<TBlock>*> m_btrees;
-  size_t                      m_num_elements;
+  size_t                              m_num_elements;
+  void                                (*m_destructor)(void* ptr);
 };
 
 } /* furious */ 

@@ -21,12 +21,12 @@ void init();
 void release();
 
 /**
- * @brief Adds a component to the furious framework
+ * @brief Registers a component to the furious framework
  *
- * @tparam TComponent The component to add
+ * @tparam TComponent The component to register
  */
 template<typename TComponent>
-void add_component();
+void register_component();
 
 /**
  * @brief Removes a component from the furious framework
@@ -39,11 +39,11 @@ void remove_component();
 /**
  * @brief Adds a system to the furious framework
  *
- * @tparam typename TSystem The system to add to the furious framework
+ * @tparam typename TSystem The system to register to the furious framework
  * @tparam typename...TArgs The arguments to initialize the system with 
  */
 template<typename TSystem, typename...TArgs> 
-void add_system(TArgs&&...);
+void register_system(TArgs&&...);
 
 /**
  * @brief Removes a System from the furious framework

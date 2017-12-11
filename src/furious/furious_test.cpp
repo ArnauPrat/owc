@@ -25,9 +25,10 @@ int main(int argc, char** argv) {
 
   furious::init();
 
-  furious::add_component<TestComponentA>();
-  furious::add_component<TestComponentB>();
-  furious::add_system<TestSystem>();
+  furious::register_component<TestComponentA>();
+  furious::register_component<TestComponentB>();
+
+  furious::register_system<TestSystem>();
 
   furious::Entity entity1 = furious::create_entity();
   entity1.add_component<TestComponentA>(0.0f, 0.0f, 0.0f);
@@ -37,8 +38,12 @@ int main(int argc, char** argv) {
   entity2.add_component<TestComponentA>(0.0f, 0.0f, 0.0f);
   entity2.add_component<TestComponentB>(0.0f, 0.0f, 0.0f);
 
+
   entity1.remove_component<TestComponentA>(); 
   entity1.remove_component<TestComponentB>(); 
+
+  entity2.remove_component<TestComponentA>(); 
+  entity2.remove_component<TestComponentB>(); 
   furious::release();
 
   return 0;

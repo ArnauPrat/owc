@@ -26,13 +26,13 @@ public:
   ////////////////////////////////////////////////
 
   /**
-   * @brief Adds a system to the set of running systems
+   * @brief Registers a system to the set of running systems
    *
-   * @tparam TSystem The system to add
+   * @tparam TSystem The system to register  
    * @tparam typename...TComponent The components this system works with
    */
   template<typename TSystem, typename...TArgs>
-    void add_system(TArgs&&...args);
+    void register_system(TArgs&&...args);
 
   template<typename TSystem>
     void remove_system();

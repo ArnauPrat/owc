@@ -6,7 +6,7 @@ extern Database* database;
 extern Workload* workload;
 
 template<typename TComponent>
-  void add_component() {
+  void register_component() {
     assert(database != nullptr);
     database->create_table<TComponent>();
   }
@@ -17,10 +17,10 @@ template<typename TComponent>
   }
 
 template<typename TSystem, typename...TArgs>
-  void add_system(TArgs&&...args) {
+  void register_system(TArgs&&...args) {
     assert(database != nullptr);
     assert(workload != nullptr);
-    workload->add_system<TSystem>(std::forward<TArgs>(args)...);
+    workload->register_system<TSystem>(std::forward<TArgs>(args)...);
   }
 
 template<typename TSystem>

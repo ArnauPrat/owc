@@ -1,6 +1,6 @@
 
 #include "../common/common.h"
-#include "../data/table.h"
+#include "../data/data.h"
 
 #include <gtest/gtest.h>
 #include <set>
@@ -9,7 +9,7 @@ namespace furious {
 
 struct Component {
   uint32_t field1_;
-  double field2_;
+  float field2_;
 
   Component(uint32_t field1, double field2) : field1_(field1), field2_(field2) {}
 
@@ -21,10 +21,11 @@ struct Component {
 
 TEST(TableTest,TableWorks) {
 
-  Table* table = new Table(type_name<Component>(), sizeof(Component));
-  uint32_t num_elements = TABLE_BLOCK_SIZE*2048;
+  Table* table = new Table(type_name<Component>(), sizeof(Component), &destructor<Component> );
+  //uint32_t num_elements = TABLE_BLOCK_SIZE*2048;
+  uint32_t num_elements = TABLE_BLOCK_SIZE;
   for(uint32_t i = 0; i < num_elements; ++i) {
-    table->insert_element<Component>(i,i,static_cast<double>(i));
+    table->insert_element<Component>(i,i,static_cast<float>(i));
   }
 
   ASSERT_EQ(table->size(), num_elements);
@@ -39,7 +40,7 @@ TEST(TableTest,TableWorks) {
         if(component != nullptr) {
           counter++;
           ASSERT_EQ(component->field1_, i);
-          ASSERT_EQ(component->field2_, static_cast<double>(i));
+          ASSERT_EQ(component->field2_, static_cast<float>(i));
         }
     }
   }
@@ -48,7 +49,7 @@ TEST(TableTest,TableWorks) {
   ASSERT_EQ(table->size(), num_elements);
 
   for(uint32_t i = 0; i < num_elements; i+=2) {
-    table->drop_element(i);
+    table->remove_element(i);
   }
   ASSERT_EQ(table->size(), num_elements/2);
 
